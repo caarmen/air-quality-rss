@@ -200,7 +200,7 @@ Cobol *> ***************************************************************
        data division.
        working-storage section.
        01 curl-callback-result                 usage binary-long.
-       01 accumulated-response                 pic x(10000).   *> Buffer to accumulate response data
+       01 response-string pic x(10000).   *> Buffer to accumulate response data
        01 response-length                      pic 9(9) comp-5.   *> Holds the current length of the data in the buffer
        
        linkage section.
@@ -223,11 +223,11 @@ Cobol *> ***************************************************************
        compute response-length = sizet-size * sizet-nmemb
        *> https://curl.se/libcurl/c/getinmemory.html
        call "memcpy" using
--           by reference accumulated-response
+-           by reference response-string
 -           by value star-ptr
 -           by value response-length
        string ms_buffer(1:ms_sizet-size) 
-           accumulated-response(1:response-length) delimited by size
+           response-string(1:response-length) delimited by size
            into ms_buffer of memory-struct
        end-string.
        compute ms_sizet-size = ms_sizet-size + response-length
