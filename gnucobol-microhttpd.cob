@@ -94,7 +94,7 @@ Cobol *> ***************************************************************
            "&REQUEST=GetFeatureInfo&SERVICE=WMS&SRS=EPSG%3A3857" &
            "&STYLES=&VERSION=1.3&FILTER=%3CPropertyIsEqualTo" &
            "%20matchCase%3D%22true%22%3E%3CPropertyName%3Edate_ech%3C" &
-           "%2FPropertyName%3E%3CLiteral%3E2025-04-05%3C%2FLiteral%3E" &
+           "%2FPropertyName%3E%3CLiteral%3E2025-04-06%3C%2FLiteral%3E" &
            "%3C%2FPropertyIsEqualTo%3E&SORTBY=date_dif%20D&BBOX=" &
            "517516.9000047859%2C5732547.810303366%2C558945.7693353514" &
            "%2C5752459.656171654&HEIGHT=521&WIDTH=1084&LAYERS=ind_pol" &
@@ -159,7 +159,7 @@ Cobol *> ***************************************************************
        .
 
        set curl-callback to
-         entry "curl-callback"
+         entry "curl-write-callback"
        call "curl_easy_init"
            returning star-curl
        call "curl_easy_setopt" using
@@ -308,45 +308,3 @@ Cobol *> ***************************************************************
 
        goback.
        end program gnucobol-connection-handler.
-
-       identification division.
-       program-id. curl-callback.
-
-       data division.
-       working-storage section.
-       01 curl-callback-result                 usage binary-long.
-       01 response-string pic x(10000).   *> Buffer to accumulate response data
-       01 response-length                      pic 9(9) comp-5.   *> Holds the current length of the data in the buffer
-       
-       linkage section.
-       01 star-ptr                             usage pointer.
-       01 sizet-size                           pic S9(18) comp-5.   *> 64-bit (for size_t)
-       01 sizet-nmemb                          pic S9(18) comp-5.   *> 64-bit (for size_t)
-       01 userdata-ptr                         usage pointer.
-
-       01 memory-struct.
-           05 ms_buffer pic x(10000).
-           05 ms_sizet-size pic S9(18) comp-5.
-
-       procedure division with C linkage using
-           by value star-ptr
-           by value sizet-size
-           by value sizet-nmemb
-           by reference memory-struct
-       .
-
-       compute response-length = sizet-size * sizet-nmemb
-       *> https://curl.se/libcurl/c/getinmemory.html
-       call "memcpy" using
--           by reference response-string
--           by value star-ptr
--           by value response-length
-       string ms_buffer(1:ms_sizet-size) 
-           response-string(1:response-length) delimited by size
-           into ms_buffer of memory-struct
-       end-string.
-       compute ms_sizet-size = ms_sizet-size + response-length
-
-       move response-length to return-code.
-       goback.
-       end program  curl-callback.
