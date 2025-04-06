@@ -14,8 +14,8 @@ Cobol *> ***************************************************************
        configuration section.
        repository.
            function all intrinsic.
-
        data division.
+
        working-storage section.
        01 MHD_HTTP_OK               constant   as 200.
        01 MHD_USE_SELECT_INTERNALLY constant   as 8.
@@ -77,7 +77,17 @@ Cobol *> ***************************************************************
        identification division.
        program-id. gnucobol-connection-handler.
 
+       environment division.
+       input-output section. 
+       file-control.
+           select pollen-file assign to "pollen.dat"
+               organization is sequential.
        data division.
+       file section.
+       fd pollen-file.
+       01 pollen-record.
+           05 pollen-name pic x(16).
+           05 pollen-code pic 9(1).
        working-storage section.
        01 MHD_HTTP_OK               constant   as 200.
        01 MHD_RESPMEM_PERSISTENT    constant   as 0.
@@ -208,6 +218,8 @@ Cobol *> ***************************************************************
                        call "cJSON_GetArraySize" using
                            by value json-properties
                            returning json-properties-size
+                       open output pollen-file
+
                        perform varying property-attr-index from 0 by 1 
                            until property-attr-index 
                                = json-properties-size
@@ -232,8 +244,12 @@ Cobol *> ***************************************************************
                                    returning property-value-val
                                display property-name-val
                                    ": " property-value-val
+                               move property-name-val to pollen-name
+                               move property-value-val to pollen-code
+                               write pollen-record
                            end-if
                        end-perform
+                       close pollen-file
                    end-if
                end-if
            end-if
