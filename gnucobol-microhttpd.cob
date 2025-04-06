@@ -182,6 +182,10 @@ Cobol *> ***************************************************************
        data division.
        working-storage section.
        01 curl-callback-result                 usage binary-long.
+       01 accumulated-response                 pic x(10000).   *> Buffer to accumulate response data
+       01 response-length                      pic 9(9) comp-5.   *> Holds the current length of the data in the buffer
+       01 current-position                     pic 9(9) comp-5 value 1.  *> Pointer or index for where to append data
+       
        linkage section.
        01 star-ptr                             usage pointer.
        01 sizet-size                           pic S9(18) comp-5.   *> 64-bit (for size_t)
@@ -199,6 +203,13 @@ Cobol *> ***************************************************************
        display "sizet-size " sizet-size
        display "sizet-nmemb " sizet-nmemb
        display "userdata-ptr " userdata-ptr
-       move 0 to return-code.
+       compute response-length = sizet-size * sizet-nmemb
+       display "response length " response-length
+       call "memcpy" using
+           by reference accumulated-response
+           by value star-ptr
+           by value response-length
+       display "acc resp " accumulated-response
+       move response-length to return-code.
        goback.
        end program  curl-callback.
