@@ -87,6 +87,10 @@ Cobol *> ***************************************************************
        01 CURLOPT_WRITEDATA         constant   as 10001.
        01 CURLOPT_URL               constant   as 10002.
        01 CURLOPT_WRITEFUNCTION     constant   as 20011.
+       *> https://curl.se/libcurl/c/getinmemory.html
+       01 memory-struct.
+           05 buffer pic x(10000).
+           05 sizet-size pic S9(18) comp-5.
        01 data-url                  constant   as "https://rmen.ca".
        01 curl-callback             usage program-pointer.
        01 webpage              pic x(132) value
@@ -97,6 +101,7 @@ Cobol *> ***************************************************************
        01 star-response                        usage pointer.
        01 mhd-result                           usage binary-long.
        01 curl-response                        usage binary-long.
+       01 curl-response-text                   pic x(10000).   *> Buffer to accumulate response data
 
        01 star-curl                            usage pointer.
 
@@ -136,6 +141,10 @@ Cobol *> ***************************************************************
            by value star-curl
            by value CURLOPT_WRITEFUNCTION
            by value curl-callback
+       call "curl_easy_setopt" using
+           by value star-curl
+           by value CURLOPT_WRITEDATA
+           by reference memory-struct
        call "curl_easy_perform" using
            by value star-curl
            returning curl-response
@@ -184,6 +193,7 @@ Cobol *> ***************************************************************
        01 curl-callback-result                 usage binary-long.
        01 accumulated-response                 pic x(10000).   *> Buffer to accumulate response data
        01 response-length                      pic 9(9) comp-5.   *> Holds the current length of the data in the buffer
+       01 acc-length                      pic 9(9) comp-5.   *> Holds the current length of the data in the buffer
        01 current-position                     pic 9(9) comp-5 value 1.  *> Pointer or index for where to append data
        
        linkage section.
@@ -192,23 +202,28 @@ Cobol *> ***************************************************************
        01 sizet-nmemb                          pic S9(18) comp-5.   *> 64-bit (for size_t)
        01 userdata-ptr                         usage pointer.
 
+       01 memory-struct.
+           05 ms_buffer pic x(10000).
+           05 ms_sizet-size pic S9(18) comp-5.
+
        procedure division with C linkage using
            by value star-ptr
            by value sizet-size
            by value sizet-nmemb
-           by value userdata-ptr
+           by reference memory-struct
        .
 
        display "star ptr " star-ptr
        display "sizet-size " sizet-size
        display "sizet-nmemb " sizet-nmemb
-       display "userdata-ptr " userdata-ptr
+       display "userdata-ptr " ms_sizet-size of memory-struct
        compute response-length = sizet-size * sizet-nmemb
+       compute acc-length = ms_sizet-size of memory-struct 
+           + response-length
        display "response length " response-length
-       call "memcpy" using
-           by reference accumulated-response
-           by value star-ptr
-           by value response-length
+       display "acc length " acc-length
+       *> https://curl.se/libcurl/c/getinmemory.html
+       compute ms_sizet-size of memory-struct = acc-length
        display "acc resp " accumulated-response
        move response-length to return-code.
        goback.
