@@ -148,6 +148,8 @@ Cobol *> ***************************************************************
        call "curl_easy_perform" using
            by value star-curl
            returning curl-response
+
+       display "memory struct finally " memory-struct
        
        display "curl is " star-curl
        display "curl-response is " curl-response
@@ -192,6 +194,8 @@ Cobol *> ***************************************************************
        working-storage section.
        01 curl-callback-result                 usage binary-long.
        01 accumulated-response                 pic x(10000).   *> Buffer to accumulate response data
+       01 trimmed-new-part                     pic x(10000).
+       01 trimmed-so-far                       pic x(10000).
        01 response-length                      pic 9(9) comp-5.   *> Holds the current length of the data in the buffer
        01 acc-length                      pic 9(9) comp-5.   *> Holds the current length of the data in the buffer
        01 current-position                     pic 9(9) comp-5 value 1.  *> Pointer or index for where to append data
@@ -223,8 +227,23 @@ Cobol *> ***************************************************************
        display "response length " response-length
        display "acc length " acc-length
        *> https://curl.se/libcurl/c/getinmemory.html
+       display "before struct size" ms_sizet-size of memory-struct
+       call "memcpy" using
+-           by reference accumulated-response
+-           by value star-ptr
+-           by value response-length
+       move ms_buffer(1:ms_sizet-size) to trimmed-so-far
+       move accumulated-response(1:response-length) to trimmed-new-part
+       display "trimmed-so-far" trimmed-so-far
+       display "trimmed-new-part" trimmed-new-part
+       string trimmed-so-far(1:ms_sizet-size) 
+           trimmed-new-part(1:response-length) delimited by size
+           into ms_buffer of memory-struct
+       end-string.
        compute ms_sizet-size of memory-struct = acc-length
+
        display "acc resp " accumulated-response
+       display "after ms_buffer " ms_buffer of memory-struct
        move response-length to return-code.
        goback.
        end program  curl-callback.
