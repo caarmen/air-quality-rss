@@ -202,7 +202,6 @@ Cobol *> ***************************************************************
        01 curl-callback-result                 usage binary-long.
        01 accumulated-response                 pic x(10000).   *> Buffer to accumulate response data
        01 response-length                      pic 9(9) comp-5.   *> Holds the current length of the data in the buffer
-       01 acc-length                      pic 9(9) comp-5.   *> Holds the current length of the data in the buffer
        
        linkage section.
        01 star-ptr                             usage pointer.
@@ -222,8 +221,6 @@ Cobol *> ***************************************************************
        .
 
        compute response-length = sizet-size * sizet-nmemb
-       compute acc-length = ms_sizet-size of memory-struct 
-           + response-length
        *> https://curl.se/libcurl/c/getinmemory.html
        call "memcpy" using
 -           by reference accumulated-response
@@ -233,7 +230,7 @@ Cobol *> ***************************************************************
            accumulated-response(1:response-length) delimited by size
            into ms_buffer of memory-struct
        end-string.
-       compute ms_sizet-size of memory-struct = acc-length
+       compute ms_sizet-size = ms_sizet-size + response-length
 
        move response-length to return-code.
        goback.
