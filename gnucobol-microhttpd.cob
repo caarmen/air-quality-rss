@@ -122,6 +122,8 @@ Cobol *> ***************************************************************
        01 json-str-val pic x(1000) value spaces.
        01 json-error usage pointer.
        01 json-int usage binary-long.
+       01 json-name-ptr usage pointer.
+       01 json-name-val pic x(100).
        01 root-index pic 9 value 1.
        01 json-bool pic 9 value 1.
        01 json-pollen-resp-ptr usage pointer.
@@ -180,15 +182,11 @@ Cobol *> ***************************************************************
 
        call "cJSON_GetObjectItem" using
            by value json-root
-           by content "totalFeatures"
+           by content "features"
            returning json-foo
+       
+       display "features " json-foo
 
-       call "cJSON_GetStringValue" using
-           by value json-foo
-           returning json-str-ptr
-       call "strcpy" using 
-           by reference json-str-val 
-           by value json-str-ptr.
        call "cJSON_GetArraySize" using
            by value json-root
            returning json-int
@@ -197,10 +195,15 @@ Cobol *> ***************************************************************
                by value json-root
                root-index
                returning json-foo
-           call "cJSON_IsArray" using
+           call "cJSON_GetObjectName" using
                by value json-foo
-               returning json-bool
-           if json-bool = 1
+               returning json-name-ptr
+           
+           call "strcpy" using 
+               by reference json-name-val 
+               by value json-name-ptr
+           display "name: " json-name-val
+           if json-name-val(1:8) = "features"
            then
                call "cJSON_GetArrayItem" using
                    by value json-foo
