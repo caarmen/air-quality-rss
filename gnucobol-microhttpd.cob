@@ -46,9 +46,7 @@ Cobol *> ***************************************************************
                    upon syserr
                end-display
        end-call
-       display "wow, server.  help, info, quit" end-display
        perform until server-command = "quit"
-           display "server: " with no advancing end-display
            accept server-command end-accept
            if server-command = "help" then
                display
@@ -128,7 +126,6 @@ Cobol *> ***************************************************************
        .
 
 
-       display "wow, connection handler" upon syserr end-display
        set curl-callback to
          entry "curl-callback"
        call "curl_easy_init"
@@ -151,8 +148,6 @@ Cobol *> ***************************************************************
 
        display "memory struct finally " memory-struct
        
-       display "curl is " star-curl
-       display "curl-response is " curl-response
        call "MHD_create_response_from_buffer" using
            by value length of webpage
            by reference webpage
@@ -217,33 +212,22 @@ Cobol *> ***************************************************************
            by reference memory-struct
        .
 
-       display "star ptr " star-ptr
-       display "sizet-size " sizet-size
-       display "sizet-nmemb " sizet-nmemb
-       display "userdata-ptr " ms_sizet-size of memory-struct
        compute response-length = sizet-size * sizet-nmemb
        compute acc-length = ms_sizet-size of memory-struct 
            + response-length
-       display "response length " response-length
-       display "acc length " acc-length
        *> https://curl.se/libcurl/c/getinmemory.html
-       display "before struct size" ms_sizet-size of memory-struct
        call "memcpy" using
 -           by reference accumulated-response
 -           by value star-ptr
 -           by value response-length
        move ms_buffer(1:ms_sizet-size) to trimmed-so-far
        move accumulated-response(1:response-length) to trimmed-new-part
-       display "trimmed-so-far" trimmed-so-far
-       display "trimmed-new-part" trimmed-new-part
        string trimmed-so-far(1:ms_sizet-size) 
            trimmed-new-part(1:response-length) delimited by size
            into ms_buffer of memory-struct
        end-string.
        compute ms_sizet-size of memory-struct = acc-length
 
-       display "acc resp " accumulated-response
-       display "after ms_buffer " ms_buffer of memory-struct
        move response-length to return-code.
        goback.
        end program  curl-callback.
