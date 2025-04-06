@@ -158,8 +158,6 @@ Cobol *> ***************************************************************
            by reference star-star-con-cls
        .
 
-       display data-url
-
        set curl-callback to
          entry "curl-callback"
        call "curl_easy_init"
@@ -180,8 +178,6 @@ Cobol *> ***************************************************************
            by value star-curl
            returning curl-response
 
-       display "memory struct finally " buffer(1:sizet-size)
-
        call "cJSON_ParseWithLength" using
            by value buffer
            by value sizet-size
@@ -192,8 +188,6 @@ Cobol *> ***************************************************************
            by content "features"
            returning json-foo
        
-       display "features " json-foo
-
        call "cJSON_GetArraySize" using
            by value json-root
            returning json-int
