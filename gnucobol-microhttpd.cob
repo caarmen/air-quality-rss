@@ -83,6 +83,8 @@ Cobol *> ***************************************************************
        working-storage section.
        01 MHD_HTTP_OK               constant   as 200.
        01 MHD_RESPMEM_PERSISTENT    constant   as 0.
+       01 CURLOPT_URL               constant   as 10002.
+       01 data-url                  constant   as "https://rmen.ca".
        01 webpage              pic x(132) value
           "<html><body>" &
           "Hello, world<br/>" &
@@ -90,6 +92,9 @@ Cobol *> ***************************************************************
           "</body></html>".
        01 star-response                        usage pointer.
        01 mhd-result                           usage binary-long.
+       01 curl-response                        usage binary-long.
+
+       01 star-curl                            usage pointer.
 
        linkage section.
        01 star-cls                             usage pointer.
@@ -100,6 +105,8 @@ Cobol *> ***************************************************************
        01 star-upload-data                     usage pointer.
        01 star-upload-data-size                usage pointer.
        01 star-star-con-cls                    usage pointer.
+
+
        procedure division with C linkage using
            by value star-cls
            by value star-connection
@@ -113,6 +120,18 @@ Cobol *> ***************************************************************
 
 
        display "wow, connection handler" upon syserr end-display
+       call "curl_easy_init"
+           returning star-curl
+       call "curl_easy_setopt" using
+           by value star-curl
+           by value CURLOPT_URL
+           by content data-url
+       call "curl_easy_perform" using
+           by value star-curl
+           returning curl-response
+       
+       display "curl is " star-curl
+       display "curl-response is " curl-response
        call "MHD_create_response_from_buffer" using
            by value length of webpage
            by reference webpage
@@ -138,6 +157,9 @@ Cobol *> ***************************************************************
        call "MHD_destroy_response" using
            by value star-response
        end-call
+
+       call "curl_easy_cleanup" using
+           by value star-curl
 
        move mhd-result to return-code
 
