@@ -33,7 +33,6 @@
        *> Calculate the length of the response data.
        compute response-length-bytes = size-memb * nmemb.
 
-       display "response length " response-length-bytes
        *> Put the response data into the response-string so
        *> we can manipulate it as a string.
        call "memcpy" using
@@ -41,7 +40,6 @@
            by value ptr
            by value response-length-bytes.
 
-       display "response " response-string
        *> Append the response data to the data we already
        *> have in the buffer.
        string buffer-data(1:buffer-length-bytes)
