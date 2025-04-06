@@ -229,8 +229,6 @@ Cobol *> ***************************************************************
                                call "cJSON_GetIntValue" using
                                    by value property-attr
                                    returning property-value-val
-                               display property-name-val
-                                   ": " property-value-val
                                move property-name-val to pollen-name
                                move property-value-val to pollen-code
                                write pollen-record

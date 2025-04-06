@@ -4,7 +4,6 @@
 
        working-storage section.
        01 property-name-ptr usage pointer.
-       01 property-name-val pic x(50).
        01 property-value-ptr usage pointer.
 
        linkage section.
