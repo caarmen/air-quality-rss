@@ -197,12 +197,9 @@ Cobol *> ***************************************************************
                            by content "pollen_resp"
                            returning json-pollen-resp-ptr
 
-                       call "cJSON_GetStringValue" using
+                       call "json-get-string-value" using
                            by value json-pollen-resp-ptr
-                           returning json-str-ptr
-                       call "strcpy" using 
-                           by reference json-str-val 
-                           by value json-str-ptr
+                           by reference json-str-val
                        display "resp pollen: " json-str-val
 
                        call "cJSON_GetArraySize" using
