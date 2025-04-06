@@ -201,11 +201,8 @@ Cobol *> ***************************************************************
        working-storage section.
        01 curl-callback-result                 usage binary-long.
        01 accumulated-response                 pic x(10000).   *> Buffer to accumulate response data
-       01 trimmed-new-part                     pic x(10000).
-       01 trimmed-so-far                       pic x(10000).
        01 response-length                      pic 9(9) comp-5.   *> Holds the current length of the data in the buffer
        01 acc-length                      pic 9(9) comp-5.   *> Holds the current length of the data in the buffer
-       01 current-position                     pic 9(9) comp-5 value 1.  *> Pointer or index for where to append data
        
        linkage section.
        01 star-ptr                             usage pointer.
@@ -232,10 +229,8 @@ Cobol *> ***************************************************************
 -           by reference accumulated-response
 -           by value star-ptr
 -           by value response-length
-       move ms_buffer(1:ms_sizet-size) to trimmed-so-far
-       move accumulated-response(1:response-length) to trimmed-new-part
-       string trimmed-so-far(1:ms_sizet-size) 
-           trimmed-new-part(1:response-length) delimited by size
+       string ms_buffer(1:ms_sizet-size) 
+           accumulated-response(1:response-length) delimited by size
            into ms_buffer of memory-struct
        end-string.
        compute ms_sizet-size of memory-struct = acc-length
