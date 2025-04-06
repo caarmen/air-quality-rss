@@ -129,7 +129,6 @@ Cobol *> ***************************************************************
        01 root-index pic 9 value 1.
        01 property-attr-index pic 999 value 1.
        01 property-attr usage pointer.
-       01 property-name-ptr usage pointer.
        01 property-name-val pic x(50).
        01 property-value-ptr usage pointer.
        01 property-value-val pic 9 value 0.
@@ -164,16 +163,10 @@ Cobol *> ***************************************************************
            by content DATA-URL
            by reference buffer
 
-       call "cJSON_ParseWithLength" using
-           by value buffer
-           by value sizet-size
+       call "cJSON_Parse" using
+           by value function trim(buffer)
            returning json-root
 
-       call "cJSON_GetObjectItem" using
-           by value json-root
-           by content "features"
-           returning json-foo
-       
        call "cJSON_GetArraySize" using
            by value json-root
            returning json-int
@@ -182,12 +175,9 @@ Cobol *> ***************************************************************
                by value json-root
                root-index
                returning json-foo
-           call "cJSON_GetObjectName" using
+           call "json-get-object-name" using
                by value json-foo
-               returning json-name-ptr
-           call "strcpy" using 
-               by reference json-name-val 
-               by value json-name-ptr
+               by reference json-name-val
            if json-name-val(1:8) = "features"
            then
                call "cJSON_GetArrayItem" using
@@ -228,12 +218,9 @@ Cobol *> ***************************************************************
                                by value json-properties
                                property-attr-index
                                returning property-attr
-                           call "cJSON_GetObjectName" using
+                           call "json-get-object-name" using
                                by value property-attr
-                               returning property-name-ptr
-                           call "strcpy" using 
                                by reference property-name-val
-                               by value property-name-ptr
                            if property-name-val(1:5) = "code_"
                            then
                                call "cJSON_IsNumber" using
