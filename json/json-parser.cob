@@ -46,4 +46,53 @@
                by value property-value-ptr
        goback.
        end program json-get-string-value.
+
+       *> The GetObject api from cJSON doesn't seem to work when
+       *> the attribute value is an array.
+       *> So we implement an alternative here which iterates over
+       *> all the objects attributes, until it finds the one with
+       *> the given name.
+       program-id. json-get-object.
+       data division.
+
+       working-storage section.
+       01 attribute-index pic 9 value 1.
+       01 attribute-count usage binary-long.
+       01 iter-attribute-handle-ptr usage pointer.
+       01 iter-attribute-name pic x(50).
+
+       linkage section.
+       
+       01 json-source-handle-ptr usage pointer.
+       01 attribute-name pic x(50) value spaces.
+       01 json-found-object-handle-ptr usage pointer.
+
+       procedure division using
+           attribute-name
+           by value json-source-handle-ptr
+           by reference json-found-object-handle-ptr.
+               
+       call "cJSON_GetArraySize" using
+           by value json-source-handle-ptr
+           returning attribute-count
+
+       move NULL to json-found-object-handle-ptr
+       perform varying attribute-index from 0 by 1 
+           until attribute-index = attribute-count 
+               or json-found-object-handle-ptr not = NULL
+           call "cJSON_GetArrayItem" using
+               by value json-source-handle-ptr
+               by value attribute-index
+               returning iter-attribute-handle-ptr
+           call "json-get-object-name" using
+               by value iter-attribute-handle-ptr
+               by reference iter-attribute-name
+           if iter-attribute-name(1:8) = attribute-name
+           then
+               move iter-attribute-handle-ptr 
+                   to json-found-object-handle-ptr
+           end-if
+       end-perform
+       goback.
+       end program json-get-object.
        

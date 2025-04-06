@@ -119,22 +119,16 @@ Cobol *> ***************************************************************
        01 json-features usage pointer.
        01 json-first-feature usage pointer.
        01 json-properties usage pointer.
-       01 json-foo usage pointer.
-       01 json-str-ptr usage pointer.
        01 json-str-val pic x(1000) value spaces.
        01 json-error usage pointer.
-       01 json-int usage binary-long.
-       01 json-name-ptr usage pointer.
-       01 json-name-val pic x(100).
-       01 root-index pic 9 value 1.
        01 property-attr-index pic 999 value 1.
        01 property-attr usage pointer.
        01 property-name-val pic x(50).
-       01 property-value-ptr usage pointer.
        01 property-value-val pic 9 value 0.
        01 json-pollen-resp-ptr usage pointer.
        01 json-pollen-resp-val pic x(50) value spaces.
        01 json-properties-size usage binary-long.
+       01 FEATURES_ATTRIBUTE pic x(50) value "features".
 
        linkage section.
        01 star-cls                             usage pointer.
@@ -165,73 +159,61 @@ Cobol *> ***************************************************************
        call "cJSON_Parse" using
            by value function trim(buffer)
            returning json-root
-
-       call "cJSON_GetArraySize" using
+       call "json-get-object" using
+           by content FEATURES_ATTRIBUTE
            by value json-root
-           returning json-int
-       perform varying root-index from 0 by 1 until root-index =json-int
-           call "cJSON_GetArrayItem" using
-               by value json-root
-               root-index
-               returning json-foo
-           call "json-get-object-name" using
-               by value json-foo
-               by reference json-name-val
-           if json-name-val(1:8) = "features"
+           by reference json-features
+       call "cJSON_GetArrayItem" using
+           by value json-features
+           0
+           returning json-first-feature
+       if json-first-feature NOT = NULL
+       then
+           call "cJSON_GetObjectItem" using
+               by value json-first-feature
+               by content "properties"
+               returning json-properties
+           if json-properties NOT = NULL
            then
-               call "cJSON_GetArrayItem" using
-                   by value json-foo
-                   0
-                   returning json-first-feature
-               if json-first-feature NOT = NULL
-               then
-                   call "cJSON_GetObjectItem" using
-                       by value json-first-feature
-                       by content "properties"
-                       returning json-properties
-                   if json-properties NOT = NULL
+               call "cJSON_GetObjectItem" using
+                   by value json-properties
+                   by content "pollen_resp"
+                   returning json-pollen-resp-ptr
+
+               call "json-get-string-value" using
+                   by value json-pollen-resp-ptr
+                   by reference json-str-val
+               display "resp pollen: " json-str-val
+
+               call "cJSON_GetArraySize" using
+                   by value json-properties
+                   returning json-properties-size
+               open output pollen-file
+
+               perform varying property-attr-index from 0 by 1 
+                   until property-attr-index 
+                       = json-properties-size
+                   move "" to property-name-val
+                   call "cJSON_GetArrayItem" using
+                       by value json-properties
+                       property-attr-index
+                       returning property-attr
+                   call "json-get-object-name" using
+                       by value property-attr
+                       by reference property-name-val
+                   if property-name-val(1:5) = "code_"
                    then
-                       call "cJSON_GetObjectItem" using
-                           by value json-properties
-                           by content "pollen_resp"
-                           returning json-pollen-resp-ptr
-
-                       call "json-get-string-value" using
-                           by value json-pollen-resp-ptr
-                           by reference json-str-val
-                       display "resp pollen: " json-str-val
-
-                       call "cJSON_GetArraySize" using
-                           by value json-properties
-                           returning json-properties-size
-                       open output pollen-file
-
-                       perform varying property-attr-index from 0 by 1 
-                           until property-attr-index 
-                               = json-properties-size
-                           move "" to property-name-val
-                           call "cJSON_GetArrayItem" using
-                               by value json-properties
-                               property-attr-index
-                               returning property-attr
-                           call "json-get-object-name" using
-                               by value property-attr
-                               by reference property-name-val
-                           if property-name-val(1:5) = "code_"
-                           then
-                               call "cJSON_GetIntValue" using
-                                   by value property-attr
-                                   returning property-value-val
-                               move property-name-val to pollen-name
-                               move property-value-val to pollen-code
-                               write pollen-record
-                           end-if
-                       end-perform
-                       close pollen-file
+                       call "cJSON_GetIntValue" using
+                           by value property-attr
+                           returning property-value-val
+                       move property-name-val to pollen-name
+                       move property-value-val to pollen-code
+                       write pollen-record
                    end-if
-               end-if
+               end-perform
+               close pollen-file
            end-if
-       end-perform.
+       end-if
 
        call "cJSON_GetErrorPtr"
            returning json-error
