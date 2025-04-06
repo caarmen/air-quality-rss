@@ -215,17 +215,6 @@ Cobol *> ***************************************************************
            end-if
        end-if
 
-       call "cJSON_GetErrorPtr"
-           returning json-error
-       
-       if json-error NOT = NULL
-       then
-           display "json error " json-error
-       end-if
-
-
-
-
        
        call "MHD_create_response_from_buffer" using
            by value length of webpage
