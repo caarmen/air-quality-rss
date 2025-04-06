@@ -132,7 +132,6 @@ Cobol *> ***************************************************************
        01 property-name-val pic x(50).
        01 property-value-ptr usage pointer.
        01 property-value-val pic 9 value 0.
-       01 json-bool pic 9 value 1.
        01 json-pollen-resp-ptr usage pointer.
        01 json-pollen-resp-val pic x(50) value spaces.
        01 json-properties-size usage binary-long.
@@ -220,9 +219,6 @@ Cobol *> ***************************************************************
                                by reference property-name-val
                            if property-name-val(1:5) = "code_"
                            then
-                               call "cJSON_IsNumber" using
-                                   by value property-attr
-                                   returning json-bool
                                call "cJSON_GetIntValue" using
                                    by value property-attr
                                    returning property-value-val
