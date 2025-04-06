@@ -83,8 +83,12 @@ Cobol *> ***************************************************************
        working-storage section.
        01 MHD_HTTP_OK               constant   as 200.
        01 MHD_RESPMEM_PERSISTENT    constant   as 0.
+       *> https://github.com/curl/curl/blob/master/packages/OS400/curl.inc.in#L1073
+       01 CURLOPT_WRITEDATA         constant   as 10001.
        01 CURLOPT_URL               constant   as 10002.
+       01 CURLOPT_WRITEFUNCTION     constant   as 20011.
        01 data-url                  constant   as "https://rmen.ca".
+       01 curl-callback             usage program-pointer.
        01 webpage              pic x(132) value
           "<html><body>" &
           "Hello, world<br/>" &
@@ -120,12 +124,18 @@ Cobol *> ***************************************************************
 
 
        display "wow, connection handler" upon syserr end-display
+       set curl-callback to
+         entry "curl-callback"
        call "curl_easy_init"
            returning star-curl
        call "curl_easy_setopt" using
            by value star-curl
            by value CURLOPT_URL
            by content data-url
+       call "curl_easy_setopt" using
+           by value star-curl
+           by value CURLOPT_WRITEFUNCTION
+           by value curl-callback
        call "curl_easy_perform" using
            by value star-curl
            returning curl-response
@@ -166,41 +176,29 @@ Cobol *> ***************************************************************
        goback.
        end program gnucobol-connection-handler.
 
-      *> ***************************************************************
-      *> from libmicrohttpd hellobrowser.c tutorial example
-      *> ***************************************************************
-      *> #include <sys/types.h>
-      *> #include <sys/select.h>
-      *> #include <sys/socket.h>
-      *> #include <microhttpd.h>
-      *>
-      *> #define PORT 8888
-      *>
-      *> static int
-      *> answer_to_connection(void *cls, struct MHD_Connection *connection,
-      *>                     const char *url, const char *method,
-      *>                     const char *version, const char *upload_data,
-      *>                     size_t * upload_data_size, void **con_cls)
-      *> {
-      *>     const char *page = "<html><body>Hello, browser!</body></html>";
-      *>     struct MHD_Response *response;
-      *>     int ret;
-      *>     response =
-      *>        MHD_create_response_from_buffer(strlen(page), (void *) page,
-      *>                                        MHD_RESPMEM_PERSISTENT);
-      *>     ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
-      *>     MHD_destroy_response(response);
-      *>     return ret;
-      *> }
-      *>
-      *> int main()
-      *> {
-      *>     struct MHD_Daemon *daemon;
-      *>     daemon = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY, PORT, NULL, NULL,
-      *>                              &answer_to_connection, NULL, MHD_OPTION_END);
-      *>     if (NULL == daemon)
-      *>        return 1;
-      *>     getchar();
-      *>     MHD_stop_daemon(daemon);
-      *>     return 0;
-      *> }
+       identification division.
+       program-id. curl-callback.
+
+       data division.
+       working-storage section.
+       01 curl-callback-result                 usage binary-long.
+       linkage section.
+       01 star-ptr                             usage pointer.
+       01 sizet-size                           pic S9(18) comp-5.   *> 64-bit (for size_t)
+       01 sizet-nmemb                          pic S9(18) comp-5.   *> 64-bit (for size_t)
+       01 userdata-ptr                         usage pointer.
+
+       procedure division with C linkage using
+           by value star-ptr
+           by value sizet-size
+           by value sizet-nmemb
+           by value userdata-ptr
+       .
+
+       display "star ptr " star-ptr
+       display "sizet-size " sizet-size
+       display "sizet-nmemb " sizet-nmemb
+       display "userdata-ptr " userdata-ptr
+       move 0 to return-code.
+       goback.
+       end program  curl-callback.
