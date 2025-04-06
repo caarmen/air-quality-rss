@@ -6,7 +6,7 @@ GCC_FLAGS = -c
 LIBS = -lmicrohttpd -lcurl -lcJSON
 
 # Source and output
-COB_FILES = gnucobol-microhttpd.cob http/curl-write-callback.cob
+COB_FILES = gnucobol-microhttpd.cob http/curl-write-callback.cob http/http-client.cob
 C_FILES = cJSON-wrapper.c
 COB_OBJ_FILES = $(COB_FILES:.cob=.o)
 C_OBJ_FILES = $(C_FILES:.c=.o)

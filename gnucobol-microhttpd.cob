@@ -81,15 +81,10 @@ Cobol *> ***************************************************************
        working-storage section.
        01 MHD_HTTP_OK               constant   as 200.
        01 MHD_RESPMEM_PERSISTENT    constant   as 0.
-       *> https://github.com/curl/curl/blob/master/packages/OS400/curl.inc.in#L1073
-       01 CURLOPT_WRITEDATA         constant   as 10001.
-       01 CURLOPT_URL               constant   as 10002.
-       01 CURLOPT_WRITEFUNCTION     constant   as 20011.
-       *> https://curl.se/libcurl/c/getinmemory.html
        01 memory-struct.
            05 buffer pic x(10000).
            05 sizet-size pic S9(18) comp-5.
-       01 DATA-URL                  pic x(532) VALUE
+       01 DATA-URL                  pic x(1000) VALUE
            "https://data.atmo-france.org/geoserver/ind_pol/ows?" &
            "&REQUEST=GetFeatureInfo&SERVICE=WMS&SRS=EPSG%3A3857" &
            "&STYLES=&VERSION=1.3&FILTER=%3CPropertyIsEqualTo" &
@@ -109,10 +104,7 @@ Cobol *> ***************************************************************
           "</body></html>".
        01 star-response                        usage pointer.
        01 mhd-result                           usage binary-long.
-       01 curl-response                        usage binary-long.
-       01 curl-response-text                   pic x(10000).   *> Buffer to accumulate response data
 
-       01 star-curl                            usage pointer.
        01 json-root                                 usage pointer.
        01 json-features usage pointer.
        01 json-first-feature usage pointer.
@@ -158,25 +150,9 @@ Cobol *> ***************************************************************
            by reference star-star-con-cls
        .
 
-       set curl-callback to
-         entry "curl-write-callback"
-       call "curl_easy_init"
-           returning star-curl
-       call "curl_easy_setopt" using
-           by value star-curl
-           by value CURLOPT_URL
-           by content data-url
-       call "curl_easy_setopt" using
-           by value star-curl
-           by value CURLOPT_WRITEFUNCTION
-           by value curl-callback
-       call "curl_easy_setopt" using
-           by value star-curl
-           by value CURLOPT_WRITEDATA
-           by reference memory-struct
-       call "curl_easy_perform" using
-           by value star-curl
-           returning curl-response
+       call "http-client-get" using
+           by content DATA-URL
+           by reference buffer
 
        call "cJSON_ParseWithLength" using
            by value buffer
@@ -300,9 +276,6 @@ Cobol *> ***************************************************************
        call "MHD_destroy_response" using
            by value star-response
        end-call
-
-       call "curl_easy_cleanup" using
-           by value star-curl
 
        move mhd-result to return-code
 
