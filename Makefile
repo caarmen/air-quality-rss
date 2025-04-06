@@ -1,7 +1,7 @@
 # Compiler and flags
 COBC = cobc
 CFLAGS = -x
-LIBS = -lmicrohttpd -lcurl
+LIBS = -lmicrohttpd -lcurl -lcJSON
 
 # Source and output
 SRC = gnucobol-microhttpd.cob

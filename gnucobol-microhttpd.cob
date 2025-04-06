@@ -113,6 +113,19 @@ Cobol *> ***************************************************************
        01 curl-response-text                   pic x(10000).   *> Buffer to accumulate response data
 
        01 star-curl                            usage pointer.
+       01 json-root                                 usage pointer.
+       01 json-features usage pointer.
+       01 json-first-feature usage pointer.
+       01 json-properties usage pointer.
+       01 json-foo usage pointer.
+       01 json-str-ptr usage pointer.
+       01 json-str-val pic x(1000) value spaces.
+       01 json-error usage pointer.
+       01 json-int usage binary-long.
+       01 root-index pic 9 value 1.
+       01 json-bool pic 9 value 1.
+       01 json-pollen-resp-ptr usage pointer.
+       01 json-pollen-resp-val pic x(50) value spaces.
 
        linkage section.
        01 star-cls                             usage pointer.
@@ -158,7 +171,78 @@ Cobol *> ***************************************************************
            by value star-curl
            returning curl-response
 
-       display "memory struct finally " memory-struct
+       display "memory struct finally " buffer(1:sizet-size)
+
+       call "cJSON_ParseWithLength" using
+           by value buffer
+           by value sizet-size
+           returning json-root
+
+       call "cJSON_GetObjectItem" using
+           by value json-root
+           by content "totalFeatures"
+           returning json-foo
+
+       call "cJSON_GetStringValue" using
+           by value json-foo
+           returning json-str-ptr
+       call "strcpy" using 
+           by reference json-str-val 
+           by value json-str-ptr.
+       call "cJSON_GetArraySize" using
+           by value json-root
+           returning json-int
+       perform varying root-index from 0 by 1 until root-index =json-int
+           call "cJSON_GetArrayItem" using
+               by value json-root
+               root-index
+               returning json-foo
+           call "cJSON_IsArray" using
+               by value json-foo
+               returning json-bool
+           if json-bool = 1
+           then
+               call "cJSON_GetArrayItem" using
+                   by value json-foo
+                   0
+                   returning json-first-feature
+               if json-first-feature NOT = NULL
+               then
+                   call "cJSON_GetObjectItem" using
+                       by value json-first-feature
+                       by content "properties"
+                       returning json-properties
+                   if json-properties NOT = NULL
+                   then
+                       call "cJSON_GetObjectItem" using
+                           by value json-properties
+                           by content "pollen_resp"
+                           returning json-pollen-resp-ptr
+
+                       call "cJSON_GetStringValue" using
+                           by value json-pollen-resp-ptr
+                           returning json-str-ptr
+                       call "strcpy" using 
+                           by reference json-str-val 
+                           by value json-str-ptr
+                       display "resp pollen: " json-str-val
+
+                   end-if
+               end-if
+           end-if
+       end-perform.
+
+       call "cJSON_GetErrorPtr"
+           returning json-error
+       
+       if json-error NOT = NULL
+       then
+           display "json error " json-error
+       end-if
+
+
+
+
        
        call "MHD_create_response_from_buffer" using
            by value length of webpage
