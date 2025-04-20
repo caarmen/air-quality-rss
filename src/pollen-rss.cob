@@ -64,11 +64,7 @@
            "ind_national_pol&INFO_FORMAT=application%2Fjson" &
            "&X=535&Y=284".
        01 curl-callback             usage program-pointer.
-       01 webpage              pic x(132) value
-          "<html><body>" &
-          "Hello, world<br/>" &
-          "from <b>GnuCOBOL</b> and <i>libmicrohttpd</i>" &
-          "</body></html>".
+       01 pollen-output pic x(10000) value spaces.
        01 star-response                        usage pointer.
        01 mhd-result                           usage binary-long.
 
@@ -101,9 +97,12 @@
        call "pollen-parser" using
            by reference buffer
 
+       call "pollen-render" using
+           by reference pollen-output
+
        call "MHD_create_response_from_buffer" using
-           by value length of webpage
-           by reference webpage
+           by value length of pollen-output
+           by value function trim(pollen-output)
            by value MHD_RESPMEM_PERSISTENT
            returning star-response
        end-call

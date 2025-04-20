@@ -85,6 +85,8 @@
                        by value property-attr
                        by reference property-name-val
                    if property-name-val(1:5) = "code_"
+                       and property-name-val(1:9) NOT = "code_qual"
+                       and property-name-val(1:9) NOT = "code_zone"
                    then
                        call "cJSON_GetIntValue" using
                            by value property-attr
