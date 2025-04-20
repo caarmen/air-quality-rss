@@ -61,6 +61,7 @@ Cobol *> ***************************************************************
        data division.
        file section.
        fd pollen-file.
+       01 responsible-pollen pic x(16).
        01 pollen-record.
            05 pollen-name pic x(16).
            05 pollen-code pic 9(1).
@@ -161,12 +162,15 @@ Cobol *> ***************************************************************
                call "json-get-string-value" using
                    by value json-pollen-resp-ptr
                    by reference json-str-val
-               display "resp pollen: " json-str-val
+               string json-str-val
+                   into responsible-pollen
+               end-string
+               open output pollen-file
+               write responsible-pollen
 
                call "cJSON_GetArraySize" using
                    by value json-properties
                    returning json-properties-size
-               open output pollen-file
 
                perform varying property-attr-index from 0 by 1 
                    until property-attr-index 
