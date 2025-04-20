@@ -39,23 +39,11 @@ Cobol *> ***************************************************************
            by value MHD_OPTION_END
            returning star-daemon
        end-call
-       perform until server-command = "quit"
-           accept server-command end-accept
-           if server-command = "help" then
-               display
-                   "gnucobol-microhttpd: help, info, quit"
-               end-display
-           end-if
-           if server-command = "info" then
-               display
-                   "gnucobol-microhttpd: info? help, quit"
-               end-display
-           end-if
-       end-perform
 
-       call "MHD_stop_daemon" using
-           by value star-daemon
-       end-call
+       *> Wait for incoming connections
+       perform forever
+           call "sleep" using by value 1
+       end-perform
 
        goback.
        end program gnucobol-microhttpd.
