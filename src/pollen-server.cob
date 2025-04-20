@@ -4,15 +4,15 @@
        data division.
 
        local-storage section.
-       01 MHD_HTTP_OK               constant   as 200.
        01 MHD_USE_SELECT_INTERNALLY constant   as 8.
-       01 MHD_RESPMEM_PERSISTENT    constant   as 0.
        01 MHD_OPTION_END            constant   as 0.
 
        01 star-daemon               usage pointer.
        01 connection-handler-entry  usage program-pointer.
 
        01 server-command            pic x(80).
+
+
 
       *> ***************************************************************
        procedure division.
@@ -41,10 +41,6 @@
        local-storage section.
        01 MHD_HTTP_OK               constant   as 200.
        01 MHD_RESPMEM_PERSISTENT    constant   as 0.
-       01 memory-struct.
-           05 buffer pic x(10000).
-           05 sizet-size pic S9(18) comp-5.
-       01 curl-callback             usage program-pointer.
        01 pollen-output pic x(10000) value spaces.
        01 star-response                        usage pointer.
        01 mhd-result                           usage binary-long.
@@ -71,13 +67,7 @@
            by reference star-star-con-cls
        .
 
-       call "pollen-data-source" using
-           by reference buffer
-
-       call "pollen-parser" using
-           by reference buffer
-
-       call "pollen-render" using
+       call "pollen-service" using
            by reference pollen-output
 
        call "MHD_create_response_from_buffer" using
