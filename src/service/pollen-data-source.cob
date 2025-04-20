@@ -3,6 +3,28 @@
 
        data division.
        local-storage section.
+       01 DATA-URL                  pic x(1000) VALUE SPACES.
+       linkage section.
+       01 response pic x(10000).
+       procedure division using
+           by reference response
+       .
+
+       call "source-url" using
+           by reference DATA-URL
+       display "fetching data from " DATA-URL
+
+       call "http-client-get" using
+           by content DATA-URL
+           by reference response
+
+       goback.
+       end program pollen-data-source.
+
+       identification division.
+       program-id. source-url.
+       data division.
+       local-storage section.
        01  CURRENT-DATE-AND-TIME.
            05 CDT-Year                PIC 9(4).
            05 CDT-Month               PIC 9(2). *> 01-12
@@ -20,25 +42,19 @@
            "%3Aind_national_pol&QUERY_LAYERS=ind_pol%3A" &
            "ind_national_pol&INFO_FORMAT=application%2Fjson" &
            "&X=535&Y=284".
-       linkage section.
-       01 response pic x(10000).
-       procedure division using
-           by reference response
-       .
 
+       linkage section.
+       01 DATA-URL-OUT pic x(1000).
+       procedure division using
+           by reference DATA-URL-OUT.
        move function current-date
            to CURRENT-DATE-AND-TIME
        string
            CDT-Year "-" CDT-Month "-" CDT-Day
            into date-and-time-str
        end-string
-       inspect DATA-URL
+       move DATA-URL to DATA-URL-OUT.
+       inspect DATA-URL-OUT
            replacing all "YYYY-MM-DD" by date-and-time-str
-       display "fetching data from " DATA-URL
-
-       call "http-client-get" using
-           by content DATA-URL
-           by reference response
-
        goback.
-       end program pollen-data-source.
+       end program source-url.

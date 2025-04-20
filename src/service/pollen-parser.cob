@@ -8,6 +8,7 @@
        data division.
        file section.
        fd pollen-file.
+       01 date-maj pic x(24).
        01 responsible-pollen pic x(16).
        01 pollen-record.
            05 pollen-name pic x(16).
@@ -23,11 +24,12 @@
        01 property-attr usage pointer.
        01 property-name-val pic x(50).
        01 property-value-val pic 9 value 0.
+       01 json-pollen-date-maj-ptr usage pointer.
        01 json-pollen-resp-ptr usage pointer.
-       01 json-pollen-resp-val pic x(50) value spaces.
        01 json-properties-size usage binary-long.
        01 FEATURES_ATTRIBUTE pic x(50) value "features".
        01 PROPERTIES_ATTRIBUTE pic x(50) value "properties" & X"00".
+       01 DATE_MAJ_ATTRIBUTE pic x(50) value "date_maj" & X"00".
        01 POLLEN_RESP_ATTRIBUTE pic x(50) value "pollen_resp" & X"00".
 
        linkage section.
@@ -55,18 +57,29 @@
                returning json-properties
            if json-properties NOT = NULL
            then
+               open output pollen-file
+
+               call "cJSON_GetObjectItem" using
+                   by value json-properties
+                   by content DATE_MAJ_ATTRIBUTE
+                   returning json-pollen-date-maj-ptr
+               call "json-get-string-value" using
+                   by value json-pollen-date-maj-ptr
+                   by reference json-str-val
+               string json-str-val
+                   into date-maj
+               write date-maj
+
                call "cJSON_GetObjectItem" using
                    by value json-properties
                    by content POLLEN_RESP_ATTRIBUTE
                    returning json-pollen-resp-ptr
-
                call "json-get-string-value" using
                    by value json-pollen-resp-ptr
                    by reference json-str-val
                string json-str-val
                    into responsible-pollen
                end-string
-               open output pollen-file
                write responsible-pollen
 
                call "cJSON_GetArraySize" using

@@ -12,22 +12,29 @@
        data division.
        file section.
        fd pollen-file.
+       01 date-maj pic x(24).
        01 responsible-pollen pic x(16).
        01 pollen-record.
            05 pollen-name pic x(16).
            05 pollen-code pic 9(1).
        local-storage section.
        01 response pic x(10000) value spaces.
+       01 pollen-updated-at pic x(24).
        01 pollen-display-name pic x(16).
-       linkage section.
        01 pollen-output pic x(10000) value spaces.
+       linkage section.
+       01 pollen-rss-output pic x(10000) value spaces.
+
 
        procedure division using
-           by reference pollen-output.
+           by reference pollen-rss-output.
             open input pollen-file
             *> First read the responsible-pollen
             *> Then read all of the pollen-records until the end of
             *> file
+            read pollen-file into date-maj.
+            string date-maj into pollen-updated-at
+            end-string
             read pollen-file into responsible-pollen.
             string
                 "Responsible pollen: " responsible-pollen x"0A"
@@ -52,6 +59,11 @@
                 end-read
             end-perform
             close pollen-file
+            call "render-rss" using
+                by reference pollen-updated-at
+                by reference pollen-output
+                by reference pollen-rss-output
+            end-call
             goback.
        end program pollen-render.
 
@@ -87,3 +99,53 @@
            end-if
        goback.
        end program pollen-display-name.
+
+       identification division.
+       program-id. render-rss.
+       data division.
+       local-storage section.
+       01 feed-url pic x(100).
+       01 source-url pic x(1000).
+       linkage section.
+       01 date-maj pic x(24).
+       01 feed-content pic x(10000) value spaces.
+       01 rss-content pic x(10000) value spaces.
+       procedure division using
+           by reference date-maj
+           by reference feed-content
+           by reference rss-content
+       .
+       accept feed-url from environment "FEED_URL"
+       call "source-url" using
+           by reference source-url
+       string
+           '<?xml version="1.0" encoding="utf-8"?>'                x"0A"
+           '<feed xmlns="http://www.w3.org/2005/Atom"'
+           ' xmlns:dc="http://purl.org/dc/elements/1.1/">'         x"0A"
+           " <updated>" date-maj "</updated>"                      x"0A"
+           " <dc:date>" date-maj "</dc:date>"                      x"0A"
+           " <title>Pollenes aujourd'hui</title>"                  x"0A"
+           " <subtitle>Pollenes aujourd'hui</subtitle>"            x"0A"
+           ' <link rel="alternate" '
+           '  href="' function trim(feed-url) '" />'               x"0A"
+           " <id>" function trim(feed-url) "</id>"                 x"0A"
+           " <entry>"                                              x"0A"
+           "  <title>Rapport de pollens</title>"                   x"0A"
+           '  <link rel="alternate" '
+           '   href="' function trim(source-url) '" />'            x"0A"
+           "  <id>" function trim(source-url) "</id>"              x"0A"
+           '  <content type="text/plain">'                         x"0A"
+                function trim(feed-content)
+           "  </content>"                                          x"0A"
+           "  <author><name>Atmo France</name></author>"           x"0A"
+           "  <dc:creator>Atmo France</dc:creator>"                x"0A"
+           "  <published>" date-maj "</published>"                 x"0A"
+           "  <updated>" date-maj "</updated>"                     x"0A"
+           "  <dc:date>" date-maj "</dc:date>"                     x"0A"
+           " </entry>"                                             x"0A"
+           "</feed>"
+           into rss-content
+       end-string
+       goback.
+
+       end program render-rss.
