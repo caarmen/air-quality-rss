@@ -14,7 +14,7 @@ Cobol *> ***************************************************************
        configuration section.
        data division.
 
-       working-storage section.
+       local-storage section.
        01 MHD_HTTP_OK               constant   as 200.
        01 MHD_USE_SELECT_INTERNALLY constant   as 8.
        01 MHD_RESPMEM_PERSISTENT    constant   as 0.
@@ -76,7 +76,7 @@ Cobol *> ***************************************************************
        01 pollen-record.
            05 pollen-name pic x(16).
            05 pollen-code pic 9(1).
-       working-storage section.
+       local-storage section.
        01 MHD_HTTP_OK               constant   as 200.
        01 MHD_RESPMEM_PERSISTENT    constant   as 0.
        01 memory-struct.

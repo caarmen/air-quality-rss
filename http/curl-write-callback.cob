@@ -2,7 +2,7 @@
        program-id. curl-write-callback.
        *> https://curl.se/libcurl/c/CURLOPT_WRITEFUNCTION.html
        data division.
-       working-storage section.
+       local-storage section.
        01 response-string pic x(10000) value spaces.
        01 response-length-bytes pic 9(5) value 0.
        linkage section.
