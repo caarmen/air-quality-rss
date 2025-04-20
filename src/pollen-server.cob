@@ -41,9 +41,15 @@
        local-storage section.
        01 MHD_HTTP_OK               constant   as 200.
        01 MHD_RESPMEM_PERSISTENT    constant   as 0.
-       01 pollen-output pic x(10000) value spaces.
+       01 response.
+           05 status-code pic 999.
+           05 body pic x(10000) value spaces.
+
        01 star-response                        usage pointer.
        01 mhd-result                           usage binary-long.
+
+       01 http-method pic x(8).
+       01 url pic x(100).
 
        linkage section.
        01 star-cls                             usage pointer.
@@ -67,18 +73,27 @@
            by reference star-star-con-cls
        .
 
-       call "pollen-service" using
-           by reference pollen-output
+       call "c-string" using
+           by value star-method
+           by reference http-method
+       call "c-string" using
+           by value star-url
+           by reference url
+
+       call "pollen-router" using
+           by reference http-method
+           by reference url
+           by reference response
 
        call "MHD_create_response_from_buffer" using
-           by value length of pollen-output
-           by value function trim(pollen-output)
+           by value length of body
+           by value function trim(body)
            by value MHD_RESPMEM_PERSISTENT
            returning star-response
        end-call
        call "MHD_queue_response" using
            by value star-connection
-           by value MHD_HTTP_OK
+           by value status-code
            by value star-response
            returning mhd-result
        end-call

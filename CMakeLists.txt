@@ -18,8 +18,10 @@ set(COB_OTHER
     ${CMAKE_SOURCE_DIR}/src/pollen-data-source.cob
     ${CMAKE_SOURCE_DIR}/src/pollen-parser.cob
     ${CMAKE_SOURCE_DIR}/src/pollen-render.cob
+    ${CMAKE_SOURCE_DIR}/src/pollen-router.cob
     ${CMAKE_SOURCE_DIR}/src/pollen-server.cob
     ${CMAKE_SOURCE_DIR}/src/pollen-service.cob
+    ${CMAKE_SOURCE_DIR}/src/c-interop/c-string.cob
     ${CMAKE_SOURCE_DIR}/src/http/http-client.cob
     ${CMAKE_SOURCE_DIR}/src/http/curl-write-callback.cob
     ${CMAKE_SOURCE_DIR}/src/json/json-parser.cob
