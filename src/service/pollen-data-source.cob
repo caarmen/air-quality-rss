@@ -40,11 +40,8 @@
            "&LAYERS=ind_pol" &
            "%3Aind_national_pol&QUERY_LAYERS=ind_pol%3A" &
            "ind_national_pol&INFO_FORMAT=application%2Fjson" &
-           "&X=535&Y=284" &
-           "&BBOX="&
-           "517516.9000047859%2C5732547.810303366%2C558945.7693353514" &
-           "%2C5752459.656171654&HEIGHT=521&WIDTH=1084".
-
+           "&X=535&Y=284".
+       01 BBOX pic x(1000) value spaces.
        linkage section.
        01 DATA-URL-OUT pic x(1000).
        procedure division using
@@ -55,8 +52,56 @@
            CDT-Year "-" CDT-Month "-" CDT-Day
            into date-and-time-str
        end-string
+
+       call "bounding-box-str" using
+           by reference BBOX
        move DATA-URL to DATA-URL-OUT.
        inspect DATA-URL-OUT
            replacing all "YYYY-MM-DD" by date-and-time-str
+       string function trim(data-url-out) "&" BBOX
+           into data-url-out
+       end-string
        goback.
        end program source-url.
+
+       identification division.
+       program-id. bounding-box-str.
+       data division.
+       local-storage section.
+       01 latitude pic s9(3)v9(8).
+       01 longitude pic s9(3)v9(8).
+       01 x pic s9(7)v9(8).
+       01 y pic s9(7)v9(8).
+       01 bbox-left pic 9(7).9(8).
+       01 bbox-right pic 9(7).9(8).
+       01 bbox-top pic 9(7).9(8).
+       01 bbox-bottom pic 9(7).9(8).
+
+       linkage section.
+       01 bounding-box pic x(1000).
+       procedure division using
+           by reference bounding-box.
+
+       accept latitude from environment "POLLEN_LATITUDE"
+       accept longitude from environment "POLLEN_LONGITUDE"
+       call "lat-long-to-web-mercator" using
+           by reference latitude
+           by reference longitude
+           by reference x
+           by reference y
+
+           compute bbox-left = x - 20000
+           compute bbox-right = x + 20000
+           compute bbox-top = y + 10000
+           compute bbox-bottom = y - 10000
+           string
+               "BBOX="
+               bbox-left "%2C" bbox-bottom "%2C"
+               bbox-right "%2C" bbox-top
+               "&HEIGHT=500&WIDTH=1000"
+               into bounding-box
+           end-string
+
+       goback.
+
+       end program bounding-box-str.
