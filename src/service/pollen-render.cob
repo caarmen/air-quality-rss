@@ -13,7 +13,7 @@
        file section.
        fd pollen-file.
        01 date-maj pic x(24).
-       01 responsible-pollen pic x(16).
+       01 responsible-pollen pic x(16) value spaces.
        01 pollen-record.
            05 pollen-name pic x(16).
            05 pollen-code pic 9(1).
@@ -37,7 +37,8 @@
             end-string
             read pollen-file into responsible-pollen.
             string
-                "Responsible pollen: " responsible-pollen x"0A"
+                "Responsible pollen: "
+                function trim(responsible-pollen) x"0A"
                 into pollen-output
             end-string
             perform until exit

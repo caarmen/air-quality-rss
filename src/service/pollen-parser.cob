@@ -9,7 +9,7 @@
        file section.
        fd pollen-file.
        01 date-maj pic x(24).
-       01 responsible-pollen pic x(16).
+       01 responsible-pollen pic x(16) value spaces.
        01 pollen-record.
            05 pollen-name pic x(16).
            05 pollen-code pic 9(1).
@@ -70,6 +70,7 @@
                    into date-maj
                write date-maj
 
+               move spaces to json-str-val
                call "cJSON_GetObjectItem" using
                    by value json-properties
                    by content POLLEN_RESP_ATTRIBUTE
