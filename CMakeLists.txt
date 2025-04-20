@@ -15,6 +15,7 @@ set(C_SOURCES
 # COBOL files
 set(COB_MAIN ${CMAKE_SOURCE_DIR}/src/pollen-rss.cob)  # Needs -x
 set(COB_OTHER
+    ${CMAKE_SOURCE_DIR}/src/pollen-data-source.cob
     ${CMAKE_SOURCE_DIR}/src/pollen-parser.cob
     ${CMAKE_SOURCE_DIR}/src/pollen-render.cob
     ${CMAKE_SOURCE_DIR}/src/http/http-client.cob
