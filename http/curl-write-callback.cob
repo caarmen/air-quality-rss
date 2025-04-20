@@ -2,7 +2,7 @@
        program-id. curl-write-callback.
        *> https://curl.se/libcurl/c/CURLOPT_WRITEFUNCTION.html
        data division.
-       working-storage section.
+       local-storage section.
        01 response-string pic x(10000) value spaces.
        01 response-length-bytes pic 9(5) value 0.
        linkage section.
@@ -39,13 +39,13 @@
            by reference response-string
            by value ptr
            by value response-length-bytes.
-
        *> Append the response data to the data we already
        *> have in the buffer.
-       string buffer-data(1:buffer-length-bytes)
+       string
            response-string(1:response-length-bytes)
-           into buffer-data
-       end-string.
+           into buffer-data(buffer-length-bytes + 1:)
+       end-string
+
        compute buffer-length-bytes = 
            buffer-length-bytes + response-length-bytes.
 

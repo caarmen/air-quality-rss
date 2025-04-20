@@ -1,7 +1,7 @@
        identification division.
        program-id. http-client-get.
        data division.
-       working-storage section.
+       local-storage section.
        01 curl-code usage binary-long.
        *> https://github.com/curl/curl/blob/master/packages/OS400/curl.inc.in#L1073
        01 CURLOPT_URL constant as 10002.

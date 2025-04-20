@@ -2,7 +2,7 @@
        program-id. json-get-object-name.
        data division.
 
-       working-storage section.
+       local-storage section.
        01 property-name-ptr usage pointer.
 
        linkage section.
@@ -26,7 +26,7 @@
        program-id. json-get-string-value.
        data division.
 
-       working-storage section.
+       local-storage section.
        01 property-value-ptr usage pointer.
 
        linkage section.
@@ -55,7 +55,7 @@
        program-id. json-get-object.
        data division.
 
-       working-storage section.
+       local-storage section.
        01 attribute-index pic 9 value 1.
        01 attribute-count usage binary-long.
        01 iter-attribute-handle-ptr usage pointer.
