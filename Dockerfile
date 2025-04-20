@@ -19,9 +19,7 @@ WORKDIR /app
 # Copy the entire source code into the container
 COPY build.sh .
 COPY CMakeLists.txt .
-COPY pollen-rss.cob .
-COPY http http/.
-COPY json json/.
+COPY src src/
 
 # Run the build script
 RUN ./build.sh clean
