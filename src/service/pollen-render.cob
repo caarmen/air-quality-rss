@@ -106,6 +106,8 @@
        local-storage section.
        01 feed-url pic x(100).
        01 source-url pic x(1000).
+       01 escaped-source-url pic x(1000) value spaces.
+       01 i pic 9(3) value 1.
        linkage section.
        01 date-maj pic x(24).
        01 feed-content pic x(10000) value spaces.
@@ -118,6 +120,26 @@
        accept feed-url from environment "FEED_URL"
        call "source-url" using
            by reference source-url
+      *> Escape & from the url
+      *> This could be done more robustly with a thin wrapper to
+      *> libxml2 apis.
+       perform varying i from 1 by 1 until i > length
+           of function trim(source-url)
+           evaluate source-url(i:1)
+              when "&"
+                string
+                     function trim(escaped-source-url)
+                     "&amp;"
+                     into escaped-source-url
+                end-string
+              when other
+                string
+                     function trim(escaped-source-url)
+                     source-url(i:1)
+                     into escaped-source-url
+                end-string
+           end-evaluate
+       end-perform
        string
            '<?xml version="1.0" encoding="utf-8"?>'                x"0A"
            '<feed xmlns="http://www.w3.org/2005/Atom"'
@@ -132,8 +154,8 @@
            " <entry>"                                              x"0A"
            "  <title>Rapport de pollens</title>"                   x"0A"
            '  <link rel="alternate" '
-           '   href="' function trim(source-url) '" />'            x"0A"
-           "  <id>" function trim(source-url) "</id>"              x"0A"
+           '   href="' function trim(escaped-source-url) '" />'    x"0A"
+           "  <id>" function trim(escaped-source-url) "</id>"      x"0A"
            '  <content type="text/plain">'                         x"0A"
                 function trim(feed-content)
            "  </content>"                                          x"0A"
