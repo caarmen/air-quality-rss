@@ -36,12 +36,14 @@
            "&STYLES=&VERSION=1.3&FILTER=%3CPropertyIsEqualTo" &
            "%20matchCase%3D%22true%22%3E%3CPropertyName%3Edate_ech%3C" &
            "%2FPropertyName%3E%3CLiteral%3EYYYY-MM-DD%3C%2FLiteral%3E" &
-           "%3C%2FPropertyIsEqualTo%3E&SORTBY=date_dif%20D&BBOX=" &
-           "517516.9000047859%2C5732547.810303366%2C558945.7693353514" &
-           "%2C5752459.656171654&HEIGHT=521&WIDTH=1084&LAYERS=ind_pol" &
+           "%3C%2FPropertyIsEqualTo%3E&SORTBY=date_dif%20D" &
+           "&LAYERS=ind_pol" &
            "%3Aind_national_pol&QUERY_LAYERS=ind_pol%3A" &
            "ind_national_pol&INFO_FORMAT=application%2Fjson" &
-           "&X=535&Y=284".
+           "&X=535&Y=284" &
+           "&BBOX="&
+           "517516.9000047859%2C5732547.810303366%2C558945.7693353514" &
+           "%2C5752459.656171654&HEIGHT=521&WIDTH=1084".
 
        linkage section.
        01 DATA-URL-OUT pic x(1000).
