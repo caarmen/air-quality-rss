@@ -9,15 +9,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # C source
 set(C_SOURCES
-    ${CMAKE_SOURCE_DIR}/json/cJSON-wrapper.c
+    ${CMAKE_SOURCE_DIR}/src/json/cJSON-wrapper.c
 )
 
 # COBOL files
-set(COB_MAIN ${CMAKE_SOURCE_DIR}/pollen-rss.cob)  # Needs -x
+set(COB_MAIN ${CMAKE_SOURCE_DIR}/src/pollen-rss.cob)  # Needs -x
 set(COB_OTHER
-    ${CMAKE_SOURCE_DIR}/http/http-client.cob
-    ${CMAKE_SOURCE_DIR}/http/curl-write-callback.cob
-    ${CMAKE_SOURCE_DIR}/json/json-parser.cob
+    ${CMAKE_SOURCE_DIR}/src/http/http-client.cob
+    ${CMAKE_SOURCE_DIR}/src/http/curl-write-callback.cob
+    ${CMAKE_SOURCE_DIR}/src/json/json-parser.cob
 ) # No -x
 
 # Output COBOL objects
