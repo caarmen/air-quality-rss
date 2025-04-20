@@ -12,8 +12,6 @@ Cobol *> ***************************************************************
 
        environment division.
        configuration section.
-       repository.
-           function all intrinsic.
        data division.
 
        working-storage section.
@@ -40,11 +38,6 @@ Cobol *> ***************************************************************
            by value 0
            by value MHD_OPTION_END
            returning star-daemon
-           on exception
-               display
-                   "gnucobol-microhttpd: libmicrohttpd failure"
-                   upon syserr
-               end-display
        end-call
        perform until server-command = "quit"
            accept server-command end-accept
@@ -62,11 +55,6 @@ Cobol *> ***************************************************************
 
        call "MHD_stop_daemon" using
            by value star-daemon
-           on exception
-               display
-                   "gnucobol-microhttpd: libmicrohttpd failure"
-                   upon syserr
-               end-display
        end-call
 
        goback.
@@ -99,7 +87,7 @@ Cobol *> ***************************************************************
            "&REQUEST=GetFeatureInfo&SERVICE=WMS&SRS=EPSG%3A3857" &
            "&STYLES=&VERSION=1.3&FILTER=%3CPropertyIsEqualTo" &
            "%20matchCase%3D%22true%22%3E%3CPropertyName%3Edate_ech%3C" &
-           "%2FPropertyName%3E%3CLiteral%3E2025-04-06%3C%2FLiteral%3E" &
+           "%2FPropertyName%3E%3CLiteral%3E2025-04-20%3C%2FLiteral%3E" &
            "%3C%2FPropertyIsEqualTo%3E&SORTBY=date_dif%20D&BBOX=" &
            "517516.9000047859%2C5732547.810303366%2C558945.7693353514" &
            "%2C5752459.656171654&HEIGHT=521&WIDTH=1084&LAYERS=ind_pol" &
@@ -129,6 +117,8 @@ Cobol *> ***************************************************************
        01 json-pollen-resp-val pic x(50) value spaces.
        01 json-properties-size usage binary-long.
        01 FEATURES_ATTRIBUTE pic x(50) value "features".
+       01 PROPERTIES_ATTRIBUTE pic x(50) value "properties" & X"00".
+       01 POLLEN_RESP_ATTRIBUTE pic x(50) value "pollen_resp" & X"00".
 
        linkage section.
        01 star-cls                             usage pointer.
@@ -157,7 +147,7 @@ Cobol *> ***************************************************************
            by reference buffer
 
        call "cJSON_Parse" using
-           by value function trim(buffer)
+           by content function trim(buffer)
            returning json-root
        call "json-get-object" using
            by content FEATURES_ATTRIBUTE
@@ -171,13 +161,13 @@ Cobol *> ***************************************************************
        then
            call "cJSON_GetObjectItem" using
                by value json-first-feature
-               by content "properties"
+               by content PROPERTIES_ATTRIBUTE
                returning json-properties
            if json-properties NOT = NULL
            then
                call "cJSON_GetObjectItem" using
                    by value json-properties
-                   by content "pollen_resp"
+                   by content POLLEN_RESP_ATTRIBUTE
                    returning json-pollen-resp-ptr
 
                call "json-get-string-value" using
@@ -193,7 +183,7 @@ Cobol *> ***************************************************************
                perform varying property-attr-index from 0 by 1 
                    until property-attr-index 
                        = json-properties-size
-                   move "" to property-name-val
+                   move " " to property-name-val
                    call "cJSON_GetArrayItem" using
                        by value json-properties
                        property-attr-index
@@ -221,22 +211,12 @@ Cobol *> ***************************************************************
            by reference webpage
            by value MHD_RESPMEM_PERSISTENT
            returning star-response
-           on exception
-               display
-                   "gnucobol-microhttpd: libmicrohttpd failure"
-                   upon syserr
-               end-display
        end-call
        call "MHD_queue_response" using
            by value star-connection
            by value MHD_HTTP_OK
            by value star-response
            returning mhd-result
-           on exception
-               display
-                   "gnucobol-microhttpd: libmicrohttpd failure"
-                   upon syserr
-               end-display
        end-call
        call "MHD_destroy_response" using
            by value star-response
