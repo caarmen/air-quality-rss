@@ -10,7 +10,10 @@ TODO: instructions to fetch the docker image from github.
 ### Local
 Build the project with `./build.sh`.
 
-Set the environment variable `FEED_URL` to the URL of the rss feed. This is used in the `<link>` and `<id>` tags of the RSS feed.
+Set the following environment variables:
+* `POLLEN_FEED_URL`: the URL of the rss feed. This is used in the `<link>` and `<id>` tags of the RSS feed.
+* `POLLEN_LATITUDE`: the latitude of the location to fetch pollen data for.
+* `POLLEN_LONGITUDE`: the longitude of the location to fetch pollen data for.
 
 Run the project with `build/bin/pollen-rss`.
 

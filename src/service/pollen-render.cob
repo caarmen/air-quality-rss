@@ -118,7 +118,7 @@
            by reference feed-content
            by reference rss-content
        .
-       accept feed-url from environment "FEED_URL"
+       accept feed-url from environment "POLLEN_FEED_URL"
        call "source-url" using
            by reference source-url
       *> Escape & from the url
