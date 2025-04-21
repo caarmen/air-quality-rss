@@ -3,6 +3,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(gnucobol_microhttpd C)
 
+set(COB_COPY_DIR "${CMAKE_SOURCE_DIR}/src")
 # Set C standard and output dir
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -35,7 +36,7 @@ set(COB_OBJECTS "")
 set(COB_MAIN_OBJ ${CMAKE_BINARY_DIR}/pollen-rss.o)
 add_custom_command(
     OUTPUT ${COB_MAIN_OBJ}
-    COMMAND cobc -c -x ${COB_MAIN} -o ${COB_MAIN_OBJ}
+    COMMAND COB_COPY_DIR=${COB_COPY_DIR} cobc -c -x ${COB_MAIN} -o ${COB_MAIN_OBJ}
     DEPENDS ${COB_MAIN}
     COMMENT "Compiling pollen-rss.cob with -x"
 )
@@ -48,7 +49,7 @@ foreach(COB_FILE IN LISTS COB_OTHER)
     set(OBJ_PATH "${CMAKE_BINARY_DIR}/${OBJ_NAME}.o")
     add_custom_command(
         OUTPUT ${OBJ_PATH}
-        COMMAND cobc -c ${COB_FILE} -o ${OBJ_PATH}
+        COMMAND COB_COPY_DIR=${COB_COPY_DIR} cobc -c ${COB_FILE} -o ${OBJ_PATH}
         DEPENDS ${COB_FILE}
         COMMENT "Compiling ${COB_FILE} without -x"
     )
