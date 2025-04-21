@@ -12,8 +12,6 @@ Build the project with `./build.sh`.
 
 Set the following environment variables:
 * `POLLEN_FEED_URL`: the URL of the rss feed. This is used in the `<link>` and `<id>` tags of the RSS feed.
-* `POLLEN_LATITUDE`: the latitude of the location to fetch pollen data for.
-* `POLLEN_LONGITUDE`: the longitude of the location to fetch pollen data for.
 
 Run the project with `build/bin/pollen-rss`.
 
@@ -21,6 +19,11 @@ Run the project with `build/bin/pollen-rss`.
 The server will be available at `http://localhost:8888/pollen-rss`.
 
 There is only one route, `/pollen-rss`, which returns the RSS feed.
+Query params:
+* `latitude`: latitude of the location to fetch pollen info for.
+* `longitude`: latitude of the location to fetch pollen info for.
+
+Example: localhost:8888/pollen-rss?latitude=45.758&longitude=4.7
 
 # License
 This project is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.

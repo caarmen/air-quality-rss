@@ -3,23 +3,30 @@
 
        data division.
        local-storage section.
-       01 DATA-URL                  pic x(1000) VALUE SPACES.
        01 response.
            05 response-data pic x(10000).
            05 response-length-bytes pic 9(5) comp-5.
 
        linkage section.
+       01 latitude pic s9(3)v9(8).
+       01 longitude pic s9(3)v9(8).
+       01 DATA-URL                  pic x(1000) VALUE SPACES.
        01 response-body pic x(10000).
        procedure division using
+           by reference latitude
+           by reference longitude
+           by reference DATA-URL
            by reference response-body
        .
 
        call "source-url" using
+           by reference latitude
+           by reference longitude
            by reference DATA-URL
        display "fetching data from " DATA-URL
 
        call "http-client-get" using
-           by content DATA-URL
+           by reference DATA-URL
            by reference response
 
        move response-data(1:response-length-bytes)
@@ -49,8 +56,12 @@
            "&X=535&Y=284".
        01 BBOX pic x(1000) value spaces.
        linkage section.
+       01 latitude pic s9(3)v9(8).
+       01 longitude pic s9(3)v9(8).
        01 DATA-URL-OUT pic x(1000).
        procedure division using
+           by reference latitude
+           by reference longitude
            by reference DATA-URL-OUT.
        move function current-date
            to CURRENT-DATE-AND-TIME
@@ -60,6 +71,8 @@
        end-string
 
        call "bounding-box-str" using
+           by reference latitude
+           by reference longitude
            by reference BBOX
        move DATA-URL to DATA-URL-OUT.
        inspect DATA-URL-OUT
@@ -74,8 +87,6 @@
        program-id. bounding-box-str.
        data division.
        local-storage section.
-       01 latitude pic s9(3)v9(8).
-       01 longitude pic s9(3)v9(8).
        01 x pic s9(7)v9(8).
        01 y pic s9(7)v9(8).
        01 bbox-left pic 9(7).9(8).
@@ -84,12 +95,14 @@
        01 bbox-bottom pic 9(7).9(8).
 
        linkage section.
+       01 latitude pic s9(3)v9(8).
+       01 longitude pic s9(3)v9(8).
        01 bounding-box pic x(1000).
        procedure division using
+           by reference latitude
+           by reference longitude
            by reference bounding-box.
 
-       accept latitude from environment "POLLEN_LATITUDE"
-       accept longitude from environment "POLLEN_LONGITUDE"
        call "lat-long-to-web-mercator" using
            by reference latitude
            by reference longitude

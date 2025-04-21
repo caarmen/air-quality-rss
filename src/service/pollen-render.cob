@@ -23,10 +23,12 @@
        01 pollen-display-name pic x(16).
        01 pollen-output pic x(10000) value spaces.
        linkage section.
+       01 DATA-URL                  pic x(1000) VALUE SPACES.
        01 pollen-rss-output pic x(10000) value spaces.
 
 
        procedure division using
+           by reference DATA-URL
            by reference pollen-rss-output.
             open input pollen-file
             *> First read the responsible-pollen
@@ -61,6 +63,7 @@
             end-perform
             close pollen-file
             call "render-rss" using
+                by reference DATA-URL
                 by reference pollen-updated-at
                 by reference pollen-output
                 by reference pollen-rss-output
@@ -106,21 +109,21 @@
        data division.
        local-storage section.
        01 feed-url pic x(100).
-       01 source-url pic x(1000).
        01 escaped-source-url pic x(1000) value spaces.
        01 i pic 9(3) value 1.
        linkage section.
+       01 source-url pic x(1000).
        01 date-maj pic x(24).
        01 feed-content pic x(10000) value spaces.
        01 rss-content pic x(10000) value spaces.
        procedure division using
+           by reference source-url
            by reference date-maj
            by reference feed-content
            by reference rss-content
+
        .
        accept feed-url from environment "POLLEN_FEED_URL"
-       call "source-url" using
-           by reference source-url
       *> Escape & from the url
       *> This could be done more robustly with a thin wrapper to
       *> libxml2 apis.

@@ -81,6 +81,7 @@
            by reference url
 
        call "pollen-router" using
+           by value star-connection
            by reference http-method
            by reference url
            by reference response
