@@ -37,9 +37,23 @@ The project has the following dependencies:
 agréées de surveillance de la qualité de l’air).
 
 # Under the hood
+## Cobol
 This project is written in GnuCobol. The only reason for this
 choice is that I was curious about Cobol and wanted to 
 discover this language with a simple project. This would not
 be the most practical choice for a production project. :)
-I'm pretty sure that the code here isn't following any best
-practices for Cobol!
+
+## AI
+AI (ChatGPT and copilot) has been used for a few things in this project:
+* Generating most of the `CMakeLists.txt` file.
+* Formatting the code. The prompt used for this is in the description in PR #1.
+  I initially wrote the code with inconsistent and unconventional indentation,
+  capitalization, and spacing between statements. As I was not familiar with Cobol, and
+  I didn't find any linter for Cobol, I decided to use AI to format the code.
+* Auto-complete for the comment headings before each program.
+
+Of course, AI didn't get everything right the first time, and I had to correct/improve
+some things.
+
+However, for the bulk of the code, I did write it, as I wanted to learn this retro
+language :) As a result, I'm pretty sure that the code here isn't following any best practices!
