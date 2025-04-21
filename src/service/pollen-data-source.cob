@@ -89,10 +89,10 @@
        local-storage section.
        01 x pic s9(7)v9(8).
        01 y pic s9(7)v9(8).
-       01 bbox-left pic 9(7).9(8).
-       01 bbox-right pic 9(7).9(8).
-       01 bbox-top pic 9(7).9(8).
-       01 bbox-bottom pic 9(7).9(8).
+       01 bbox-left pic +9(7).9(8).
+       01 bbox-right pic +9(7).9(8).
+       01 bbox-top pic +9(7).9(8).
+       01 bbox-bottom pic +9(7).9(8).
 
        linkage section.
        01 latitude pic s9(3)v9(8).
