@@ -1,98 +1,110 @@
-       identification division.
-       program-id. json-get-object-name.
-       data division.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. JSON-GET-OBJECT-NAME.
 
-       local-storage section.
-       01 property-name-ptr usage pointer.
+       DATA DIVISION.
 
-       linkage section.
-       
-       01 json-handle-ptr usage pointer.
-       01 object-name pic x(50).
+       LOCAL-STORAGE SECTION.
+           01  PROPERTY-NAME-PTR               USAGE POINTER.
 
-       procedure division using
-           by value json-handle-ptr
-           by reference object-name.
+       LINKAGE SECTION.
+           01  JSON-HANDLE-PTR                 USAGE POINTER.
+           01  OBJECT-NAME                     PIC X(50).
 
-           call "cJSON_GetObjectName" using
-               by value json-handle-ptr
-               returning property-name-ptr
-           call "strcpy" using 
-               by reference object-name
-               by value property-name-ptr
-       goback.
-       end program json-get-object-name.
+       PROCEDURE DIVISION USING
+           BY VALUE     JSON-HANDLE-PTR
+           BY REFERENCE OBJECT-NAME.
 
-       program-id. json-get-string-value.
-       data division.
+           CALL "cJSON_GetObjectName" USING
+               BY VALUE JSON-HANDLE-PTR
+               RETURNING PROPERTY-NAME-PTR
 
-       local-storage section.
-       01 property-value-ptr usage pointer.
+           CALL "strcpy" USING 
+               BY REFERENCE OBJECT-NAME
+               BY VALUE     PROPERTY-NAME-PTR
 
-       linkage section.
-       
-       01 json-handle-ptr usage pointer.
-       01 string-value pic x(50).
+           GOBACK.
+       END PROGRAM JSON-GET-OBJECT-NAME.
 
-       procedure division using
-           by value json-handle-ptr
-           by reference string-value.
 
-           call "cJSON_GetStringValue" using
-               by value json-handle-ptr
-               returning property-value-ptr
-           call "strcpy" using 
-               by reference string-value
-               by value property-value-ptr
-       goback.
-       end program json-get-string-value.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. JSON-GET-STRING-VALUE.
 
-       *> The GetObject api from cJSON doesn't seem to work when
-       *> the attribute value is an array.
-       *> So we implement an alternative here which iterates over
-       *> all the objects attributes, until it finds the one with
-       *> the given name.
-       program-id. json-get-object.
-       data division.
+       DATA DIVISION.
 
-       local-storage section.
-       01 attribute-index pic 9 value 1.
-       01 attribute-count usage binary-long.
-       01 iter-attribute-handle-ptr usage pointer.
-       01 iter-attribute-name pic x(50).
+       LOCAL-STORAGE SECTION.
+           01  PROPERTY-VALUE-PTR              USAGE POINTER.
 
-       linkage section.
-       
-       01 json-source-handle-ptr usage pointer.
-       01 attribute-name pic x(50) value spaces.
-       01 json-found-object-handle-ptr usage pointer.
+       LINKAGE SECTION.
+           01  JSON-HANDLE-PTR                 USAGE POINTER.
+           01  STRING-VALUE                    PIC X(50).
 
-       procedure division using
-           attribute-name
-           by value json-source-handle-ptr
-           by reference json-found-object-handle-ptr.
-               
-       call "cJSON_GetArraySize" using
-           by value json-source-handle-ptr
-           returning attribute-count
+       PROCEDURE DIVISION USING
+           BY VALUE     JSON-HANDLE-PTR
+           BY REFERENCE STRING-VALUE.
 
-       move NULL to json-found-object-handle-ptr
-       perform varying attribute-index from 0 by 1 
-           until attribute-index = attribute-count 
-               or json-found-object-handle-ptr not = NULL
-           call "cJSON_GetArrayItem" using
-               by value json-source-handle-ptr
-               by value attribute-index
-               returning iter-attribute-handle-ptr
-           call "json-get-object-name" using
-               by value iter-attribute-handle-ptr
-               by reference iter-attribute-name
-           if iter-attribute-name(1:8) = attribute-name
-           then
-               move iter-attribute-handle-ptr 
-                   to json-found-object-handle-ptr
-           end-if
-       end-perform
-       goback.
-       end program json-get-object.
-       
+           CALL "cJSON_GetStringValue" USING
+               BY VALUE JSON-HANDLE-PTR
+               RETURNING PROPERTY-VALUE-PTR
+
+           CALL "strcpy" USING 
+               BY REFERENCE STRING-VALUE
+               BY VALUE     PROPERTY-VALUE-PTR
+
+           GOBACK.
+       END PROGRAM JSON-GET-STRING-VALUE.
+
+
+       *> The GetObject API from cJSON doesn't seem to work when
+       *> the attribute value is an array. So we implement an
+       *> alternative here which iterates over all the object's
+       *> attributes until it finds the one with the given name.
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. JSON-GET-OBJECT.
+
+       DATA DIVISION.
+
+       LOCAL-STORAGE SECTION.
+           01  ATTRIBUTE-INDEX                PIC 9       VALUE 1.
+           01  ATTRIBUTE-COUNT                USAGE BINARY-LONG.
+           01  ITER-ATTRIBUTE-HANDLE-PTR      USAGE POINTER.
+           01  ITER-ATTRIBUTE-NAME            PIC X(50).
+
+       LINKAGE SECTION.
+           01  JSON-SOURCE-HANDLE-PTR         USAGE POINTER.
+           01  ATTRIBUTE-NAME                 PIC X(50) VALUE SPACES.
+           01  JSON-FOUND-OBJECT-HANDLE-PTR   USAGE POINTER.
+
+       PROCEDURE DIVISION USING
+           ATTRIBUTE-NAME
+           BY VALUE     JSON-SOURCE-HANDLE-PTR
+           BY REFERENCE JSON-FOUND-OBJECT-HANDLE-PTR.
+
+           CALL "cJSON_GetArraySize" USING
+               BY VALUE JSON-SOURCE-HANDLE-PTR
+               RETURNING ATTRIBUTE-COUNT
+
+           MOVE NULL TO JSON-FOUND-OBJECT-HANDLE-PTR
+
+           PERFORM VARYING ATTRIBUTE-INDEX FROM 0 BY 1 
+               UNTIL ATTRIBUTE-INDEX = ATTRIBUTE-COUNT 
+                 OR JSON-FOUND-OBJECT-HANDLE-PTR NOT = NULL
+
+               CALL "cJSON_GetArrayItem" USING
+                   BY VALUE JSON-SOURCE-HANDLE-PTR
+                   BY VALUE ATTRIBUTE-INDEX
+                   RETURNING ITER-ATTRIBUTE-HANDLE-PTR
+
+               CALL "JSON-GET-OBJECT-NAME" USING
+                   BY VALUE     ITER-ATTRIBUTE-HANDLE-PTR
+                   BY REFERENCE ITER-ATTRIBUTE-NAME
+
+               IF ITER-ATTRIBUTE-NAME(1:8) = ATTRIBUTE-NAME
+                   MOVE ITER-ATTRIBUTE-HANDLE-PTR TO
+                       JSON-FOUND-OBJECT-HANDLE-PTR
+               END-IF
+
+           END-PERFORM
+
+           GOBACK.
+       END PROGRAM JSON-GET-OBJECT.

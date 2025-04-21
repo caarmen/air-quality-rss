@@ -1,36 +1,34 @@
-       identification division.
-       program-id. pollen-service.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. POLLEN-SERVICE.
 
-       data division.
-       local-storage section.
-       01 buffer pic x(10000).
-       01 DATA-URL                  pic x(1000) VALUE SPACES.
+       DATA DIVISION.
+       LOCAL-STORAGE SECTION.
+       01 BUFFER                   PIC X(10000).
+       01 DATA-URL                 PIC X(1000) VALUE SPACES.
 
-       linkage section.
-       01 latitude pic s9(3)v9(8).
-       01 longitude pic s9(3)v9(8).
-       01 pollen-output pic x(10000) value spaces.
+       LINKAGE SECTION.
+       01 LATITUDE                 PIC S9(3)V9(8).
+       01 LONGITUDE                PIC S9(3)V9(8).
+       01 POLLEN-OUTPUT            PIC X(10000) VALUE SPACES.
 
-       procedure division using
-           by reference latitude
-           by reference longitude
-           by reference pollen-output
-       .
+       PROCEDURE DIVISION USING
+           BY REFERENCE LATITUDE
+           BY REFERENCE LONGITUDE
+           BY REFERENCE POLLEN-OUTPUT.
 
-       call "pollen-data-source" using
-           by reference latitude
-           by reference longitude
-           by reference DATA-URL
-           by reference buffer
+           CALL "POLLEN-DATA-SOURCE" USING
+               BY REFERENCE LATITUDE
+               BY REFERENCE LONGITUDE
+               BY REFERENCE DATA-URL
+               BY REFERENCE BUFFER
 
-       call "pollen-parser" using
-           by reference buffer
+           CALL "POLLEN-PARSER" USING
+               BY REFERENCE BUFFER
 
-       call "pollen-render" using
-           by reference DATA-URL
-           by reference pollen-output
+           CALL "POLLEN-RENDER" USING
+               BY REFERENCE DATA-URL
+               BY REFERENCE POLLEN-OUTPUT
 
+           GOBACK.
 
-       goback.
-       end program pollen-service.
-
+       END PROGRAM POLLEN-SERVICE.

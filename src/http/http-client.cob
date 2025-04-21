@@ -1,57 +1,59 @@
-       identification division.
-       program-id. http-client-get.
-       data division.
-       local-storage section.
-       01 curl-code usage binary-long.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. HTTP-CLIENT-GET.
+
+       DATA DIVISION.
+
+       LOCAL-STORAGE SECTION.
+           01  CURL-CODE                   USAGE BINARY-LONG.
+
        *> https://github.com/curl/curl/blob/master/packages/OS400/curl.inc.in#L1073
-       01 CURLOPT_URL constant as 10002.
-       01 CURLOPT_WRITEFUNCTION constant as 20011.
-       01 CURLOPT_WRITEDATA constant as 10001.
-       01 curl-write-callback usage program-pointer.
-       01 curl-handle-ptr usage pointer.
+           01  CURLOPT-URL                CONSTANT AS 10002.
+           01  CURLOPT-WRITEFUNCTION      CONSTANT AS 20011.
+           01  CURLOPT-WRITEDATA          CONSTANT AS 10001.
 
-       linkage section.
-       01 request-url pic x(1000).
-       01 response.
-           05 response-data pic x(10000).
-           05 response-length-bytes pic 9(5) comp-5.
+           01  CURL-WRITE-CALLBACK        USAGE PROGRAM-POINTER.
+           01  CURL-HANDLE-PTR            USAGE POINTER.
 
-       *> Perform an http get request at the given url and store
-       *> the response in the response variable.
-       procedure division using
-           request-url
-           by reference response.
+       LINKAGE SECTION.
+           01  REQUEST-URL                PIC X(1000).
+           01  RESPONSE.
+               05  RESPONSE-DATA          PIC X(10000).
+               05  RESPONSE-LENGTH-BYTES  PIC 9(5) COMP-5.
 
-       set curl-write-callback 
-           to entry "curl-write-callback"
+       *> Perform an HTTP GET request at the given URL
+       *> and store the response in the RESPONSE variable.
+       PROCEDURE DIVISION USING
+           REQUEST-URL
+           BY REFERENCE RESPONSE.
 
-       call "curl_easy_init"
-           returning curl-handle-ptr
+           SET CURL-WRITE-CALLBACK TO
+               ENTRY "CURL-WRITE-CALLBACK"
 
-       call "curl_easy_setopt" using
-           by value curl-handle-ptr
-           by value CURLOPT_URL
-           by content function trim(request-url)
+           CALL "curl_easy_init"
+               RETURNING CURL-HANDLE-PTR
 
-       call "curl_easy_setopt" using
-           by value curl-handle-ptr
-           by value CURLOPT_WRITEFUNCTION
-           by value curl-write-callback
+           CALL "curl_easy_setopt" USING
+               BY VALUE    CURL-HANDLE-PTR
+               BY VALUE    CURLOPT-URL
+               BY CONTENT  FUNCTION TRIM(REQUEST-URL)
 
-       call "curl_easy_setopt" using
-           by value curl-handle-ptr
-           by value CURLOPT_WRITEDATA
-           by reference response
+           CALL "curl_easy_setopt" USING
+               BY VALUE    CURL-HANDLE-PTR
+               BY VALUE    CURLOPT-WRITEFUNCTION
+               BY VALUE    CURL-WRITE-CALLBACK
+
+           CALL "curl_easy_setopt" USING
+               BY VALUE    CURL-HANDLE-PTR
+               BY VALUE    CURLOPT-WRITEDATA
+               BY REFERENCE RESPONSE
 
        *> https://curl.se/libcurl/c/curl_easy_perform.html
-       call "curl_easy_perform" using
-           by value curl-handle-ptr
-           returning curl-code
-        
-       call "curl_easy_cleanup" using
-           by value curl-handle-ptr
-       goback.
-       end program http-client-get.
-       
+           CALL "curl_easy_perform" USING
+               BY VALUE    CURL-HANDLE-PTR
+               RETURNING   CURL-CODE
 
-       
+           CALL "curl_easy_cleanup" USING
+               BY VALUE CURL-HANDLE-PTR
+
+           GOBACK.
+       END PROGRAM HTTP-CLIENT-GET.

@@ -1,65 +1,77 @@
-       identification division.
-       program-id. pollen-router.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. POLLEN-ROUTER.
 
-       data division.
-       local-storage section.
-       01 query-param-latitude pic x(16) value spaces.
-       01 query-param-longitude pic x(16) value spaces.
-       01 latitude pic s9(3)v9(8).
-       01 longitude pic s9(3)v9(8).
-       01 query-param-value usage pointer.
-       01 query-param-size usage pointer.
-       linkage section.
-       01 connection-ptr                             usage pointer.
-       01 http-method pic x(8).
-       01 url pic x(100).
-       01 response.
-           05 status-code pic 999.
-           05 body pic x(10000) value spaces.
+       DATA DIVISION.
 
-       procedure division
-       using
-           by value connection-ptr
-           by reference http-method
-           by reference url
-           by reference response
-       .
-           display "incoming " http-method " request for " url "."
-           if function trim(http-method) = "GET" 
-               and function trim(url) = "/pollen-rss"
-           then
-               move 200 to status-code
-               *> TODO Make utility function for parsing query params.
-               call "MHD_lookup_connection_value_n" using
-                   by value connection-ptr
-                   by value 8 *> MHD_GET_ARGUMENT_KIND
-                   by value "longitude"
-                   by value length of "longitude"
-                   by reference query-param-value
-                   by reference query-param-size
-               call "c-string" using
-                   by value query-param-value
-                   by reference query-param-longitude
-               move query-param-longitude to longitude
-               call "MHD_lookup_connection_value_n" using
-                   by value connection-ptr
-                   by value 8 *> MHD_GET_ARGUMENT_KIND
-                   by value "latitude"
-                   by value length of "latitude"
-                   by reference query-param-value
-                   by reference query-param-size
-               call "c-string" using
-                   by value query-param-value
-                   by reference query-param-latitude
-               move query-param-latitude to latitude
+       LOCAL-STORAGE SECTION.
+           01  QUERY-PARAM-LATITUDE       PIC X(16)        VALUE SPACES.
+           01  QUERY-PARAM-LONGITUDE      PIC X(16)        VALUE SPACES.
+           01  LATITUDE                   PIC S9(3)V9(8).
+           01  LONGITUDE                  PIC S9(3)V9(8).
+           01  QUERY-PARAM-VALUE          USAGE POINTER.
+           01  QUERY-PARAM-SIZE           USAGE POINTER.
 
-               call "pollen-service" using
-                   by reference latitude
-                   by reference longitude
-                   by reference body
-           else
-               move 404 to status-code
-               move "Not Found" to body
-           end-if
-       goback.
-       end program pollen-router.
+       LINKAGE SECTION.
+           01  CONNECTION-PTR             USAGE POINTER.
+           01  HTTP-METHOD                PIC X(8).
+           01  URL                        PIC X(100).
+           01  RESPONSE.
+               05  STATUS-CODE            PIC 999.
+               05  BODY                   PIC X(10000)     VALUE SPACES.
+
+       PROCEDURE DIVISION
+           USING
+               BY VALUE    CONNECTION-PTR
+               BY REFERENCE HTTP-METHOD
+               BY REFERENCE URL
+               BY REFERENCE RESPONSE.
+
+           DISPLAY "Incoming " HTTP-METHOD " request for " URL ".".
+
+           IF FUNCTION TRIM(HTTP-METHOD) = "GET"
+               AND FUNCTION TRIM(URL) = "/pollen-rss"
+           THEN
+               MOVE 200 TO STATUS-CODE
+
+               *> TODO: Make utility function for parsing query params.
+
+               CALL "MHD_lookup_connection_value_n" USING
+                   BY VALUE    CONNECTION-PTR
+                   BY VALUE    8 *> MHD_GET_ARGUMENT_KIND
+                   BY VALUE    "longitude"
+                   BY VALUE    LENGTH OF "longitude"
+                   BY REFERENCE QUERY-PARAM-VALUE
+                   BY REFERENCE QUERY-PARAM-SIZE
+
+               CALL "C-STRING" USING
+                   BY VALUE    QUERY-PARAM-VALUE
+                   BY REFERENCE QUERY-PARAM-LONGITUDE
+
+               MOVE QUERY-PARAM-LONGITUDE TO LONGITUDE
+
+               CALL "MHD_lookup_connection_value_n" USING
+                   BY VALUE    CONNECTION-PTR
+                   BY VALUE    8 *> MHD_GET_ARGUMENT_KIND
+                   BY VALUE    "latitude"
+                   BY VALUE    LENGTH OF "latitude"
+                   BY REFERENCE QUERY-PARAM-VALUE
+                   BY REFERENCE QUERY-PARAM-SIZE
+
+               CALL "C-STRING" USING
+                   BY VALUE    QUERY-PARAM-VALUE
+                   BY REFERENCE QUERY-PARAM-LATITUDE
+
+               MOVE QUERY-PARAM-LATITUDE TO LATITUDE
+
+               CALL "POLLEN-SERVICE" USING
+                   BY REFERENCE LATITUDE
+                   BY REFERENCE LONGITUDE
+                   BY REFERENCE BODY
+
+           ELSE
+               MOVE 404 TO STATUS-CODE
+               MOVE "Not Found" TO BODY
+           END-IF.
+
+           GOBACK.
+       END PROGRAM POLLEN-ROUTER.

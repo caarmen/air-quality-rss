@@ -1,12 +1,12 @@
-       identification division.
-       program-id. pollen-rss.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. POLLEN-RSS.
 
-      *> ***************************************************************
-       procedure division.
-       call "pollen-server".
+       *> ***************************************************************
+       PROCEDURE DIVISION.
 
-       *> Wait for incoming connections
-       perform forever
-           call "sleep" using by value 1
-       end-perform
+           CALL "POLLEN-SERVER".
 
+           *> Wait for incoming connections
+           PERFORM FOREVER
+               CALL "sleep" USING BY VALUE 1
+           END-PERFORM.

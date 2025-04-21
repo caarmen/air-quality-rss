@@ -1,18 +1,22 @@
-       identification division.
-       program-id. c-string.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. C-STRING.
 
-       data division.
-       linkage section.
-       01 c-string usage pointer.
-       01 cobol-string pic x(10000) value spaces.
+       DATA DIVISION.
 
-       procedure division with C linkage using
-           by value c-string
-           by reference cobol-string.
-           call "strcpy" using
-               by reference cobol-string
-               by value c-string
-           inspect cobol-string
-               replacing first x"00" by space
-           goback.
-       end program c-string.
+       LINKAGE SECTION.
+           01  C-STRING                 USAGE POINTER.
+           01  COBOL-STRING             PIC X(10000) VALUE SPACES.
+
+       PROCEDURE DIVISION WITH C LINKAGE USING
+           BY VALUE     C-STRING
+           BY REFERENCE COBOL-STRING.
+
+           CALL "strcpy" USING
+               BY REFERENCE COBOL-STRING
+               BY VALUE     C-STRING
+
+           INSPECT COBOL-STRING
+               REPLACING FIRST X"00" BY SPACE
+
+           GOBACK.
+       END PROGRAM C-STRING.
