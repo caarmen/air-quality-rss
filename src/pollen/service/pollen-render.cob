@@ -138,10 +138,9 @@
 
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
-       01 FEED-URL                  PIC X(100).
+       01 FEED-URL                  PIC X(1000).
        01 ESCAPED-SOURCE-URL        PIC X(1000) VALUE SPACES.
        01 ESCAPED-FEED-URL          PIC X(1000) VALUE SPACES.
-       01 I                          PIC 9(3) VALUE 1.
 
        LINKAGE SECTION.
        01 SOURCE-URL                 PIC X(1000).
@@ -158,42 +157,14 @@
            ACCEPT FEED-URL FROM ENVIRONMENT "POLLEN_FEED_URL"
 
            *> Escape & from the URL
-           *> This could be done more robustly with a thin wrapper to libxml2 APIs.
-           PERFORM VARYING I FROM 1 BY 1 
-               UNTIL I > LENGTH OF FUNCTION TRIM(SOURCE-URL)
-               EVALUATE SOURCE-URL(I:1)
-                   WHEN "&"
-                       STRING
-                           FUNCTION TRIM(ESCAPED-SOURCE-URL)
-                           "&amp;"
-                           INTO ESCAPED-SOURCE-URL
-                       END-STRING
-                   WHEN OTHER
-                       STRING
-                           FUNCTION TRIM(ESCAPED-SOURCE-URL)
-                           SOURCE-URL(I:1)
-                           INTO ESCAPED-SOURCE-URL
-                       END-STRING
-               END-EVALUATE
-           END-PERFORM
-           *> Move this into a procedure to avoid copy/paste
-           PERFORM VARYING I FROM 1 BY 1 
-               UNTIL I > LENGTH OF FUNCTION TRIM(FEED-URL)
-               EVALUATE FEED-URL(I:1)
-                   WHEN "&"
-                       STRING
-                           FUNCTION TRIM(ESCAPED-FEED-URL)
-                           "&amp;"
-                           INTO ESCAPED-FEED-URL
-                       END-STRING
-                   WHEN OTHER
-                       STRING
-                           FUNCTION TRIM(ESCAPED-FEED-URL)
-                           FEED-URL(I:1)
-                           INTO ESCAPED-FEED-URL
-                       END-STRING
-               END-EVALUATE
-           END-PERFORM
+           CALL "XML-ENCODE" USING
+               BY REFERENCE SOURCE-URL
+               BY REFERENCE ESCAPED-SOURCE-URL
+           END-CALL
+           CALL "XML-ENCODE" USING
+               BY REFERENCE FEED-URL
+               BY REFERENCE ESCAPED-FEED-URL
+           END-CALL
 
            STRING
                '<?xml version="1.0" encoding="utf-8"?>'            X"0A"

@@ -13,12 +13,10 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  QUERY-PARAM-LATITUDE       PIC X(16)        VALUE SPACES.
-           01  QUERY-PARAM-LONGITUDE      PIC X(16)        VALUE SPACES.
            01  LATITUDE                   PIC S9(3)V9(8).
            01  LONGITUDE                  PIC S9(3)V9(8).
-           01  QUERY-PARAM-VALUE          USAGE POINTER.
-           01  QUERY-PARAM-SIZE           USAGE POINTER.
+           01  QUERY-PARAM-LATITUDE       PIC X(16) VALUE "latitude".
+           01  QUERY-PARAM-LONGITUDE      PIC X(16) VALUE "longitude".
 
        LINKAGE SECTION.
            01  CONNECTION-PTR             USAGE POINTER.
@@ -42,47 +40,36 @@
            THEN
                MOVE 200 TO STATUS-CODE
 
-               *> TODO: Make utility function for parsing query params.
+               *> Parse the latitude query parameter
 
-               CALL "MHD_lookup_connection_value_n" USING
-                   BY VALUE    CONNECTION-PTR
-                   BY VALUE    8 *> MHD_GET_ARGUMENT_KIND
-                   BY VALUE    "longitude"
-                   BY VALUE    LENGTH OF "longitude"
-                   BY REFERENCE QUERY-PARAM-VALUE
-                   BY REFERENCE QUERY-PARAM-SIZE
-               IF QUERY-PARAM-SIZE = NULL
-               THEN
-                   MOVE 400 TO STATUS-CODE
-                   MOVE "Bad Request" TO BODY
-                   GOBACK
-               END-IF
-
-               CALL "C-STRING" USING
-                   BY VALUE    QUERY-PARAM-VALUE
-                   BY REFERENCE QUERY-PARAM-LONGITUDE
-
-               MOVE QUERY-PARAM-LONGITUDE TO LONGITUDE
-
-               CALL "MHD_lookup_connection_value_n" USING
-                   BY VALUE    CONNECTION-PTR
-                   BY VALUE    8 *> MHD_GET_ARGUMENT_KIND
-                   BY VALUE    "latitude"
-                   BY VALUE    LENGTH OF "latitude"
-                   BY REFERENCE QUERY-PARAM-VALUE
-                   BY REFERENCE QUERY-PARAM-SIZE
-               IF QUERY-PARAM-SIZE = NULL
-               THEN
-                   MOVE 400 TO STATUS-CODE
-                   MOVE "Bad Request" TO BODY
-                   GOBACK
-               END-IF
-
-               CALL "C-STRING" USING
-                   BY VALUE    QUERY-PARAM-VALUE
+               CALL "PARSE-NUMERIC-QUERY-PARAM" USING
+                   BY VALUE     CONNECTION-PTR
                    BY REFERENCE QUERY-PARAM-LATITUDE
+                   BY REFERENCE LATITUDE
+                   RETURNING RETURN-CODE
+               IF RETURN-CODE NOT = 0
+               THEN
+                   MOVE 400 TO STATUS-CODE
+                   MOVE "Bad Request: missing latitude query param"
+                       TO BODY
+                   GOBACK
+               END-IF
 
-               MOVE QUERY-PARAM-LATITUDE TO LATITUDE
+               *> Parse the longitude query parameter
+
+               CALL "PARSE-NUMERIC-QUERY-PARAM" USING
+                   BY VALUE     CONNECTION-PTR
+                   BY REFERENCE QUERY-PARAM-LONGITUDE
+                   BY REFERENCE LONGITUDE
+               IF RETURN-CODE NOT = 0
+               THEN
+                   MOVE 400 TO STATUS-CODE
+                   MOVE "Bad Request: missing longitude query param"
+                       TO BODY
+                   GOBACK
+               END-IF
+
+               *> We have all we need, call the pollen service.
 
                CALL "POLLEN-SERVICE" USING
                    BY REFERENCE LATITUDE
