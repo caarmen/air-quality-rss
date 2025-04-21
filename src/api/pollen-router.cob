@@ -17,7 +17,7 @@
        .
            display "incoming " http-method " request for " url "."
            if function trim(http-method) = "GET" 
-               and function trim(url) = "/"
+               and function trim(url) = "/pollen-rss"
            then
                move 200 to status-code
                call "pollen-service" using

@@ -18,9 +18,9 @@ Set the following environment variables:
 Run the project with `build/bin/pollen-rss`.
 
 ### Http requests
-The server will be available at `http://localhost:8888/`.
+The server will be available at `http://localhost:8888/pollen-rss`.
 
-There is only one root, `/`, which returns the RSS feed.
+There is only one route, `/pollen-rss`, which returns the RSS feed.
 
 # License
 This project is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.
