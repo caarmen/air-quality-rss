@@ -1,3 +1,8 @@
+
+      *> ===============================================================
+      *> PROGRAM: C-STRING
+      *> PURPOSE: Converts a C-STRING TO A COBOL STRING
+      *> ===============================================================
        IDENTIFICATION DIVISION.
        PROGRAM-ID. C-STRING.
 

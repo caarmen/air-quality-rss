@@ -1,3 +1,12 @@
+      *> ===============================================================
+      *> PROGRAM: POLLEN-ROUTER
+      *> PURPOSE: Handles incoming HTTP requests for pollen data.
+      *>          Parses query parameters and calls the pollen service.
+      *>          Returns the response to the caller.
+      *>          This program is called by the
+      *>          MICROHTTPD-ACCESS-HANDLER.
+      *> ===============================================================
+
        IDENTIFICATION DIVISION.
        PROGRAM-ID. POLLEN-ROUTER.
 

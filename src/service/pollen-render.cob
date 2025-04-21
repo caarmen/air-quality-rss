@@ -1,7 +1,10 @@
+
+      *> ===============================================================
+      *> PROGRAM: POLLEN-RENDER
+      *> PURPOSE: Read data from the pollen.dat file and render it to a
+      *>          string in the format of an RSS feed.
+      *> ===============================================================
        IDENTIFICATION DIVISION.
-       *> ***************************************************************
-       *> Read data from the pollen.dat file and render it to a string.
-       *> ***************************************************************
 
        PROGRAM-ID. POLLEN-RENDER.
 
@@ -81,6 +84,12 @@
 
        END PROGRAM POLLEN-RENDER.
 
+      *> ===============================================================
+      *> PROGRAM: POLLEN-DISPLAY-NAME
+      *> PURPOSE: Return the display name of the pollen from the code
+      *>          of the pollen.
+      *> ===============================================================
+
        PROGRAM-ID. POLLEN-DISPLAY-NAME.
 
        DATA DIVISION.
@@ -117,6 +126,14 @@
            GOBACK.
 
        END PROGRAM POLLEN-DISPLAY-NAME.
+
+      *> ===============================================================
+      *> PROGRAM: RENDER-RSS
+      *> PURPOSE: Render the given FEED-CONTENT to an RSS feed format.
+      *>          The SOURCE-URL is escaped to be used in the RSS feed.
+      *>          The DATE-MAJ is used to set the updated date of the
+      *>          feed.
+      *> ===============================================================
 
        IDENTIFICATION DIVISION.
        PROGRAM-ID. RENDER-RSS.

@@ -1,3 +1,12 @@
+
+      *> ===============================================================
+      *> PROGRAM: HTTP-CLIENT-GET
+      *> PURPOSE: Performs an HTTP GET request using libcurl.
+      *>          The response is stored in the RESPONSE variable.
+      *>          This program is called by the POLLEN-DATA-SOURCE
+      *>          program to fetch the pollen data.
+      *> ===============================================================
+
        IDENTIFICATION DIVISION.
        PROGRAM-ID. HTTP-CLIENT-GET.
 

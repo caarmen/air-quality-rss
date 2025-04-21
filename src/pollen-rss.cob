@@ -1,7 +1,12 @@
+
+      *> ===============================================================
+      *> PROGRAM: POLLEN-RSS
+      *> PURPOSE: Entry point for the pollen RSS server.
+      *> ===============================================================
+
        IDENTIFICATION DIVISION.
        PROGRAM-ID. POLLEN-RSS.
 
-       *> ***************************************************************
        PROCEDURE DIVISION.
 
            CALL "POLLEN-SERVER".

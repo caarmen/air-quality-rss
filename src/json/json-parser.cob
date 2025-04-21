@@ -1,3 +1,13 @@
+
+      *> ===============================================================
+      *> PROGRAM: JSON-GET-OBJECT-NAME
+      *> PURPOSE: For a given JSON object, which is a value of a
+      *>          property of a parent object, this program returns
+      *>          the property name of the object inside its
+      *>          parent object.
+      *>          TODO this looks tordu, maybe this can be simplified.
+      *> ===============================================================
+
        IDENTIFICATION DIVISION.
        PROGRAM-ID. JSON-GET-OBJECT-NAME.
 
@@ -25,6 +35,11 @@
            GOBACK.
        END PROGRAM JSON-GET-OBJECT-NAME.
 
+      *> ===============================================================
+      *> PROGRAM: JSON-GET-STRING-VALUE
+      *> PURPOSE: For a given JSON string property, return the value
+      *>          of the property as a COBOL string.
+      *> ===============================================================
 
        IDENTIFICATION DIVISION.
        PROGRAM-ID. JSON-GET-STRING-VALUE.
@@ -53,11 +68,18 @@
            GOBACK.
        END PROGRAM JSON-GET-STRING-VALUE.
 
+      *> ===============================================================
+      *> PROGRAM: JSON-GET-OBJECT
+      *> PURPOSE: Return the first value of a JSON object's properties
+      *>          whose name matches the given name.
+      *>
+      *>          This is a workaround:
+      *>          The GetObject API from cJSON doesn't seem to work when
+      *>          the attribute value is an array. So we implement an
+      *>          alternative here which iterates over all the object's
+      *>          attributes until it finds the one with the given name.
+      *> ===============================================================
 
-       *> The GetObject API from cJSON doesn't seem to work when
-       *> the attribute value is an array. So we implement an
-       *> alternative here which iterates over all the object's
-       *> attributes until it finds the one with the given name.
 
        IDENTIFICATION DIVISION.
        PROGRAM-ID. JSON-GET-OBJECT.
