@@ -10,7 +10,7 @@
 
        LINKAGE SECTION.
            01  C-STRING                 USAGE POINTER.
-           01  COBOL-STRING             PIC X(10000) VALUE SPACES.
+           01  COBOL-STRING             PIC X(10000).
 
        PROCEDURE DIVISION WITH C LINKAGE USING
            BY VALUE     C-STRING

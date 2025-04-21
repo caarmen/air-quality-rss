@@ -5,7 +5,22 @@
       *>          property of a parent object, this program returns
       *>          the property name of the object inside its
       *>          parent object.
+      *>
       *>          TODO this looks tordu, maybe this can be simplified.
+      *>
+      *>          We do this because we iterate over all of the
+      *>          attributes of the pollen structure's
+      *>          features[0].properties: like code_aul, code_boul,
+      *>          code_oliv, etc.
+      *>          The api from cJSON is:
+      *>
+      *>          To iterate over an object, you can use the
+      *>          cJSON_ArrayForEach macro the same way as for arrays.
+      *> https://github.com/DaveGamble/cJSON?tab=readme-ov-file#objects
+      *>
+      *>          For each iteration, we want to get both the name
+      *>          (ex: code_aul) and the value (ex: 1).
+      *>          This program returns the name (ex: code_aul).
       *> ===============================================================
 
        IDENTIFICATION DIVISION.
@@ -36,37 +51,51 @@
        END PROGRAM JSON-GET-OBJECT-NAME.
 
       *> ===============================================================
-      *> PROGRAM: JSON-GET-STRING-VALUE
-      *> PURPOSE: For a given JSON string property, return the value
-      *>          of the property as a COBOL string.
+      *> PROGRAM: JSON-GET-PROPERTY-STRING-VALUE
+      *> PURPOSE: For a given JSON object and property name, get the
+      *>          value of the property as a COBOL string.
       *> ===============================================================
 
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. JSON-GET-STRING-VALUE.
+       PROGRAM-ID. JSON-GET-PROPERTY-STRING-VALUE.
 
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  PROPERTY-VALUE-PTR              USAGE POINTER.
+           01  PROPERTY-VALUE-OBJECT-PTR       USAGE POINTER.
+           01  PROPERTY-VALUE-STRING-PTR       USAGE POINTER.
 
        LINKAGE SECTION.
-           01  JSON-HANDLE-PTR                 USAGE POINTER.
-           01  STRING-VALUE                    PIC X(50).
+           01  JSON-OBJECT-PTR                 USAGE POINTER.
+           01  PROPERTY-NAME                   PIC X(50).
+           01  PROPERTY-VALUE                  PIC X(50).
 
        PROCEDURE DIVISION USING
-           BY VALUE     JSON-HANDLE-PTR
-           BY REFERENCE STRING-VALUE.
+           BY VALUE     JSON-OBJECT-PTR
+           BY REFERENCE PROPERTY-NAME
+           BY REFERENCE PROPERTY-VALUE.
 
+           *> Get the value of the object's property as a cJSON object.
+           CALL "cJSON_GetObjectItem" USING
+               BY VALUE JSON-OBJECT-PTR
+               BY CONTENT PROPERTY-NAME
+               RETURNING PROPERTY-VALUE-OBJECT-PTR
+
+           *> We assume the value is a string: get the object's property
+           *> value as a c-string.
            CALL "cJSON_GetStringValue" USING
-               BY VALUE JSON-HANDLE-PTR
-               RETURNING PROPERTY-VALUE-PTR
+               BY VALUE PROPERTY-VALUE-OBJECT-PTR
+               RETURNING PROPERTY-VALUE-STRING-PTR
 
-           CALL "strcpy" USING 
-               BY REFERENCE STRING-VALUE
-               BY VALUE     PROPERTY-VALUE-PTR
+           *> Finally convert the c-string to a cobol string.
+
+           MOVE SPACES TO PROPERTY-VALUE
+           CALL "C-STRING" USING
+               BY VALUE     PROPERTY-VALUE-STRING-PTR
+               BY REFERENCE PROPERTY-VALUE
 
            GOBACK.
-       END PROGRAM JSON-GET-STRING-VALUE.
+       END PROGRAM JSON-GET-PROPERTY-STRING-VALUE.
 
       *> ===============================================================
       *> PROGRAM: JSON-GET-OBJECT
