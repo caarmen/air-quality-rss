@@ -27,6 +27,7 @@ set(COB_OTHER
     ${CMAKE_SOURCE_DIR}/src/support/http/curl-write-callback.cob
     ${CMAKE_SOURCE_DIR}/src/support/json/json-parser.cob
     ${CMAKE_SOURCE_DIR}/src/support/math/coordinates.cob
+    ${CMAKE_SOURCE_DIR}/src/support/xml/encode.cob
 ) # No -x
 
 # Output COBOL objects
