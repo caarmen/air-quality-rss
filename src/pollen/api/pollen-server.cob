@@ -12,7 +12,7 @@
            01  MHD-USE-SELECT-INTERNALLY  CONSTANT AS 8.
            01  MHD-OPTION-END             CONSTANT AS 0.
 
-           01  STAR-DAEMON                USAGE POINTER.
+           01  DAEMON-PTR                 USAGE POINTER.
            01  CONNECTION-HANDLER-ENTRY   USAGE PROGRAM-POINTER.
            01  SERVER-COMMAND             PIC X(80).
 
@@ -28,7 +28,7 @@
                BY VALUE    CONNECTION-HANDLER-ENTRY
                BY VALUE    0
                BY VALUE    MHD-OPTION-END
-               RETURNING   STAR-DAEMON
+               RETURNING   DAEMON-PTR
            END-CALL
 
            GOBACK.
@@ -53,42 +53,42 @@
                05  STATUS-CODE            PIC 999.
                05  BODY                   PIC X(10000) VALUE SPACES.
 
-           01  STAR-RESPONSE              USAGE POINTER.
+           01  RESPONSE-PTR               USAGE POINTER.
            01  MHD-RESULT                 USAGE BINARY-LONG.
 
            01  HTTP-METHOD                PIC X(8).
            01  URL                        PIC X(100).
 
        LINKAGE SECTION.
-           01  STAR-CLS                   USAGE POINTER.
-           01  STAR-CONNECTION            USAGE POINTER.
-           01  STAR-URL                   USAGE POINTER.
-           01  STAR-METHOD                USAGE POINTER.
-           01  STAR-VERSION               USAGE POINTER.
-           01  STAR-UPLOAD-DATA           USAGE POINTER.
-           01  STAR-UPLOAD-DATA-SIZE      USAGE POINTER.
-           01  STAR-STAR-CON-CLS          USAGE POINTER.
+           01  CLS-PTR                    USAGE POINTER.
+           01  CONNECTION-PTR             USAGE POINTER.
+           01  URL-PTR                    USAGE POINTER.
+           01  METHOD-PTR                 USAGE POINTER.
+           01  VERSION-PTR                USAGE POINTER.
+           01  UPLOAD-DATA-PTR            USAGE POINTER.
+           01  UPLOAD-DATA-SIZE-PTR       USAGE POINTER.
+           01  CON-CLS-PTR-PTR            USAGE POINTER.
 
        PROCEDURE DIVISION WITH C LINKAGE USING
-           BY VALUE    STAR-CLS
-           BY VALUE    STAR-CONNECTION
-           BY VALUE    STAR-URL
-           BY VALUE    STAR-METHOD
-           BY VALUE    STAR-VERSION
-           BY VALUE    STAR-UPLOAD-DATA
-           BY VALUE    STAR-UPLOAD-DATA-SIZE
-           BY REFERENCE STAR-STAR-CON-CLS.
+           BY VALUE    CLS-PTR
+           BY VALUE    CONNECTION-PTR
+           BY VALUE    URL-PTR
+           BY VALUE    METHOD-PTR
+           BY VALUE    VERSION-PTR
+           BY VALUE    UPLOAD-DATA-PTR
+           BY VALUE    UPLOAD-DATA-SIZE-PTR
+           BY REFERENCE CON-CLS-PTR-PTR.
 
            CALL "C-STRING" USING
-               BY VALUE    STAR-METHOD
+               BY VALUE    METHOD-PTR
                BY REFERENCE HTTP-METHOD
 
            CALL "C-STRING" USING
-               BY VALUE    STAR-URL
+               BY VALUE    URL-PTR
                BY REFERENCE URL
 
            CALL "POLLEN-ROUTER" USING
-               BY VALUE    STAR-CONNECTION
+               BY VALUE    CONNECTION-PTR
                BY REFERENCE HTTP-METHOD
                BY REFERENCE URL
                BY REFERENCE RESPONSE
@@ -98,23 +98,23 @@
                BY VALUE    LENGTH OF FUNCTION TRIM(BODY)
                BY VALUE    FUNCTION TRIM(BODY)
                BY VALUE    MHD-RESPMEM-PERSISTENT
-               RETURNING   STAR-RESPONSE
+               RETURNING   RESPONSE-PTR
            END-CALL
            CALL "MHD_add_response_header" USING
-               BY VALUE    STAR-RESPONSE
+               BY VALUE    RESPONSE-PTR
                BY VALUE    "Content-Type"
                BY VALUE    "application/xml"
            END-CALL
 
            CALL "MHD_queue_response" USING
-               BY VALUE    STAR-CONNECTION
+               BY VALUE    CONNECTION-PTR
                BY VALUE    STATUS-CODE
-               BY VALUE    STAR-RESPONSE
+               BY VALUE    RESPONSE-PTR
                RETURNING   MHD-RESULT
            END-CALL
 
            CALL "MHD_destroy_response" USING
-               BY VALUE    STAR-RESPONSE
+               BY VALUE    RESPONSE-PTR
            END-CALL
 
            MOVE MHD-RESULT TO RETURN-CODE
