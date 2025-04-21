@@ -32,7 +32,6 @@
        01 PROPERTY-ATTR-INDEX          PIC 999 VALUE 1.
        01 PROPERTY-ATTR-PTR            USAGE POINTER.
        01 PROPERTY-NAME-VAL            PIC X(50).
-       01 PROPERTY-VALUE-VAL           PIC 9 VALUE 0.
        01 JSON-PROPERTIES-SIZE         USAGE BINARY-LONG.
        01 FEATURES-ATTRIBUTE           PIC X(50) VALUE "features".
        01 PROPERTIES-ATTRIBUTE         PIC X(50) 
@@ -144,18 +143,20 @@
                                BY VALUE PROPERTY-ATTR-PTR
                                BY REFERENCE PROPERTY-NAME-VAL
 
+                           *> Ignore code_qual and code_zone which
+                           *> aren't pollen codes. All other code_
+                           *> attributes are pollen codes.
                            IF PROPERTY-NAME-VAL(1:5) = "code_"
                                AND PROPERTY-NAME-VAL(1:9) 
                                    NOT = "code_qual"
                                AND PROPERTY-NAME-VAL(1:9) 
                                    NOT = "code_zone"
                            THEN
-                               *> PROPERTY-VALUE-VAL will be like 2
+                               MOVE PROPERTY-NAME-VAL TO POLLEN-NAME
+                               *> POLLEN-CODE will be like 2
                                CALL "cJSON_GetIntValue" USING
                                    BY VALUE PROPERTY-ATTR-PTR
-                                   RETURNING PROPERTY-VALUE-VAL
-                               MOVE PROPERTY-NAME-VAL TO POLLEN-NAME
-                               MOVE PROPERTY-VALUE-VAL TO POLLEN-CODE
+                                   RETURNING POLLEN-CODE
                                WRITE POLLEN-RECORD
                            END-IF
                    END-PERFORM
