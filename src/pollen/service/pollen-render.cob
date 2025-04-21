@@ -42,7 +42,7 @@
 
            READ POLLEN-FILE INTO RESPONSIBLE-POLLEN
            STRING
-               "Responsible pollen: "
+               "Pollen responsable: "
                FUNCTION TRIM(RESPONSIBLE-POLLEN) X"0A"
                INTO POLLEN-OUTPUT
            END-STRING
@@ -172,8 +172,8 @@
                ' xmlns:dc="http://purl.org/dc/elements/1.1/">'     X"0A"
                " <updated>" DATE-MAJ "</updated>"                  X"0A"
                " <dc:date>" DATE-MAJ "</dc:date>"                  X"0A"
-               " <title>Pollenes aujourd'hui</title>"              X"0A"
-               " <subtitle>Pollenes aujourd'hui</subtitle>"        X"0A"
+               " <title>Pollens aujourd'hui</title>"               X"0A"
+               " <subtitle>Pollens aujourd'hui</subtitle>"         X"0A"
                ' <link rel="alternate" '                           X"0A"
                '  href="' FUNCTION TRIM(ESCAPED-FEED-URL) '" />'   X"0A"
                " <id>" FUNCTION TRIM(ESCAPED-FEED-URL) "</id>"     X"0A"
