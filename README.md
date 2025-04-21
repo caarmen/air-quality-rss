@@ -41,7 +41,8 @@ agréées de surveillance de la qualité de l’air).
 This project is written in GnuCobol. The only reason for this
 choice is that I was curious about Cobol and wanted to 
 discover this language with a simple project. This would not
-be the most practical choice for a production project. :)
+be the most practical choice for a production project. :) Much of
+the code is calling out to C libraries like microhttpd, libcurl, and cJSON.
 
 ## AI
 AI (ChatGPT and copilot) has been used for a few things in this project:
@@ -57,3 +58,11 @@ some things.
 
 However, for the bulk of the code, I did write it, as I wanted to learn this retro
 language :) As a result, I'm pretty sure that the code here isn't following any best practices!
+
+## Related examples
+These examples from Brian Tiffin helped me to get started:
+* [GnuCobol and microhttpd](https://gnucobol.sourceforge.io/faq/index.html#gnu-libmicrohttpd)
+* [Example with GnuCobol and libcurl](https://gnucobol.sourceforge.io/faq/index.html#function-id)
+
+However, eventually the code diverged enough from these examples that I
+think that an MIT license for the project should be ok. IANAL ;)
