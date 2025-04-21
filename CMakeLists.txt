@@ -9,23 +9,23 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # C source
 set(C_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/json/cJSON-wrapper.c
+    ${CMAKE_SOURCE_DIR}/src/support/json/cJSON-wrapper.c
 )
 
 # COBOL files
-set(COB_MAIN ${CMAKE_SOURCE_DIR}/src/pollen-rss.cob)  # Needs -x
+set(COB_MAIN ${CMAKE_SOURCE_DIR}/src/pollen/pollen-rss.cob)  # Needs -x
 set(COB_OTHER
-    ${CMAKE_SOURCE_DIR}/src/api/pollen-router.cob
-    ${CMAKE_SOURCE_DIR}/src/api/pollen-server.cob
-    ${CMAKE_SOURCE_DIR}/src/service/pollen-data-source.cob
-    ${CMAKE_SOURCE_DIR}/src/service/pollen-parser.cob
-    ${CMAKE_SOURCE_DIR}/src/service/pollen-render.cob
-    ${CMAKE_SOURCE_DIR}/src/service/pollen-service.cob
-    ${CMAKE_SOURCE_DIR}/src/c-interop/c-string.cob
-    ${CMAKE_SOURCE_DIR}/src/http/http-client.cob
-    ${CMAKE_SOURCE_DIR}/src/http/curl-write-callback.cob
-    ${CMAKE_SOURCE_DIR}/src/json/json-parser.cob
-    ${CMAKE_SOURCE_DIR}/src/math/coordinates.cob
+    ${CMAKE_SOURCE_DIR}/src/pollen/api/pollen-router.cob
+    ${CMAKE_SOURCE_DIR}/src/pollen/api/pollen-server.cob
+    ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-data-source.cob
+    ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-parser.cob
+    ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-render.cob
+    ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-service.cob
+    ${CMAKE_SOURCE_DIR}/src/support/c-interop/c-string.cob
+    ${CMAKE_SOURCE_DIR}/src/support/http/http-client.cob
+    ${CMAKE_SOURCE_DIR}/src/support/http/curl-write-callback.cob
+    ${CMAKE_SOURCE_DIR}/src/support/json/json-parser.cob
+    ${CMAKE_SOURCE_DIR}/src/support/math/coordinates.cob
 ) # No -x
 
 # Output COBOL objects
