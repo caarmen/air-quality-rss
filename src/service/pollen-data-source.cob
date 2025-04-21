@@ -4,10 +4,14 @@
        data division.
        local-storage section.
        01 DATA-URL                  pic x(1000) VALUE SPACES.
+       01 response.
+           05 response-data pic x(10000).
+           05 response-length-bytes pic 9(5) comp-5.
+
        linkage section.
-       01 response pic x(10000).
+       01 response-body pic x(10000).
        procedure division using
-           by reference response
+           by reference response-body
        .
 
        call "source-url" using
@@ -18,6 +22,8 @@
            by content DATA-URL
            by reference response
 
+       move response-data(1:response-length-bytes)
+           to response-body
        goback.
        end program pollen-data-source.
 
