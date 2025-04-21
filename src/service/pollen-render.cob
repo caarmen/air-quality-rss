@@ -73,6 +73,9 @@
 
            CLOSE POLLEN-FILE
 
+           INSPECT POLLEN-OUTPUT
+               REPLACING ALL X"00" BY SPACE
+
            CALL "RENDER-RSS" USING
                BY REFERENCE DATA-URL
                BY REFERENCE POLLEN-UPDATED-AT

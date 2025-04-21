@@ -93,11 +93,17 @@
                BY REFERENCE URL
                BY REFERENCE RESPONSE
 
+
            CALL "MHD_create_response_from_buffer" USING
-               BY VALUE    LENGTH OF BODY
+               BY VALUE    LENGTH OF FUNCTION TRIM(BODY)
                BY VALUE    FUNCTION TRIM(BODY)
                BY VALUE    MHD-RESPMEM-PERSISTENT
                RETURNING   STAR-RESPONSE
+           END-CALL
+           CALL "MHD_add_response_header" USING
+               BY VALUE    STAR-RESPONSE
+               BY VALUE    "Content-Type"
+               BY VALUE    "application/xml"
            END-CALL
 
            CALL "MHD_queue_response" USING
