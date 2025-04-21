@@ -50,15 +50,42 @@
        PROCEDURE DIVISION WITH C LINKAGE USING
            BY REFERENCE POLLEN-JSON-INPUT.
 
+      *> ===============================================================
+      *> The json input looks like this:
+      *>   {
+      *>       "features": [
+      *>         {
+      *>           "properties": {
+      *>             "date_maj": "2025-04-21T10:01:02.983Z",
+      *>             "code_qual": 2,
+      *>             "code_aul": 1,
+      *>             "code_boul": 2,
+      *>             "code_oliv": 1,
+      *>             "code_gram": 2,
+      *>             "code_arm": 1,
+      *>             "code_ambr": 1,
+      *>             "pollen_resp": "BETULA GRAMINEE",
+      *>             "code_zone": "07079",
+      *>           },
+      *>         }
+      *>       ]
+      *>     }
+      *> It actually has many more fields, but these are the ones we're
+      *> interested in for now.
+      *> ===============================================================
+
+      *> Parse the raw txt and get a handle to the JSON root element.
            CALL "cJSON_Parse" USING
                BY CONTENT FUNCTION TRIM(POLLEN-JSON-INPUT)
                RETURNING JSON-ROOT
 
+      *> Get the "features" attribute, which is an array:
            CALL "JSON-GET-OBJECT" USING
                BY CONTENT FEATURES-ATTRIBUTE
                BY VALUE JSON-ROOT
                BY REFERENCE JSON-FEATURES
 
+      *> Get the first feature (there's only ever one it seems).
            CALL "cJSON_GetArrayItem" USING
                BY VALUE JSON-FEATURES
                0
@@ -66,6 +93,7 @@
 
            IF JSON-FIRST-FEATURE NOT = NULL
            THEN
+               *> Get the "properties" attribute, which is an object:
                CALL "cJSON_GetObjectItem" USING
                    BY VALUE JSON-FIRST-FEATURE
                    BY CONTENT PROPERTIES-ATTRIBUTE
@@ -75,6 +103,10 @@
                THEN
                    OPEN OUTPUT POLLEN-FILE
 
+                   *> Get the "date_maj" attribute, which is a datetime
+                   *> string. We don't have any datetime logic for
+                   *> this attribute. We just store it as a string
+                   *> to use it in the rss date fields.
                    CALL "cJSON_GetObjectItem" USING
                        BY VALUE JSON-PROPERTIES
                        BY CONTENT DATE-MAJ-ATTRIBUTE
@@ -87,6 +119,10 @@
                        INTO DATE-MAJ
                    WRITE DATE-MAJ
 
+                   *> Get the "pollen_resp" attribute, which is a
+                   *> string containing potentially multiple pollen
+                   *> names separated by spaces. For now we just store
+                   *> it as is without any parsing.
                    MOVE SPACES TO JSON-STR-VAL
                    CALL "cJSON_GetObjectItem" USING
                        BY VALUE JSON-PROPERTIES
@@ -105,6 +141,9 @@
                        BY VALUE JSON-PROPERTIES
                        RETURNING JSON-PROPERTIES-SIZE
 
+                   *> Iterate over all the properties, looking for
+                   *> the ones prefixed with code_. These are the pollen
+                   *> codes (except for code_qual and code_zone).
                    PERFORM VARYING PROPERTY-ATTR-INDEX FROM 0 BY 1 
                        UNTIL PROPERTY-ATTR-INDEX = JSON-PROPERTIES-SIZE
                            MOVE " " TO PROPERTY-NAME-VAL
