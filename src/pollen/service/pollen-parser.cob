@@ -131,11 +131,15 @@
                    PERFORM VARYING PROPERTY-ATTR-INDEX FROM 0 BY 1 
                        UNTIL PROPERTY-ATTR-INDEX = JSON-PROPERTIES-SIZE
                            MOVE " " TO PROPERTY-NAME-VAL
+                           *> PROPERTY-ATTR-PTR points to an object
+                           *> containing the name (code_boul) and value
+                           *> (2) of one of the properties.
                            CALL "cJSON_GetArrayItem" USING
                                BY VALUE JSON-PROPERTIES-PTR
                                PROPERTY-ATTR-INDEX
                                RETURNING PROPERTY-ATTR-PTR
 
+                           *> PROPERTY-NAME-VAL will be like "code_boul"
                            CALL "JSON-GET-OBJECT-NAME" USING
                                BY VALUE PROPERTY-ATTR-PTR
                                BY REFERENCE PROPERTY-NAME-VAL
@@ -146,6 +150,7 @@
                                AND PROPERTY-NAME-VAL(1:9) 
                                    NOT = "code_zone"
                            THEN
+                               *> PROPERTY-VALUE-VAL will be like 2
                                CALL "cJSON_GetIntValue" USING
                                    BY VALUE PROPERTY-ATTR-PTR
                                    RETURNING PROPERTY-VALUE-VAL
