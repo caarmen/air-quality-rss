@@ -5,7 +5,22 @@
       *>          property of a parent object, this program returns
       *>          the property name of the object inside its
       *>          parent object.
+      *>
       *>          TODO this looks tordu, maybe this can be simplified.
+      *>
+      *>          We do this because we iterate over all of the
+      *>          attributes of the pollen structure's
+      *>          features[0].properties: like code_aul, code_boul,
+      *>          code_oliv, etc.
+      *>          The api from cJSON is:
+      *>
+      *>          To iterate over an object, you can use the
+      *>          cJSON_ArrayForEach macro the same way as for arrays.
+      *> https://github.com/DaveGamble/cJSON?tab=readme-ov-file#objects
+      *>
+      *>          For each iteration, we want to get both the name
+      *>          (ex: code_aul) and the value (ex: 1).
+      *>          This program returns the name (ex: code_aul).
       *> ===============================================================
 
        IDENTIFICATION DIVISION.
