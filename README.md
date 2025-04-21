@@ -6,10 +6,10 @@ Atmo France in a format compatible with RSS feeds.
 ## Running
 ### Docker
 * Fetch the image: `docker pull ghcr.io/caarmen/pollen-rss:latest`
-* Run it, setting `FEED_URL` to the url you want to appear in the `<link>` and `<id>` tags of the RSS feed:
+* Run it, setting `POLLEN_FEED_URL` to the url you want to appear in the `<link>` and `<id>` tags of the RSS feed:
 ```bash
  docker run \
-   -e FEED_URL=localhost:8888 \
+   -e POLLEN_FEED_URL=localhost:8888 \
    -p 8888:8888 \
    ghcr.io/caarmen/pollen-rss:latest
 ```
