@@ -36,37 +36,51 @@
        END PROGRAM JSON-GET-OBJECT-NAME.
 
       *> ===============================================================
-      *> PROGRAM: JSON-GET-STRING-VALUE
-      *> PURPOSE: For a given JSON string property, return the value
-      *>          of the property as a COBOL string.
+      *> PROGRAM: JSON-GET-PROPERTY-STRING-VALUE
+      *> PURPOSE: For a given JSON object and property name, get the
+      *>          value of the property as a COBOL string.
       *> ===============================================================
 
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. JSON-GET-STRING-VALUE.
+       PROGRAM-ID. JSON-GET-PROPERTY-STRING-VALUE.
 
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  PROPERTY-VALUE-PTR              USAGE POINTER.
+           01  PROPERTY-VALUE-OBJECT-PTR       USAGE POINTER.
+           01  PROPERTY-VALUE-STRING-PTR       USAGE POINTER.
 
        LINKAGE SECTION.
-           01  JSON-HANDLE-PTR                 USAGE POINTER.
-           01  STRING-VALUE                    PIC X(50).
+           01  JSON-OBJECT-PTR                 USAGE POINTER.
+           01  PROPERTY-NAME                   PIC X(50).
+           01  PROPERTY-VALUE                  PIC X(50).
 
        PROCEDURE DIVISION USING
-           BY VALUE     JSON-HANDLE-PTR
-           BY REFERENCE STRING-VALUE.
+           BY VALUE     JSON-OBJECT-PTR
+           BY REFERENCE PROPERTY-NAME
+           BY REFERENCE PROPERTY-VALUE.
 
+           *> Get the value of the object's property as a cJSON object.
+           CALL "cJSON_GetObjectItem" USING
+               BY VALUE JSON-OBJECT-PTR
+               BY CONTENT PROPERTY-NAME
+               RETURNING PROPERTY-VALUE-OBJECT-PTR
+
+           *> We assume the value is a string: get the object's property
+           *> value as a c-string.
            CALL "cJSON_GetStringValue" USING
-               BY VALUE JSON-HANDLE-PTR
-               RETURNING PROPERTY-VALUE-PTR
+               BY VALUE PROPERTY-VALUE-OBJECT-PTR
+               RETURNING PROPERTY-VALUE-STRING-PTR
 
-           CALL "strcpy" USING 
-               BY REFERENCE STRING-VALUE
-               BY VALUE     PROPERTY-VALUE-PTR
+           *> Finally convert the c-string to a cobol string.
+
+           MOVE SPACES TO PROPERTY-VALUE
+           CALL "C-STRING" USING
+               BY VALUE     PROPERTY-VALUE-STRING-PTR
+               BY REFERENCE PROPERTY-VALUE
 
            GOBACK.
-       END PROGRAM JSON-GET-STRING-VALUE.
+       END PROGRAM JSON-GET-PROPERTY-STRING-VALUE.
 
       *> ===============================================================
       *> PROGRAM: JSON-GET-OBJECT

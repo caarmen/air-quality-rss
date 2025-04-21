@@ -29,7 +29,6 @@
        01 JSON-PROPERTIES-PTR          USAGE POINTER.
        01 JSON-POLLEN-DATE-MAJ-PTR     USAGE POINTER.
        01 JSON-POLLEN-RESP-PTR         USAGE POINTER.
-       01 JSON-STR-VAL                 PIC X(1000) VALUE SPACES.
        01 PROPERTY-ATTR-INDEX          PIC 999 VALUE 1.
        01 PROPERTY-ATTR-PTR            USAGE POINTER.
        01 PROPERTY-NAME-VAL            PIC X(50).
@@ -106,34 +105,20 @@
                    *> string. We don't have any datetime logic for
                    *> this attribute. We just store it as a string
                    *> to use it in the rss date fields.
-                   CALL "cJSON_GetObjectItem" USING
+                   CALL "JSON-GET-PROPERTY-STRING-VALUE" USING
                        BY VALUE JSON-PROPERTIES-PTR
-                       BY CONTENT DATE-MAJ-ATTRIBUTE
-                       RETURNING JSON-POLLEN-DATE-MAJ-PTR
-
-                   CALL "JSON-GET-STRING-VALUE" USING
-                       BY VALUE JSON-POLLEN-DATE-MAJ-PTR
-                       BY REFERENCE JSON-STR-VAL
-                   STRING JSON-STR-VAL
-                       INTO DATE-MAJ
+                       BY REFERENCE DATE-MAJ-ATTRIBUTE
+                       BY REFERENCE DATE-MAJ
                    WRITE DATE-MAJ
 
                    *> Get the "pollen_resp" attribute, which is a
                    *> string containing potentially multiple pollen
                    *> names separated by spaces. For now we just store
                    *> it as is without any parsing.
-                   MOVE SPACES TO JSON-STR-VAL
-                   CALL "cJSON_GetObjectItem" USING
+                   CALL "JSON-GET-PROPERTY-STRING-VALUE" USING
                        BY VALUE JSON-PROPERTIES-PTR
-                       BY CONTENT POLLEN-RESP-ATTRIBUTE
-                       RETURNING JSON-POLLEN-RESP-PTR
-
-                   CALL "JSON-GET-STRING-VALUE" USING
-                       BY VALUE JSON-POLLEN-RESP-PTR
-                       BY REFERENCE JSON-STR-VAL
-                   STRING JSON-STR-VAL
-                       INTO RESPONSIBLE-POLLEN
-                   END-STRING
+                       BY REFERENCE POLLEN-RESP-ATTRIBUTE
+                       BY REFERENCE RESPONSIBLE-POLLEN
                    WRITE RESPONSIBLE-POLLEN
 
                    CALL "cJSON_GetArraySize" USING
