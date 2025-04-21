@@ -1,3 +1,11 @@
+      *> ===============================================================
+      *> PROGRAM: CURL-WRITE-CALLBACK
+      *> PURPOSE: This program is called by libcurl when it receives
+      *>          data from the server.
+      *>          It saves the data into a buffer and returns the number
+      *>          of bytes written.
+      *> ===============================================================
+
        IDENTIFICATION DIVISION.
        PROGRAM-ID. CURL-WRITE-CALLBACK.
        *> https://curl.se/libcurl/c/CURLOPT_WRITEFUNCTION.html

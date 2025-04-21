@@ -1,6 +1,13 @@
-       *> https://en.wikipedia.org/wiki/Equirectangular_projection
-       *> https://proj.org/en/stable/operations/projections/webmerc.html
-       *> https://mathworld.wolfram.com/MercatorProjection.html
+
+      *> ===============================================================
+      *> PROGRAM: LAT-LONG-TO-WEB-MERCATOR
+      *> PURPOSE: Convert latitude and longitude to Web Mercator
+      *>          coordinates.
+      *>          References:
+      *> https://en.wikipedia.org/wiki/Equirectangular_projection
+      *> https://proj.org/en/stable/operations/projections/webmerc.html
+      *> https://mathworld.wolfram.com/MercatorProjection.html
+      *> ===============================================================
 
        IDENTIFICATION DIVISION.
        PROGRAM-ID. LAT-LONG-TO-WEB-MERCATOR.

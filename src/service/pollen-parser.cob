@@ -1,3 +1,14 @@
+      *> ===============================================================
+      *> PROGRAM: POLLEN-PARSER
+      *> PURPOSE: This program parses a JSON string containing pollen
+      *>          data and writes the relevant information to a file.
+      *>          We write to a file because the number of pollen
+      *>          records is unknown.
+      *>
+      *>          TODO: maybe the number of pollen records is indeed
+      *>          known. If so, we can use a table instead of a file.
+      *> ===============================================================
+
        IDENTIFICATION DIVISION.
        PROGRAM-ID. POLLEN-PARSER.
 

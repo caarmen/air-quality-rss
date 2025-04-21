@@ -1,3 +1,13 @@
+
+      *> ===============================================================
+      *> PROGRAM: POLLEN-DATA-SOURCE
+      *> PURPOSE: For a given latitude and longitude, return the URL
+      *>          for the pollen data source and the data fetched from
+      *>          the source.
+      *>          We return the URL because it will be needed to render
+      *>          the rss feed.
+      *> ===============================================================
+
        IDENTIFICATION DIVISION.
        PROGRAM-ID. POLLEN-DATA-SOURCE.
 
@@ -35,6 +45,12 @@
            GOBACK.
 
        END PROGRAM POLLEN-DATA-SOURCE.
+
+      *> ===============================================================
+      *> PROGRAM: SOURCE-URL
+      *> PURPOSE: For a given latitude and longitude, return the URL
+      *>          for the pollen data source.
+      *> ===============================================================
 
        IDENTIFICATION DIVISION.
        PROGRAM-ID. SOURCE-URL.
@@ -98,6 +114,13 @@
            GOBACK.
 
        END PROGRAM SOURCE-URL.
+
+      *> ===============================================================
+      *> PROGRAM: BOUNDING-BOX-STR
+      *> PURPOSE: For a given latitude and longitude, return the
+      *>          Mercator coordinates bounding box for the
+      *>          pollen data source.
+      *> ===============================================================
 
        IDENTIFICATION DIVISION.
        PROGRAM-ID. BOUNDING-BOX-STR.

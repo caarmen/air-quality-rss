@@ -1,3 +1,8 @@
+      *> ===============================================================
+      *> PROGRAM: POLLEN-SERVER
+      *> PURPOSE: Starts the HTTP server and binds the request handler.
+      *> ===============================================================
+
        IDENTIFICATION DIVISION.
        PROGRAM-ID. POLLEN-SERVER.
 
@@ -10,8 +15,6 @@
            01  STAR-DAEMON                USAGE POINTER.
            01  CONNECTION-HANDLER-ENTRY   USAGE PROGRAM-POINTER.
            01  SERVER-COMMAND             PIC X(80).
-
-       *> ***************************************************************
 
        PROCEDURE DIVISION.
            SET CONNECTION-HANDLER-ENTRY TO
@@ -31,8 +34,11 @@
            GOBACK.
        END PROGRAM POLLEN-SERVER.
 
-       *> ***************************************************************
-
+      *> ===============================================================
+      *> PROGRAM: MICROHTTPD-ACCESS-HANDLER
+      *> PURPOSE: Handles incoming HTTP requests using libmicrohttpd.
+      *>          Dispatches routing and formats HTTP responses.
+      *> ===============================================================
 
        IDENTIFICATION DIVISION.
        PROGRAM-ID. MICROHTTPD-ACCESS-HANDLER.

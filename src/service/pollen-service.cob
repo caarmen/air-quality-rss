@@ -1,3 +1,10 @@
+      *> ===============================================================
+      *> PROGRAM: POLLEN-SERVICE
+      *> PURPOSE: Orchestrates the pollen data fetching, parsing, and
+      *>          rendering process.
+      *>          This program is called by the pollen router.
+      *> ===============================================================
+
        IDENTIFICATION DIVISION.
        PROGRAM-ID. POLLEN-SERVICE.
 
