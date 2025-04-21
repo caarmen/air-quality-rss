@@ -23,18 +23,17 @@
        COPY pollen-data IN "pollen/service".
 
        LOCAL-STORAGE SECTION.
-       01 JSON-ROOT                    USAGE POINTER.
-       01 JSON-FEATURES                USAGE POINTER.
-       01 JSON-FIRST-FEATURE           USAGE POINTER.
-       01 JSON-PROPERTIES              USAGE POINTER.
-       01 JSON-STR-VAL                 PIC X(1000) VALUE SPACES.
-       01 JSON-ERROR                   USAGE POINTER.
-       01 PROPERTY-ATTR-INDEX          PIC 999 VALUE 1.
-       01 PROPERTY-ATTR                USAGE POINTER.
-       01 PROPERTY-NAME-VAL            PIC X(50).
-       01 PROPERTY-VALUE-VAL           PIC 9 VALUE 0.
+       01 JSON-ROOT-PTR                USAGE POINTER.
+       01 JSON-FEATURES-PTR            USAGE POINTER.
+       01 JSON-FIRST-FEATURE-PTR       USAGE POINTER.
+       01 JSON-PROPERTIES-PTR          USAGE POINTER.
        01 JSON-POLLEN-DATE-MAJ-PTR     USAGE POINTER.
        01 JSON-POLLEN-RESP-PTR         USAGE POINTER.
+       01 JSON-STR-VAL                 PIC X(1000) VALUE SPACES.
+       01 PROPERTY-ATTR-INDEX          PIC 999 VALUE 1.
+       01 PROPERTY-ATTR-PTR            USAGE POINTER.
+       01 PROPERTY-NAME-VAL            PIC X(50).
+       01 PROPERTY-VALUE-VAL           PIC 9 VALUE 0.
        01 JSON-PROPERTIES-SIZE         USAGE BINARY-LONG.
        01 FEATURES-ATTRIBUTE           PIC X(50) VALUE "features".
        01 PROPERTIES-ATTRIBUTE         PIC X(50) 
@@ -77,29 +76,29 @@
       *> Parse the raw txt and get a handle to the JSON root element.
            CALL "cJSON_Parse" USING
                BY CONTENT FUNCTION TRIM(POLLEN-JSON-INPUT)
-               RETURNING JSON-ROOT
+               RETURNING JSON-ROOT-PTR
 
       *> Get the "features" attribute, which is an array:
            CALL "JSON-GET-OBJECT" USING
                BY CONTENT FEATURES-ATTRIBUTE
-               BY VALUE JSON-ROOT
-               BY REFERENCE JSON-FEATURES
+               BY VALUE JSON-ROOT-PTR
+               BY REFERENCE JSON-FEATURES-PTR
 
       *> Get the first feature (there's only ever one it seems).
            CALL "cJSON_GetArrayItem" USING
-               BY VALUE JSON-FEATURES
+               BY VALUE JSON-FEATURES-PTR
                0
-               RETURNING JSON-FIRST-FEATURE
+               RETURNING JSON-FIRST-FEATURE-PTR
 
-           IF JSON-FIRST-FEATURE NOT = NULL
+           IF JSON-FIRST-FEATURE-PTR NOT = NULL
            THEN
                *> Get the "properties" attribute, which is an object:
                CALL "cJSON_GetObjectItem" USING
-                   BY VALUE JSON-FIRST-FEATURE
+                   BY VALUE JSON-FIRST-FEATURE-PTR
                    BY CONTENT PROPERTIES-ATTRIBUTE
-                   RETURNING JSON-PROPERTIES
+                   RETURNING JSON-PROPERTIES-PTR
 
-               IF JSON-PROPERTIES NOT = NULL
+               IF JSON-PROPERTIES-PTR NOT = NULL
                THEN
                    OPEN OUTPUT POLLEN-FILE
 
@@ -108,7 +107,7 @@
                    *> this attribute. We just store it as a string
                    *> to use it in the rss date fields.
                    CALL "cJSON_GetObjectItem" USING
-                       BY VALUE JSON-PROPERTIES
+                       BY VALUE JSON-PROPERTIES-PTR
                        BY CONTENT DATE-MAJ-ATTRIBUTE
                        RETURNING JSON-POLLEN-DATE-MAJ-PTR
 
@@ -125,7 +124,7 @@
                    *> it as is without any parsing.
                    MOVE SPACES TO JSON-STR-VAL
                    CALL "cJSON_GetObjectItem" USING
-                       BY VALUE JSON-PROPERTIES
+                       BY VALUE JSON-PROPERTIES-PTR
                        BY CONTENT POLLEN-RESP-ATTRIBUTE
                        RETURNING JSON-POLLEN-RESP-PTR
 
@@ -138,7 +137,7 @@
                    WRITE RESPONSIBLE-POLLEN
 
                    CALL "cJSON_GetArraySize" USING
-                       BY VALUE JSON-PROPERTIES
+                       BY VALUE JSON-PROPERTIES-PTR
                        RETURNING JSON-PROPERTIES-SIZE
 
                    *> Iterate over all the properties, looking for
@@ -148,12 +147,12 @@
                        UNTIL PROPERTY-ATTR-INDEX = JSON-PROPERTIES-SIZE
                            MOVE " " TO PROPERTY-NAME-VAL
                            CALL "cJSON_GetArrayItem" USING
-                               BY VALUE JSON-PROPERTIES
+                               BY VALUE JSON-PROPERTIES-PTR
                                PROPERTY-ATTR-INDEX
-                               RETURNING PROPERTY-ATTR
+                               RETURNING PROPERTY-ATTR-PTR
 
                            CALL "JSON-GET-OBJECT-NAME" USING
-                               BY VALUE PROPERTY-ATTR
+                               BY VALUE PROPERTY-ATTR-PTR
                                BY REFERENCE PROPERTY-NAME-VAL
 
                            IF PROPERTY-NAME-VAL(1:5) = "code_"
@@ -163,7 +162,7 @@
                                    NOT = "code_zone"
                            THEN
                                CALL "cJSON_GetIntValue" USING
-                                   BY VALUE PROPERTY-ATTR
+                                   BY VALUE PROPERTY-ATTR-PTR
                                    RETURNING PROPERTY-VALUE-VAL
                                MOVE PROPERTY-NAME-VAL TO POLLEN-NAME
                                MOVE PROPERTY-VALUE-VAL TO POLLEN-CODE
