@@ -51,6 +51,12 @@
                    BY VALUE    LENGTH OF "longitude"
                    BY REFERENCE QUERY-PARAM-VALUE
                    BY REFERENCE QUERY-PARAM-SIZE
+               IF QUERY-PARAM-SIZE = NULL
+               THEN
+                   MOVE 400 TO STATUS-CODE
+                   MOVE "Bad Request" TO BODY
+                   GOBACK
+               END-IF
 
                CALL "C-STRING" USING
                    BY VALUE    QUERY-PARAM-VALUE
@@ -65,6 +71,12 @@
                    BY VALUE    LENGTH OF "latitude"
                    BY REFERENCE QUERY-PARAM-VALUE
                    BY REFERENCE QUERY-PARAM-SIZE
+               IF QUERY-PARAM-SIZE = NULL
+               THEN
+                   MOVE 400 TO STATUS-CODE
+                   MOVE "Bad Request" TO BODY
+                   GOBACK
+               END-IF
 
                CALL "C-STRING" USING
                    BY VALUE    QUERY-PARAM-VALUE
