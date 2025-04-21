@@ -1,11 +1,18 @@
 # Pollen RSS feed
 
-This project provides a webserver that serves pollen data from
+This is a hobby project which provides a webserver that serves pollen data from
 Atmo France in a format compatible with RSS feeds.
 
 ## Running
 ### Docker
-TODO: instructions to fetch the docker image from github.
+* Fetch the image: `docker pull ghcr.io/caarmen/pollen-rss:latest`
+* Run it, setting `FEED_URL` to the url you want to appear in the `<link>` and `<id>` tags of the RSS feed:
+```bash
+ docker run \
+   -e FEED_URL=localhost:8888 \
+   -p 8888:8888 \
+   ghcr.io/caarmen/pollen-rss:latest
+```
 
 ### Local
 Build the project with `./build.sh`.
@@ -35,6 +42,12 @@ The project has the following dependencies:
 * [microhttpd](https://www.gnu.org/software/libmicrohttpd/) - LGPLv2.1.
 * Pollen source: [Atmo France](https://www.atmo-france.org/article/atmo-data-un-acces-unique-aux-donnees-produites-par-les-aasqa) and AASQA (Associations 
 agréées de surveillance de la qualité de l’air).
+
+# Disclaimer
+⚠️ Almost no error handling is implemented at this point!
+If something goes wrong, the application will crash and will need to
+be restarted again. I'll correct these crashes as I come across
+them.
 
 # Under the hood
 ## Cobol
