@@ -145,6 +145,7 @@
        LOCAL-STORAGE SECTION.
        01 FEED-URL                  PIC X(100).
        01 ESCAPED-SOURCE-URL        PIC X(1000) VALUE SPACES.
+       01 ESCAPED-FEED-URL          PIC X(1000) VALUE SPACES.
        01 I                          PIC 9(3) VALUE 1.
 
        LINKAGE SECTION.
@@ -180,6 +181,24 @@
                        END-STRING
                END-EVALUATE
            END-PERFORM
+           *> Move this into a procedure to avoid copy/paste
+           PERFORM VARYING I FROM 1 BY 1 
+               UNTIL I > LENGTH OF FUNCTION TRIM(FEED-URL)
+               EVALUATE FEED-URL(I:1)
+                   WHEN "&"
+                       STRING
+                           FUNCTION TRIM(ESCAPED-FEED-URL)
+                           "&amp;"
+                           INTO ESCAPED-FEED-URL
+                       END-STRING
+                   WHEN OTHER
+                       STRING
+                           FUNCTION TRIM(ESCAPED-FEED-URL)
+                           FEED-URL(I:1)
+                           INTO ESCAPED-FEED-URL
+                       END-STRING
+               END-EVALUATE
+           END-PERFORM
 
            STRING
                '<?xml version="1.0" encoding="utf-8"?>'            X"0A"
@@ -190,8 +209,8 @@
                " <title>Pollenes aujourd'hui</title>"              X"0A"
                " <subtitle>Pollenes aujourd'hui</subtitle>"        X"0A"
                ' <link rel="alternate" '                           X"0A"
-               '  href="' FUNCTION TRIM(FEED-URL) '" />'           X"0A"
-               " <id>" FUNCTION TRIM(FEED-URL) "</id>"             X"0A"
+               '  href="' FUNCTION TRIM(ESCAPED-FEED-URL) '" />'   X"0A"
+               " <id>" FUNCTION TRIM(ESCAPED-FEED-URL) "</id>"     X"0A"
                " <entry>"                                          X"0A"
                "  <title>Rapport de pollens</title>"               X"0A"
                '  <link rel="alternate" '                          X"0A"
