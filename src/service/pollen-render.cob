@@ -1,177 +1,195 @@
-       identification division.
-      *> ***************************************************************
-      *> Read data from the pollen.dat file and render it to a string.
-      *> ***************************************************************
+       IDENTIFICATION DIVISION.
+       *> ***************************************************************
+       *> Read data from the pollen.dat file and render it to a string.
+       *> ***************************************************************
 
-       program-id. pollen-render.
-       environment division.
-       input-output section.
-       file-control.
-       select pollen-file assign to "pollen.dat"
-          organization is sequential.
-       data division.
-       file section.
-       fd pollen-file.
-       01 date-maj pic x(24).
-       01 responsible-pollen pic x(16) value spaces.
-       01 pollen-record.
-           05 pollen-name pic x(16).
-           05 pollen-code pic 9(1).
-       local-storage section.
-       01 response pic x(10000) value spaces.
-       01 pollen-updated-at pic x(24).
-       01 pollen-display-name pic x(16).
-       01 pollen-output pic x(10000) value spaces.
-       linkage section.
-       01 DATA-URL                  pic x(1000) VALUE SPACES.
-       01 pollen-rss-output pic x(10000) value spaces.
+       PROGRAM-ID. POLLEN-RENDER.
 
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT POLLEN-FILE ASSIGN TO "pollen.dat"
+               ORGANIZATION IS SEQUENTIAL.
 
-       procedure division using
-           by reference DATA-URL
-           by reference pollen-rss-output.
-            open input pollen-file
-            *> First read the responsible-pollen
-            *> Then read all of the pollen-records until the end of
-            *> file
-            read pollen-file into date-maj.
-            string date-maj into pollen-updated-at
-            end-string
-            read pollen-file into responsible-pollen.
-            string
-                "Responsible pollen: "
-                function trim(responsible-pollen) x"0A"
-                into pollen-output
-            end-string
-            perform until exit
-                read pollen-file into pollen-record
-                    at end
-                        exit perform
-                    not at end
-                    call "pollen-display-name" using
-                        by reference pollen-name
-                        by reference pollen-display-name
-                    end-call
-                    string
-                        function trim(pollen-output)
-                        function trim(pollen-display-name)
-                        ": "
-                        pollen-code x"0A"
-                        into pollen-output
-                    end-string
-                end-read
-            end-perform
-            close pollen-file
-            call "render-rss" using
-                by reference DATA-URL
-                by reference pollen-updated-at
-                by reference pollen-output
-                by reference pollen-rss-output
-            end-call
-            goback.
-       end program pollen-render.
+       DATA DIVISION.
+       FILE SECTION.
+       FD POLLEN-FILE.
+       01 DATE-MAJ                    PIC X(24).
+       01 RESPONSIBLE-POLLEN           PIC X(16) VALUE SPACES.
+       01 POLLEN-RECORD.
+           05 POLLEN-NAME               PIC X(16).
+           05 POLLEN-CODE               PIC 9(1).
 
-       program-id. pollen-display-name.
-       data division.
-       linkage section.
-       01 pollen-name pic x(16).
-       01 pollen-display-name pic x(16).
+       LOCAL-STORAGE SECTION.
+       01 RESPONSE                    PIC X(10000) VALUE SPACES.
+       01 POLLEN-UPDATED-AT           PIC X(24).
+       01 POLLEN-DISPLAY-NAME         PIC X(16).
+       01 POLLEN-OUTPUT               PIC X(10000) VALUE SPACES.
 
-       procedure division using
-           by reference pollen-name,
-           by reference pollen-display-name.
-           if pollen-name(1:9) is = "code_ambr"
-           then
-               move "Ambroise" to pollen-display-name
-           else if pollen-name(1:8) is = "code_arm"
-               then
-                   move "Armoise" to pollen-display-name
-           else if pollen-name(1:8) is = "code_aul"
-               then
-                   move "Aulne" to pollen-display-name
-           else if pollen-name(1:9) is = "code_boul"
-               then
-                   move "Bouleau" to pollen-display-name
-           else if pollen-name(1:9) is = "code_gram"
-               then
-                   move "Graminées" to pollen-display-name
-           else if pollen-name(1:9) is = "code_oliv"
-               then
-                   move "Olivier" to pollen-display-name
-           else
-               move pollen-name to pollen-display-name
-           end-if
-       goback.
-       end program pollen-display-name.
+       LINKAGE SECTION.
+       01 DATA-URL                    PIC X(1000) VALUE SPACES.
+       01 POLLEN-RSS-OUTPUT           PIC X(10000) VALUE SPACES.
 
-       identification division.
-       program-id. render-rss.
-       data division.
-       local-storage section.
-       01 feed-url pic x(100).
-       01 escaped-source-url pic x(1000) value spaces.
-       01 i pic 9(3) value 1.
-       linkage section.
-       01 source-url pic x(1000).
-       01 date-maj pic x(24).
-       01 feed-content pic x(10000) value spaces.
-       01 rss-content pic x(10000) value spaces.
-       procedure division using
-           by reference source-url
-           by reference date-maj
-           by reference feed-content
-           by reference rss-content
+       PROCEDURE DIVISION USING
+           BY REFERENCE DATA-URL
+           BY REFERENCE POLLEN-RSS-OUTPUT.
 
-       .
-       accept feed-url from environment "POLLEN_FEED_URL"
-      *> Escape & from the url
-      *> This could be done more robustly with a thin wrapper to
-      *> libxml2 apis.
-       perform varying i from 1 by 1 until i > length
-           of function trim(source-url)
-           evaluate source-url(i:1)
-              when "&"
-                string
-                     function trim(escaped-source-url)
-                     "&amp;"
-                     into escaped-source-url
-                end-string
-              when other
-                string
-                     function trim(escaped-source-url)
-                     source-url(i:1)
-                     into escaped-source-url
-                end-string
-           end-evaluate
-       end-perform
-       string
-           '<?xml version="1.0" encoding="utf-8"?>'                x"0A"
-           '<feed xmlns="http://www.w3.org/2005/Atom"'
-           ' xmlns:dc="http://purl.org/dc/elements/1.1/">'         x"0A"
-           " <updated>" date-maj "</updated>"                      x"0A"
-           " <dc:date>" date-maj "</dc:date>"                      x"0A"
-           " <title>Pollenes aujourd'hui</title>"                  x"0A"
-           " <subtitle>Pollenes aujourd'hui</subtitle>"            x"0A"
-           ' <link rel="alternate" '
-           '  href="' function trim(feed-url) '" />'               x"0A"
-           " <id>" function trim(feed-url) "</id>"                 x"0A"
-           " <entry>"                                              x"0A"
-           "  <title>Rapport de pollens</title>"                   x"0A"
-           '  <link rel="alternate" '
-           '   href="' function trim(escaped-source-url) '" />'    x"0A"
-           "  <id>" function trim(escaped-source-url) "</id>"      x"0A"
-           '  <content type="text/plain">'                         x"0A"
-                function trim(feed-content)
-           "  </content>"                                          x"0A"
-           "  <author><name>Atmo France</name></author>"           x"0A"
-           "  <dc:creator>Atmo France</dc:creator>"                x"0A"
-           "  <published>" date-maj "</published>"                 x"0A"
-           "  <updated>" date-maj "</updated>"                     x"0A"
-           "  <dc:date>" date-maj "</dc:date>"                     x"0A"
-           " </entry>"                                             x"0A"
-           "</feed>"
-           into rss-content
-       end-string
-       goback.
+           OPEN INPUT POLLEN-FILE
 
-       end program render-rss.
+           *> First read the responsible-pollen
+           *> Then read all of the pollen-records until the end of file
+           READ POLLEN-FILE INTO DATE-MAJ
+           STRING DATE-MAJ INTO POLLEN-UPDATED-AT
+           END-STRING
+
+           READ POLLEN-FILE INTO RESPONSIBLE-POLLEN
+           STRING
+               "Responsible pollen: "
+               FUNCTION TRIM(RESPONSIBLE-POLLEN) X"0A"
+               INTO POLLEN-OUTPUT
+           END-STRING
+
+           PERFORM UNTIL EXIT
+               READ POLLEN-FILE INTO POLLEN-RECORD
+                   AT END
+                       EXIT PERFORM
+                   NOT AT END
+                       CALL "POLLEN-DISPLAY-NAME" USING
+                           BY REFERENCE POLLEN-NAME
+                           BY REFERENCE POLLEN-DISPLAY-NAME
+                       END-CALL
+                       STRING
+                           FUNCTION TRIM(POLLEN-OUTPUT)
+                           FUNCTION TRIM(POLLEN-DISPLAY-NAME)
+                           ": "
+                           POLLEN-CODE X"0A"
+                           INTO POLLEN-OUTPUT
+                       END-STRING
+               END-READ
+           END-PERFORM
+
+           CLOSE POLLEN-FILE
+
+           CALL "RENDER-RSS" USING
+               BY REFERENCE DATA-URL
+               BY REFERENCE POLLEN-UPDATED-AT
+               BY REFERENCE POLLEN-OUTPUT
+               BY REFERENCE POLLEN-RSS-OUTPUT
+           END-CALL
+
+           GOBACK.
+
+       END PROGRAM POLLEN-RENDER.
+
+       PROGRAM-ID. POLLEN-DISPLAY-NAME.
+
+       DATA DIVISION.
+       LINKAGE SECTION.
+       01 POLLEN-NAME                  PIC X(16).
+       01 POLLEN-DISPLAY-NAME          PIC X(16).
+
+       PROCEDURE DIVISION USING
+           BY REFERENCE POLLEN-NAME,
+           BY REFERENCE POLLEN-DISPLAY-NAME.
+
+           IF POLLEN-NAME(1:9) = "code_ambr"
+           THEN
+               MOVE "Ambroise" TO POLLEN-DISPLAY-NAME
+           ELSE IF POLLEN-NAME(1:8) = "code_arm"
+               THEN
+                   MOVE "Armoise" TO POLLEN-DISPLAY-NAME
+           ELSE IF POLLEN-NAME(1:8) = "code_aul"
+               THEN
+                   MOVE "Aulne" TO POLLEN-DISPLAY-NAME
+           ELSE IF POLLEN-NAME(1:9) = "code_boul"
+               THEN
+                   MOVE "Bouleau" TO POLLEN-DISPLAY-NAME
+           ELSE IF POLLEN-NAME(1:9) = "code_gram"
+               THEN
+                   MOVE "Graminées" TO POLLEN-DISPLAY-NAME
+           ELSE IF POLLEN-NAME(1:9) = "code_oliv"
+               THEN
+                   MOVE "Olivier" TO POLLEN-DISPLAY-NAME
+           ELSE
+               MOVE POLLEN-NAME TO POLLEN-DISPLAY-NAME
+           END-IF
+
+           GOBACK.
+
+       END PROGRAM POLLEN-DISPLAY-NAME.
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. RENDER-RSS.
+
+       DATA DIVISION.
+       LOCAL-STORAGE SECTION.
+       01 FEED-URL                  PIC X(100).
+       01 ESCAPED-SOURCE-URL        PIC X(1000) VALUE SPACES.
+       01 I                          PIC 9(3) VALUE 1.
+
+       LINKAGE SECTION.
+       01 SOURCE-URL                 PIC X(1000).
+       01 DATE-MAJ                   PIC X(24).
+       01 FEED-CONTENT               PIC X(10000) VALUE SPACES.
+       01 RSS-CONTENT                PIC X(10000) VALUE SPACES.
+
+       PROCEDURE DIVISION USING
+           BY REFERENCE SOURCE-URL
+           BY REFERENCE DATE-MAJ
+           BY REFERENCE FEED-CONTENT
+           BY REFERENCE RSS-CONTENT.
+
+           ACCEPT FEED-URL FROM ENVIRONMENT "POLLEN_FEED_URL"
+
+           *> Escape & from the URL
+           *> This could be done more robustly with a thin wrapper to libxml2 APIs.
+           PERFORM VARYING I FROM 1 BY 1 
+               UNTIL I > LENGTH OF FUNCTION TRIM(SOURCE-URL)
+               EVALUATE SOURCE-URL(I:1)
+                   WHEN "&"
+                       STRING
+                           FUNCTION TRIM(ESCAPED-SOURCE-URL)
+                           "&amp;"
+                           INTO ESCAPED-SOURCE-URL
+                       END-STRING
+                   WHEN OTHER
+                       STRING
+                           FUNCTION TRIM(ESCAPED-SOURCE-URL)
+                           SOURCE-URL(I:1)
+                           INTO ESCAPED-SOURCE-URL
+                       END-STRING
+               END-EVALUATE
+           END-PERFORM
+
+           STRING
+               '<?xml version="1.0" encoding="utf-8"?>'            X"0A"
+               '<feed xmlns="http://www.w3.org/2005/Atom"'         X"0A"
+               ' xmlns:dc="http://purl.org/dc/elements/1.1/">'     X"0A"
+               " <updated>" DATE-MAJ "</updated>"                  X"0A"
+               " <dc:date>" DATE-MAJ "</dc:date>"                  X"0A"
+               " <title>Pollenes aujourd'hui</title>"              X"0A"
+               " <subtitle>Pollenes aujourd'hui</subtitle>"        X"0A"
+               ' <link rel="alternate" '                           X"0A"
+               '  href="' FUNCTION TRIM(FEED-URL) '" />'           X"0A"
+               " <id>" FUNCTION TRIM(FEED-URL) "</id>"             X"0A"
+               " <entry>"                                          X"0A"
+               "  <title>Rapport de pollens</title>"               X"0A"
+               '  <link rel="alternate" '                          X"0A"
+               '   href="' FUNCTION TRIM(ESCAPED-SOURCE-URL) '"/>' X"0A"
+               "  <id>" FUNCTION TRIM(ESCAPED-SOURCE-URL) "</id>"  X"0A"
+               '  <content type="text/plain">'                     X"0A"
+                   FUNCTION TRIM(FEED-CONTENT)
+               "  </content>"                                      X"0A"
+               "  <author><name>Atmo France</name></author>"       X"0A"
+               "  <dc:creator>Atmo France</dc:creator>"            X"0A"
+               "  <published>" DATE-MAJ "</published>"             X"0A"
+               "  <updated>" DATE-MAJ "</updated>"                 X"0A"
+               "  <dc:date>" DATE-MAJ "</dc:date>"                 X"0A"
+               " </entry>"                                         X"0A"
+               "</feed>"
+               INTO RSS-CONTENT
+           END-STRING
+
+           GOBACK.
+
+       END PROGRAM RENDER-RSS.

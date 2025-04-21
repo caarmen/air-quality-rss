@@ -1,126 +1,146 @@
-       identification division.
-       program-id. pollen-data-source.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. POLLEN-DATA-SOURCE.
 
-       data division.
-       local-storage section.
-       01 response.
-           05 response-data pic x(10000).
-           05 response-length-bytes pic 9(5) comp-5.
+       DATA DIVISION.
 
-       linkage section.
-       01 latitude pic s9(3)v9(8).
-       01 longitude pic s9(3)v9(8).
-       01 DATA-URL                  pic x(1000) VALUE SPACES.
-       01 response-body pic x(10000).
-       procedure division using
-           by reference latitude
-           by reference longitude
-           by reference DATA-URL
-           by reference response-body
-       .
+       LOCAL-STORAGE SECTION.
+           01  RESPONSE.
+               05  RESPONSE-DATA                PIC X(10000).
+               05  RESPONSE-LENGTH-BYTES        PIC 9(5) COMP-5.
 
-       call "source-url" using
-           by reference latitude
-           by reference longitude
-           by reference DATA-URL
-       display "fetching data from " DATA-URL
+       LINKAGE SECTION.
+           01  LATITUDE                       PIC S9(3)V9(8).
+           01  LONGITUDE                      PIC S9(3)V9(8).
+           01  DATA-URL                       PIC X(1000) VALUE SPACES.
+           01  RESPONSE-BODY                  PIC X(10000).
 
-       call "http-client-get" using
-           by reference DATA-URL
-           by reference response
+       PROCEDURE DIVISION USING
+           BY REFERENCE LATITUDE
+           BY REFERENCE LONGITUDE
+           BY REFERENCE DATA-URL
+           BY REFERENCE RESPONSE-BODY.
 
-       move response-data(1:response-length-bytes)
-           to response-body
-       goback.
-       end program pollen-data-source.
+           CALL "SOURCE-URL" USING
+               BY REFERENCE LATITUDE
+               BY REFERENCE LONGITUDE
+               BY REFERENCE DATA-URL
+           DISPLAY "Fetching data from " DATA-URL
 
-       identification division.
-       program-id. source-url.
-       data division.
-       local-storage section.
-       01  CURRENT-DATE-AND-TIME.
-           05 CDT-Year                PIC 9(4).
-           05 CDT-Month               PIC 9(2). *> 01-12
-           05 CDT-Day                 PIC 9(2). *> 01-31
-       01 date-and-time-str pic x(10).
-       01 DATA-URL                  pic x(1000) VALUE
-           "https://data.atmo-france.org/geoserver/ind_pol/ows?" &
-           "&REQUEST=GetFeatureInfo&SERVICE=WMS&SRS=EPSG%3A3857" &
-           "&STYLES=&VERSION=1.3&FILTER=%3CPropertyIsEqualTo" &
-           "%20matchCase%3D%22true%22%3E%3CPropertyName%3Edate_ech%3C" &
-           "%2FPropertyName%3E%3CLiteral%3EYYYY-MM-DD%3C%2FLiteral%3E" &
-           "%3C%2FPropertyIsEqualTo%3E&SORTBY=date_dif%20D" &
-           "&LAYERS=ind_pol" &
-           "%3Aind_national_pol&QUERY_LAYERS=ind_pol%3A" &
-           "ind_national_pol&INFO_FORMAT=application%2Fjson" &
-           "&X=535&Y=284".
-       01 BBOX pic x(1000) value spaces.
-       linkage section.
-       01 latitude pic s9(3)v9(8).
-       01 longitude pic s9(3)v9(8).
-       01 DATA-URL-OUT pic x(1000).
-       procedure division using
-           by reference latitude
-           by reference longitude
-           by reference DATA-URL-OUT.
-       move function current-date
-           to CURRENT-DATE-AND-TIME
-       string
-           CDT-Year "-" CDT-Month "-" CDT-Day
-           into date-and-time-str
-       end-string
+           CALL "HTTP-CLIENT-GET" USING
+               BY REFERENCE DATA-URL
+               BY REFERENCE RESPONSE
 
-       call "bounding-box-str" using
-           by reference latitude
-           by reference longitude
-           by reference BBOX
-       move DATA-URL to DATA-URL-OUT.
-       inspect DATA-URL-OUT
-           replacing all "YYYY-MM-DD" by date-and-time-str
-       string function trim(data-url-out) "&" BBOX
-           into data-url-out
-       end-string
-       goback.
-       end program source-url.
+           MOVE RESPONSE-DATA(1:RESPONSE-LENGTH-BYTES)
+               TO RESPONSE-BODY
+           GOBACK.
 
-       identification division.
-       program-id. bounding-box-str.
-       data division.
-       local-storage section.
-       01 x pic s9(7)v9(8).
-       01 y pic s9(7)v9(8).
-       01 bbox-left pic +9(7).9(8).
-       01 bbox-right pic +9(7).9(8).
-       01 bbox-top pic +9(7).9(8).
-       01 bbox-bottom pic +9(7).9(8).
+       END PROGRAM POLLEN-DATA-SOURCE.
 
-       linkage section.
-       01 latitude pic s9(3)v9(8).
-       01 longitude pic s9(3)v9(8).
-       01 bounding-box pic x(1000).
-       procedure division using
-           by reference latitude
-           by reference longitude
-           by reference bounding-box.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. SOURCE-URL.
 
-       call "lat-long-to-web-mercator" using
-           by reference latitude
-           by reference longitude
-           by reference x
-           by reference y
+       DATA DIVISION.
 
-           compute bbox-left = x - 20000
-           compute bbox-right = x + 20000
-           compute bbox-top = y + 10000
-           compute bbox-bottom = y - 10000
-           string
+       LOCAL-STORAGE SECTION.
+           01  CURRENT-DATE-AND-TIME.
+               05  CDT-YEAR                    PIC 9(4).
+               05  CDT-MONTH                   PIC 9(2). *> 01-12
+               05  CDT-DAY                     PIC 9(2). *> 01-31
+           01  DATE-AND-TIME-STR               PIC X(10).
+           01  DATA-URL                        PIC X(1000) VALUE
+               "https://data.atmo-france.org/geoserver/ind_pol/ows?" &
+               "&REQUEST=GetFeatureInfo&SERVICE=WMS&SRS=EPSG%3A3857" &
+               "&STYLES=&VERSION=1.3&FILTER=%3CPropertyIsEqualTo" &
+               "%20matchCase%3D%22true%22%3E" &
+               "%3CPropertyName%3Edate_ech%3C" &
+               "%2FPropertyName%3E%3CLiteral" &
+               "%3EYYYY-MM-DD%3C%2FLiteral%3E" &
+               "%3C%2FPropertyIsEqualTo%3E&SORTBY=date_dif%20D" &
+               "&LAYERS=ind_pol%3Aind_national_pol" &
+               "&QUERY_LAYERS=ind_pol%3Aind_national_pol" &
+               "&INFO_FORMAT=application%2Fjson" &
+               "&X=535&Y=284".
+
+           01  BBOX                           PIC X(1000) VALUE SPACES.
+
+       LINKAGE SECTION.
+           01  LATITUDE                       PIC S9(3)V9(8).
+           01  LONGITUDE                      PIC S9(3)V9(8).
+           01  DATA-URL-OUT                   PIC X(1000).
+
+       PROCEDURE DIVISION USING
+           BY REFERENCE LATITUDE
+           BY REFERENCE LONGITUDE
+           BY REFERENCE DATA-URL-OUT.
+
+           MOVE FUNCTION CURRENT-DATE
+               TO CURRENT-DATE-AND-TIME
+
+           STRING
+               CDT-YEAR "-" CDT-MONTH "-" CDT-DAY
+               INTO DATE-AND-TIME-STR
+           END-STRING
+
+           CALL "BOUNDING-BOX-STR" USING
+               BY REFERENCE LATITUDE
+               BY REFERENCE LONGITUDE
+               BY REFERENCE BBOX
+
+           MOVE DATA-URL TO DATA-URL-OUT.
+
+           INSPECT DATA-URL-OUT
+               REPLACING ALL "YYYY-MM-DD" BY DATE-AND-TIME-STR
+
+           STRING FUNCTION TRIM(DATA-URL-OUT) "&" BBOX
+               INTO DATA-URL-OUT
+           END-STRING
+
+           GOBACK.
+
+       END PROGRAM SOURCE-URL.
+
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. BOUNDING-BOX-STR.
+
+       DATA DIVISION.
+
+       LOCAL-STORAGE SECTION.
+           01  X                              PIC S9(7)V9(8).
+           01  Y                              PIC S9(7)V9(8).
+           01  BBOX-LEFT                      PIC +9(7).9(8).
+           01  BBOX-RIGHT                     PIC +9(7).9(8).
+           01  BBOX-TOP                       PIC +9(7).9(8).
+           01  BBOX-BOTTOM                    PIC +9(7).9(8).
+
+       LINKAGE SECTION.
+           01  LATITUDE                       PIC S9(3)V9(8).
+           01  LONGITUDE                      PIC S9(3)V9(8).
+           01  BOUNDING-BOX                   PIC X(1000).
+
+       PROCEDURE DIVISION USING
+           BY REFERENCE LATITUDE
+           BY REFERENCE LONGITUDE
+           BY REFERENCE BOUNDING-BOX.
+
+           CALL "LAT-LONG-TO-WEB-MERCATOR" USING
+               BY REFERENCE LATITUDE
+               BY REFERENCE LONGITUDE
+               BY REFERENCE X
+               BY REFERENCE Y
+
+           COMPUTE BBOX-LEFT = X - 20000
+           COMPUTE BBOX-RIGHT = X + 20000
+           COMPUTE BBOX-TOP = Y + 10000
+           COMPUTE BBOX-BOTTOM = Y - 10000
+
+           STRING
                "BBOX="
-               bbox-left "%2C" bbox-bottom "%2C"
-               bbox-right "%2C" bbox-top
+               BBOX-LEFT "%2C" BBOX-BOTTOM "%2C"
+               BBOX-RIGHT "%2C" BBOX-TOP
                "&HEIGHT=500&WIDTH=1000"
-               into bounding-box
-           end-string
+               INTO BOUNDING-BOX
+           END-STRING
 
-       goback.
+           GOBACK.
 
-       end program bounding-box-str.
+       END PROGRAM BOUNDING-BOX-STR.

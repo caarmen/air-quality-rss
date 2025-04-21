@@ -1,57 +1,58 @@
-       identification division.
-       program-id. curl-write-callback.
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CURL-WRITE-CALLBACK.
        *> https://curl.se/libcurl/c/CURLOPT_WRITEFUNCTION.html
-       data division.
-       local-storage section.
-       01 response-string pic x(10000) value spaces.
-       01 response-length-bytes pic 9(5) value 0.
-       linkage section.
+
+       DATA DIVISION.
+
+       LOCAL-STORAGE SECTION.
+           01  RESPONSE-STRING            PIC X(10000) VALUE SPACES.
+           01  RESPONSE-LENGTH-BYTES      PIC 9(5)      VALUE 0.
+
+       LINKAGE SECTION.
+
        *> We implement the curl write callback function, which
        *> has this signature:
-       *> size_t write_callback(
-       *>   void *ptr,
-       *>   size_t size,
-       *>   size_t nmemb,
-       *>   void *userdata
-       *>)
-       01 ptr usage pointer.
-       01 size-memb pic 9(5) comp-5.
-       01 nmemb pic 9(5) comp-5.
+       *>   size_t write_callback(
+       *>       void *ptr,
+       *>       size_t size,
+       *>       size_t nmemb,
+       *>       void *userdata
+       *>   )
 
-       01 userdata.
-           05 buffer-data pic x(10000).
-           05 buffer-length-bytes pic 9(5) comp-5.
+           01  PTR                        USAGE POINTER.
+           01  SIZE-MEMB                  PIC 9(5) COMP-5.
+           01  NMEMB                      PIC 9(5) COMP-5.
 
+           01  USERDATA.
+               05  BUFFER-DATA            PIC X(10000).
+               05  BUFFER-LENGTH-BYTES    PIC 9(5) COMP-5.
 
-       *> Libcurl calls this procedure.
-       procedure division with C linkage using
-           by value ptr
-           by value size-memb
-           by value nmemb
-           by reference userdata.
+       PROCEDURE DIVISION WITH C LINKAGE USING
+           BY VALUE     PTR
+           BY VALUE     SIZE-MEMB
+           BY VALUE     NMEMB
+           BY REFERENCE USERDATA.
 
        *> Calculate the length of the response data.
-       compute response-length-bytes = size-memb * nmemb.
+           COMPUTE RESPONSE-LENGTH-BYTES = SIZE-MEMB * NMEMB
 
        *> Put the response data into the response-string so
        *> we can manipulate it as a string.
-       call "memcpy" using
-           by reference response-string
-           by value ptr
-           by value response-length-bytes.
-       *> Append the response data to the data we already
-       *> have in the buffer.
-       string
-           response-string(1:response-length-bytes)
-           into buffer-data(buffer-length-bytes + 1:)
-       end-string
+           CALL "memcpy" USING
+               BY REFERENCE RESPONSE-STRING
+               BY VALUE     PTR
+               BY VALUE     RESPONSE-LENGTH-BYTES
 
-       compute buffer-length-bytes = 
-           buffer-length-bytes + response-length-bytes.
+       *> Append the response data to the data we already have in the buffer.
+           STRING
+               RESPONSE-STRING(1:RESPONSE-LENGTH-BYTES)
+               INTO BUFFER-DATA(BUFFER-LENGTH-BYTES + 1:)
+           END-STRING
 
-       move response-length-bytes to return-code.
-       goback.
-       end program curl-write-callback.
+           COMPUTE BUFFER-LENGTH-BYTES =
+               BUFFER-LENGTH-BYTES + RESPONSE-LENGTH-BYTES
 
+           MOVE RESPONSE-LENGTH-BYTES TO RETURN-CODE
 
-       
+           GOBACK.
+       END PROGRAM CURL-WRITE-CALLBACK.
