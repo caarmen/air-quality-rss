@@ -13,8 +13,7 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  RESPONSE-STRING            PIC X(10000) VALUE SPACES.
-           01  RESPONSE-LENGTH-BYTES      PIC 9(5)      VALUE 0.
+           COPY remote-service-response IN "support/http".
 
        LINKAGE SECTION.
 
@@ -47,13 +46,13 @@
        *> Put the response data into the response-string so
        *> we can manipulate it as a string.
            CALL "memcpy" USING
-               BY REFERENCE RESPONSE-STRING
+               BY REFERENCE RESPONSE-DATA
                BY VALUE     PTR
                BY VALUE     RESPONSE-LENGTH-BYTES
 
        *> Append the response data to the data we already have in the buffer.
            STRING
-               RESPONSE-STRING(1:RESPONSE-LENGTH-BYTES)
+               RESPONSE-DATA(1:RESPONSE-LENGTH-BYTES)
                INTO BUFFER-DATA(BUFFER-LENGTH-BYTES + 1:)
            END-STRING
 

@@ -25,9 +25,7 @@
 
        LINKAGE SECTION.
            01  REQUEST-URL                PIC X(1000).
-           01  RESPONSE.
-               05  RESPONSE-DATA          PIC X(10000).
-               05  RESPONSE-LENGTH-BYTES  PIC 9(5) COMP-5.
+           COPY remote-service-response IN "support/http".
 
        *> Perform an HTTP GET request at the given URL
        *> and store the response in the RESPONSE variable.
