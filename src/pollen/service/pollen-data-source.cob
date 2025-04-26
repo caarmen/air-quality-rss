@@ -61,9 +61,11 @@
                05  CDT-MONTH                   PIC 9(2). *> 01-12
                05  CDT-DAY                     PIC 9(2). *> 01-31
            01  DATE-AND-TIME-STR               PIC X(10).
-           01  DATA-URL                        PIC X(1000) VALUE
-               "https://data.atmo-france.org/geoserver/ind_pol/ows?" &
-               "&REQUEST=GetFeatureInfo&SERVICE=WMS&SRS=EPSG%3A3857" &
+           01  BASE-URL                        PIC X(100).
+           01  BASE-URL-DEFAULT                PIC X(100) VALUE
+                   "https://data.atmo-france.org/geoserver/ind_pol/ows".
+           01  QUERY-STRING                    PIC X(1000) VALUE
+               "?REQUEST=GetFeatureInfo&SERVICE=WMS&SRS=EPSG%3A3857" &
                "&STYLES=&VERSION=1.3&FILTER=%3CPropertyIsEqualTo" &
                "%20matchCase%3D%22true%22%3E" &
                "%3CPropertyName%3Edate_ech%3C" &
@@ -100,11 +102,23 @@
                BY REFERENCE LONGITUDE
                BY REFERENCE BBOX
 
-           MOVE DATA-URL TO DATA-URL-OUT.
+      *> Get the pollen source host from the environment.
+      *> This is useful for testing purposes.
+           ACCEPT BASE-URL FROM ENVIRONMENT "POLLEN_BASE_URL"
+           IF FUNCTION TRIM(BASE-URL) = ""
+           THEN
+               MOVE BASE-URL-DEFAULT TO BASE-URL
+           END-IF
+           STRING FUNCTION TRIM(BASE-URL)
+               QUERY-STRING
+               INTO DATA-URL-OUT
+           END-STRING
 
+      *> Replace the date in the URL with the current date.
            INSPECT DATA-URL-OUT
                REPLACING ALL "YYYY-MM-DD" BY DATE-AND-TIME-STR
 
+      *> Append the bounding box to the URL.
            STRING FUNCTION TRIM(DATA-URL-OUT) "&" BBOX
                INTO DATA-URL-OUT
            END-STRING

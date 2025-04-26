@@ -1,0 +1,1 @@
+Bad Request: missing longitude query param

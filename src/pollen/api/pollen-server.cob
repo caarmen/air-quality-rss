@@ -30,6 +30,7 @@
                BY VALUE    MHD-OPTION-END
                RETURNING   DAEMON-PTR
            END-CALL
+           DISPLAY "Pollen server started, waiting for requests..."
 
            GOBACK.
        END PROGRAM POLLEN-SERVER.

@@ -34,27 +34,33 @@ set(COB_OTHER
 # Output COBOL objects
 set(COB_OBJECTS "")
 
-# Compile pollen-rss.cob with -x
-set(COB_MAIN_OBJ ${CMAKE_BINARY_DIR}/pollen-rss.o)
-add_custom_command(
-    OUTPUT ${COB_MAIN_OBJ}
-    COMMAND COB_COPY_DIR=${COB_COPY_DIR} cobc -c -x ${COB_MAIN} -o ${COB_MAIN_OBJ}
-    DEPENDS ${COB_MAIN}
-    COMMENT "Compiling pollen-rss.cob with -x"
-)
-list(APPEND COB_OBJECTS ${COB_MAIN_OBJ})
-
-# Compile other COBOL files without -x
-foreach(COB_FILE IN LISTS COB_OTHER)
+# Compile cobol files.
+function(compile_cobol OUTPUT_VAR COB_FILE)
+    # Check if COBOL_FLAGS is provided, otherwise set it to an empty string
+    set(COBOL_FLAGS "")
+    if(ARGC GREATER 2)
+        set(COBOL_FLAGS ${ARGV2})
+    endif()
     get_filename_component(FNAME_WE ${COB_FILE} NAME_WE)
     string(REPLACE "/" "_" OBJ_NAME ${FNAME_WE})
     set(OBJ_PATH "${CMAKE_BINARY_DIR}/${OBJ_NAME}.o")
     add_custom_command(
         OUTPUT ${OBJ_PATH}
-        COMMAND COB_COPY_DIR=${COB_COPY_DIR} cobc -c ${COB_FILE} -o ${OBJ_PATH}
+        COMMAND COB_COPY_DIR=${COB_COPY_DIR} cobc -c ${COBOL_FLAGS} ${COB_FILE} -o ${OBJ_PATH}
         DEPENDS ${COB_FILE}
-        COMMENT "Compiling ${COB_FILE} without -x"
+        COMMENT "Compiling ${COB_FILE} ${COBOL_FLAGS}"
     )
+
+    set(${OUTPUT_VAR} ${OBJ_PATH} PARENT_SCOPE)
+endfunction()
+
+# Compile the entry point. It needs -x
+compile_cobol(COB_MAIN_OBJ ${COB_MAIN} "-x")
+list(APPEND COB_OBJECTS ${COB_MAIN_OBJ})
+
+# Compile other COBOL files.
+foreach(COB_FILE IN LISTS COB_OTHER)
+    compile_cobol(OBJ_PATH ${COB_FILE})
     list(APPEND COB_OBJECTS ${OBJ_PATH})
 endforeach()
 

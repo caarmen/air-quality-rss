@@ -31,11 +31,19 @@
 
            CALL "POLLEN-PARSER" USING
                BY REFERENCE BUFFER
+               RETURNING RETURN-CODE
+           IF RETURN-CODE NOT = 0
+           THEN
+               DISPLAY "Error parsing pollen data"
+               MOVE 1 TO RETURN-CODE
+               GOBACK
+           END-IF
 
            CALL "POLLEN-RENDER" USING
                BY REFERENCE DATA-URL
                BY REFERENCE POLLEN-OUTPUT
 
+           MOVE 0 TO RETURN-CODE
            GOBACK.
 
        END PROGRAM POLLEN-SERVICE.

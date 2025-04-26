@@ -75,6 +75,13 @@
                    BY REFERENCE LATITUDE
                    BY REFERENCE LONGITUDE
                    BY REFERENCE BODY
+                   RETURNING RETURN-CODE
+               IF RETURN-CODE NOT = 0
+               THEN
+                   MOVE 500 TO STATUS-CODE
+                   MOVE "Internal Server Error: pollen service failed"
+                       TO BODY
+               END-IF
 
            ELSE
                MOVE 404 TO STATUS-CODE
