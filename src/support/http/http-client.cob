@@ -16,9 +16,9 @@
            01  LS-CURL-CODE               USAGE BINARY-LONG.
 
        *> https://github.com/curl/curl/blob/master/packages/OS400/curl.inc.in#L1073
-           01  CURLOPT-URL                CONSTANT AS 10002.
-           01  CURLOPT-WRITEFUNCTION      CONSTANT AS 20011.
-           01  CURLOPT-WRITEDATA          CONSTANT AS 10001.
+           01  C-CURLOPT-URL              CONSTANT AS 10002.
+           01  C-CURLOPT-WRITEFUNCTION    CONSTANT AS 20011.
+           01  C-CURLOPT-WRITEDATA        CONSTANT AS 10001.
 
            01  LS-CURL-WRITE-CALLBACK     USAGE PROGRAM-POINTER.
            01  LS-CURL-HANDLE-PTR         USAGE POINTER.
@@ -41,17 +41,17 @@
 
            CALL "curl_easy_setopt" USING
                BY VALUE    LS-CURL-HANDLE-PTR
-               BY VALUE    CURLOPT-URL
+               BY VALUE    C-CURLOPT-URL
                BY CONTENT  FUNCTION TRIM(REQUEST-URL)
 
            CALL "curl_easy_setopt" USING
                BY VALUE    LS-CURL-HANDLE-PTR
-               BY VALUE    CURLOPT-WRITEFUNCTION
+               BY VALUE    C-CURLOPT-WRITEFUNCTION
                BY VALUE    LS-CURL-WRITE-CALLBACK
 
            CALL "curl_easy_setopt" USING
                BY VALUE    LS-CURL-HANDLE-PTR
-               BY VALUE    CURLOPT-WRITEDATA
+               BY VALUE    C-CURLOPT-WRITEDATA
                BY REFERENCE RESPONSE
 
        *> https://curl.se/libcurl/c/curl_easy_perform.html

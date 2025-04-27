@@ -15,8 +15,8 @@
        DATA DIVISION.
 
        WORKING-STORAGE SECTION.
-           01  PI                           CONSTANT AS 3.14159265.
-           01  EARTH-RADIUS                 CONSTANT AS 6378137.
+           01  C-PI                         CONSTANT AS 3.14159265.
+           01  C-EARTH-RADIUS               CONSTANT AS 6378137.
 
        LINKAGE SECTION.
            01  LATITUDE                     PIC S9(3)V9(8).
@@ -31,12 +31,12 @@
            BY REFERENCE Y.
 
            *> Convert longitude to X coordinate
-           COMPUTE X = EARTH-RADIUS * LONGITUDE * PI / 180.
+           COMPUTE X = C-EARTH-RADIUS * LONGITUDE * C-PI / 180.
 
            *> Convert latitude to Y coordinate using Mercator formula
-           COMPUTE Y = EARTH-RADIUS * 
+           COMPUTE Y = C-EARTH-RADIUS *
                FUNCTION LOG(FUNCTION TAN(
-                   ((LATITUDE * PI / 180) / 2) + (PI / 4))).
+                   ((LATITUDE * C-PI / 180) / 2) + (C-PI / 4))).
 
            GOBACK.
        END PROGRAM LAT-LONG-TO-WEB-MERCATOR.

@@ -64,9 +64,9 @@
                05  LS-CDT-DAY                  PIC 9(2). *> 01-31
            01  LS-DATE-AND-TIME-STR            PIC X(10).
            01  LS-BASE-URL                     PIC X(100).
-           01  BASE-URL-DEFAULT                PIC X(100) VALUE
+           01  C-BASE-URL-DEFAULT              PIC X(100) VALUE
                    "https://data.atmo-france.org/geoserver/ind_pol/ows".
-           01  QUERY-STRING                    PIC X(1000) VALUE
+           01  C-QUERY-STRING                  PIC X(1000) VALUE
                "?REQUEST=GetFeatureInfo&SERVICE=WMS&SRS=EPSG%3A3857" &
                "&STYLES=&VERSION=1.3&FILTER=%3CPropertyIsEqualTo" &
                "%20matchCase%3D%22true%22%3E" &
@@ -109,10 +109,10 @@
            ACCEPT LS-BASE-URL FROM ENVIRONMENT "POLLEN_BASE_URL"
            IF FUNCTION TRIM(LS-BASE-URL) = ""
            THEN
-               MOVE BASE-URL-DEFAULT TO LS-BASE-URL
+               MOVE C-BASE-URL-DEFAULT TO LS-BASE-URL
            END-IF
            STRING FUNCTION TRIM(LS-BASE-URL)
-               QUERY-STRING
+               C-QUERY-STRING
                INTO DATA-URL-OUT
            END-STRING
 
@@ -144,8 +144,8 @@
        LOCAL-STORAGE SECTION.
            01  LS-X                           PIC S9(7)V9(8).
            01  LS-Y                           PIC S9(7)V9(8).
-           01  LS-BBOX-WIDTH                  CONSTANT AS 40000.
-           01  LS-BBOX-HEIGHT                 CONSTANT AS 20000.
+           01  C-BBOX-WIDTH                   CONSTANT AS 40000.
+           01  C-BBOX-HEIGHT                  CONSTANT AS 20000.
            01  LS-BBOX-LEFT                   PIC +9(7).9(8).
            01  LS-BBOX-RIGHT                  PIC +9(7).9(8).
            01  LS-BBOX-TOP                    PIC +9(7).9(8).
@@ -167,10 +167,10 @@
                BY REFERENCE LS-X
                BY REFERENCE LS-Y
 
-           COMPUTE LS-BBOX-LEFT = LS-X - LS-BBOX-WIDTH / 2
-           COMPUTE LS-BBOX-RIGHT = LS-X + LS-BBOX-WIDTH / 2
-           COMPUTE LS-BBOX-TOP = LS-Y + LS-BBOX-HEIGHT / 2
-           COMPUTE LS-BBOX-BOTTOM = LS-Y - LS-BBOX-HEIGHT / 2
+           COMPUTE LS-BBOX-LEFT = LS-X - C-BBOX-WIDTH / 2
+           COMPUTE LS-BBOX-RIGHT = LS-X + C-BBOX-WIDTH / 2
+           COMPUTE LS-BBOX-TOP = LS-Y + C-BBOX-HEIGHT / 2
+           COMPUTE LS-BBOX-BOTTOM = LS-Y - C-BBOX-HEIGHT / 2
 
            STRING
                "BBOX="

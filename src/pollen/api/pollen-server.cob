@@ -9,9 +9,9 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  MHD-USE-SELECT-INTERNALLY  CONSTANT AS 8.
-           01  MHD-OPTION-END             CONSTANT AS 0.
-           01  PORT_NUMBER                CONSTANT AS 8888.
+           01  C-MHD-USE-SELECT-INTERNALLY   CONSTANT AS 8.
+           01  C-MHD-OPTION-END              CONSTANT AS 0.
+           01  C-PORT_NUMBER                 CONSTANT AS 8888.
 
            01  LS-DAEMON-PTR                 USAGE POINTER.
            01  LS-CONNECTION-HANDLER-ENTRY   USAGE PROGRAM-POINTER.
@@ -22,13 +22,13 @@
                ENTRY "MICROHTTPD-ACCESS-HANDLER".
 
            CALL "MHD_start_daemon" USING
-               BY VALUE    MHD-USE-SELECT-INTERNALLY
-               BY VALUE    PORT_NUMBER
+               BY VALUE    C-MHD-USE-SELECT-INTERNALLY
+               BY VALUE    C-PORT_NUMBER
                BY VALUE    0
                BY VALUE    0
                BY VALUE    LS-CONNECTION-HANDLER-ENTRY
                BY VALUE    0
-               BY VALUE    MHD-OPTION-END
+               BY VALUE    C-MHD-OPTION-END
                RETURNING   LS-DAEMON-PTR
            END-CALL
            DISPLAY "Pollen server started, waiting for requests..."
@@ -48,8 +48,8 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  MHD-HTTP-OK                CONSTANT AS 200.
-           01  MHD-RESPMEM-PERSISTENT     CONSTANT AS 0.
+           01  C-MHD-HTTP-OK              CONSTANT AS 200.
+           01  C-MHD-RESPMEM-PERSISTENT   CONSTANT AS 0.
 
            01  LS-RESPONSE.
                05  LS-STATUS-CODE         PIC 999.
@@ -99,7 +99,7 @@
            CALL "MHD_create_response_from_buffer" USING
                BY VALUE    LENGTH OF FUNCTION TRIM(LS-BODY)
                BY VALUE    FUNCTION TRIM(LS-BODY)
-               BY VALUE    MHD-RESPMEM-PERSISTENT
+               BY VALUE    C-MHD-RESPMEM-PERSISTENT
                RETURNING   LS-RESPONSE-PTR
            END-CALL
            CALL "MHD_add_response_header" USING
