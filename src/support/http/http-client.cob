@@ -31,7 +31,7 @@
        *> and store the response in the RESPONSE variable.
        PROCEDURE DIVISION USING
            IN-REQUEST-URL
-           BY REFERENCE RESPONSE.
+           BY REFERENCE OUT-RESPONSE.
 
            SET LS-CURL-WRITE-CALLBACK TO
                ENTRY "CURL-WRITE-CALLBACK"
@@ -52,7 +52,7 @@
            CALL "curl_easy_setopt" USING
                BY VALUE    LS-CURL-HANDLE-PTR
                BY VALUE    C-CURLOPT-WRITEDATA
-               BY REFERENCE RESPONSE
+               BY REFERENCE OUT-RESPONSE
 
        *> https://curl.se/libcurl/c/curl_easy_perform.html
            CALL "curl_easy_perform" USING
