@@ -17,29 +17,29 @@
            COPY remote-service-response IN "support/http".
 
        LINKAGE SECTION.
-           01  LATITUDE                       PIC S9(3)V9(8).
-           01  LONGITUDE                      PIC S9(3)V9(8).
-           01  DATA-URL                       PIC X(1000) VALUE SPACES.
-           01  RESPONSE-BODY                  PIC X(10000).
+           01  IN-LATITUDE                    PIC S9(3)V9(8).
+           01  IN-LONGITUDE                   PIC S9(3)V9(8).
+           01  OUT-DATA-URL                   PIC X(1000) VALUE SPACES.
+           01  OUT-RESPONSE-BODY              PIC X(10000).
 
        PROCEDURE DIVISION USING
-           BY REFERENCE LATITUDE
-           BY REFERENCE LONGITUDE
-           BY REFERENCE DATA-URL
-           BY REFERENCE RESPONSE-BODY.
+           BY REFERENCE IN-LATITUDE
+           BY REFERENCE IN-LONGITUDE
+           BY REFERENCE OUT-DATA-URL
+           BY REFERENCE OUT-RESPONSE-BODY.
 
            CALL "SOURCE-URL" USING
-               BY REFERENCE LATITUDE
-               BY REFERENCE LONGITUDE
-               BY REFERENCE DATA-URL
-           DISPLAY "Fetching data from " DATA-URL
+               BY REFERENCE IN-LATITUDE
+               BY REFERENCE IN-LONGITUDE
+               BY REFERENCE OUT-DATA-URL
+           DISPLAY "Fetching data from " OUT-DATA-URL
 
            CALL "HTTP-CLIENT-GET" USING
-               BY REFERENCE DATA-URL
+               BY REFERENCE OUT-DATA-URL
                BY REFERENCE RESPONSE
 
            MOVE RESPONSE-DATA(1:RESPONSE-LENGTH-BYTES)
-               TO RESPONSE-BODY
+               TO OUT-RESPONSE-BODY
            GOBACK.
 
        END PROGRAM POLLEN-DATA-SOURCE.
@@ -82,14 +82,14 @@
            01  LS-BBOX                        PIC X(1000) VALUE SPACES.
 
        LINKAGE SECTION.
-           01  LATITUDE                       PIC S9(3)V9(8).
-           01  LONGITUDE                      PIC S9(3)V9(8).
-           01  DATA-URL-OUT                   PIC X(1000).
+           01  IN-LATITUDE                    PIC S9(3)V9(8).
+           01  IN-LONGITUDE                   PIC S9(3)V9(8).
+           01  OUT-DATA-URL                   PIC X(1000).
 
        PROCEDURE DIVISION USING
-           BY REFERENCE LATITUDE
-           BY REFERENCE LONGITUDE
-           BY REFERENCE DATA-URL-OUT.
+           BY REFERENCE IN-LATITUDE
+           BY REFERENCE IN-LONGITUDE
+           BY REFERENCE OUT-DATA-URL.
 
            MOVE FUNCTION CURRENT-DATE
                TO LS-CURRENT-DATE-AND-TIME
@@ -100,8 +100,8 @@
            END-STRING
 
            CALL "BOUNDING-BOX-STR" USING
-               BY REFERENCE LATITUDE
-               BY REFERENCE LONGITUDE
+               BY REFERENCE IN-LATITUDE
+               BY REFERENCE IN-LONGITUDE
                BY REFERENCE LS-BBOX
 
       *> Get the pollen source host from the environment.
@@ -113,16 +113,16 @@
            END-IF
            STRING FUNCTION TRIM(LS-BASE-URL)
                C-QUERY-STRING
-               INTO DATA-URL-OUT
+               INTO OUT-DATA-URL
            END-STRING
 
       *> Replace the date in the URL with the current date.
-           INSPECT DATA-URL-OUT
+           INSPECT OUT-DATA-URL
                REPLACING ALL DATE-FORMAT BY LS-DATE-AND-TIME-STR
 
       *> Append the bounding box to the URL.
-           STRING FUNCTION TRIM(DATA-URL-OUT) "&" LS-BBOX
-               INTO DATA-URL-OUT
+           STRING FUNCTION TRIM(OUT-DATA-URL) "&" LS-BBOX
+               INTO OUT-DATA-URL
            END-STRING
 
            GOBACK.
@@ -152,18 +152,18 @@
            01  LS-BBOX-BOTTOM                 PIC +9(7).9(8).
 
        LINKAGE SECTION.
-           01  LATITUDE                       PIC S9(3)V9(8).
-           01  LONGITUDE                      PIC S9(3)V9(8).
-           01  BOUNDING-BOX                   PIC X(1000).
+           01  IN-LATITUDE                    PIC S9(3)V9(8).
+           01  IN-LONGITUDE                   PIC S9(3)V9(8).
+           01  OUT-BOUNDING-BOX               PIC X(1000).
 
        PROCEDURE DIVISION USING
-           BY REFERENCE LATITUDE
-           BY REFERENCE LONGITUDE
-           BY REFERENCE BOUNDING-BOX.
+           BY REFERENCE IN-LATITUDE
+           BY REFERENCE IN-LONGITUDE
+           BY REFERENCE OUT-BOUNDING-BOX.
 
            CALL "LAT-LONG-TO-WEB-MERCATOR" USING
-               BY REFERENCE LATITUDE
-               BY REFERENCE LONGITUDE
+               BY REFERENCE IN-LATITUDE
+               BY REFERENCE IN-LONGITUDE
                BY REFERENCE LS-X
                BY REFERENCE LS-Y
 
@@ -177,7 +177,7 @@
                LS-BBOX-LEFT "%2C" LS-BBOX-BOTTOM "%2C"
                LS-BBOX-RIGHT "%2C" LS-BBOX-TOP
                "&HEIGHT=500&WIDTH=1000"
-               INTO BOUNDING-BOX
+               INTO OUT-BOUNDING-BOX
            END-STRING
 
            GOBACK.
