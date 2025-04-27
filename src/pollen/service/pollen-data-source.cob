@@ -17,20 +17,20 @@
            COPY remote-service-response IN "support/http".
 
        LINKAGE SECTION.
-           01  IN-LATITUDE                    PIC S9(3)V9(8).
-           01  IN-LONGITUDE                   PIC S9(3)V9(8).
+           01  IN-LATITUDE-DEGREES            PIC S9(3)V9(8).
+           01  IN-LONGITUDE-DEGREES           PIC S9(3)V9(8).
            01  OUT-DATA-URL                   PIC X(1000) VALUE SPACES.
            01  OUT-RESPONSE-BODY              PIC X(10000).
 
        PROCEDURE DIVISION USING
-           BY REFERENCE IN-LATITUDE
-           BY REFERENCE IN-LONGITUDE
+           BY REFERENCE IN-LATITUDE-DEGREES
+           BY REFERENCE IN-LONGITUDE-DEGREES
            BY REFERENCE OUT-DATA-URL
            BY REFERENCE OUT-RESPONSE-BODY.
 
            CALL "SOURCE-URL" USING
-               BY REFERENCE IN-LATITUDE
-               BY REFERENCE IN-LONGITUDE
+               BY REFERENCE IN-LATITUDE-DEGREES
+               BY REFERENCE IN-LONGITUDE-DEGREES
                BY REFERENCE OUT-DATA-URL
            DISPLAY "Fetching data from " OUT-DATA-URL
 
@@ -82,13 +82,13 @@
            01  LS-BBOX                        PIC X(1000) VALUE SPACES.
 
        LINKAGE SECTION.
-           01  IN-LATITUDE                    PIC S9(3)V9(8).
-           01  IN-LONGITUDE                   PIC S9(3)V9(8).
+           01  IN-LATITUDE-DEGREES            PIC S9(3)V9(8).
+           01  IN-LONGITUDE-DEGREES           PIC S9(3)V9(8).
            01  OUT-DATA-URL                   PIC X(1000).
 
        PROCEDURE DIVISION USING
-           BY REFERENCE IN-LATITUDE
-           BY REFERENCE IN-LONGITUDE
+           BY REFERENCE IN-LATITUDE-DEGREES
+           BY REFERENCE IN-LONGITUDE-DEGREES
            BY REFERENCE OUT-DATA-URL.
 
            MOVE FUNCTION CURRENT-DATE
@@ -100,8 +100,8 @@
            END-STRING
 
            CALL "BOUNDING-BOX-STR" USING
-               BY REFERENCE IN-LATITUDE
-               BY REFERENCE IN-LONGITUDE
+               BY REFERENCE IN-LATITUDE-DEGREES
+               BY REFERENCE IN-LONGITUDE-DEGREES
                BY REFERENCE LS-BBOX
 
       *> Get the pollen source host from the environment.
@@ -142,35 +142,39 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  LS-X                           PIC S9(7)V9(8).
-           01  LS-Y                           PIC S9(7)V9(8).
-           01  C-BBOX-WIDTH                   CONSTANT AS 40000.
-           01  C-BBOX-HEIGHT                  CONSTANT AS 20000.
+           01  LS-X-METERS                    PIC S9(7)V9(8).
+           01  LS-Y-METERS                    PIC S9(7)V9(8).
+           01  C-BBOX-WIDTH-METERS            CONSTANT AS 40000.
+           01  C-BBOX-HEIGHT-METERS           CONSTANT AS 20000.
            01  LS-BBOX-LEFT                   PIC +9(7).9(8).
            01  LS-BBOX-RIGHT                  PIC +9(7).9(8).
            01  LS-BBOX-TOP                    PIC +9(7).9(8).
            01  LS-BBOX-BOTTOM                 PIC +9(7).9(8).
 
        LINKAGE SECTION.
-           01  IN-LATITUDE                    PIC S9(3)V9(8).
-           01  IN-LONGITUDE                   PIC S9(3)V9(8).
+           01  IN-LATITUDE-DEGREES            PIC S9(3)V9(8).
+           01  IN-LONGITUDE-DEGREES           PIC S9(3)V9(8).
            01  OUT-BOUNDING-BOX               PIC X(1000).
 
        PROCEDURE DIVISION USING
-           BY REFERENCE IN-LATITUDE
-           BY REFERENCE IN-LONGITUDE
+           BY REFERENCE IN-LATITUDE-DEGREES
+           BY REFERENCE IN-LONGITUDE-DEGREES
            BY REFERENCE OUT-BOUNDING-BOX.
 
            CALL "LAT-LONG-TO-WEB-MERCATOR" USING
-               BY REFERENCE IN-LATITUDE
-               BY REFERENCE IN-LONGITUDE
-               BY REFERENCE LS-X
-               BY REFERENCE LS-Y
+               BY REFERENCE IN-LATITUDE-DEGREES
+               BY REFERENCE IN-LONGITUDE-DEGREES
+               BY REFERENCE LS-X-METERS
+               BY REFERENCE LS-Y-METERS
 
-           COMPUTE LS-BBOX-LEFT = LS-X - C-BBOX-WIDTH / 2
-           COMPUTE LS-BBOX-RIGHT = LS-X + C-BBOX-WIDTH / 2
-           COMPUTE LS-BBOX-TOP = LS-Y + C-BBOX-HEIGHT / 2
-           COMPUTE LS-BBOX-BOTTOM = LS-Y - C-BBOX-HEIGHT / 2
+           COMPUTE LS-BBOX-LEFT = LS-X-METERS -
+               C-BBOX-WIDTH-METERS / 2
+           COMPUTE LS-BBOX-RIGHT = LS-X-METERS +
+               C-BBOX-WIDTH-METERS / 2
+           COMPUTE LS-BBOX-TOP = LS-Y-METERS +
+               C-BBOX-HEIGHT-METERS / 2
+           COMPUTE LS-BBOX-BOTTOM = LS-Y-METERS -
+               C-BBOX-HEIGHT-METERS / 2
 
            STRING
                "BBOX="
