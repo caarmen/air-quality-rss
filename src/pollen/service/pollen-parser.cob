@@ -44,10 +44,10 @@
                                            VALUE "pollen_resp" & X"00".
 
        LINKAGE SECTION.
-       01 POLLEN-JSON-INPUT            PIC X(10000).
+       01 IN-POLLEN-JSON               PIC X(10000).
 
        PROCEDURE DIVISION WITH C LINKAGE USING
-           BY REFERENCE POLLEN-JSON-INPUT.
+           BY REFERENCE IN-POLLEN-JSON.
 
       *> ===============================================================
       *> The json input looks like this:
@@ -75,7 +75,7 @@
 
       *> Parse the raw txt and get a handle to the JSON root element.
            CALL "cJSON_Parse" USING
-               BY CONTENT FUNCTION TRIM(POLLEN-JSON-INPUT)
+               BY CONTENT FUNCTION TRIM(IN-POLLEN-JSON)
                RETURNING LS-JSON-ROOT-PTR
            PERFORM CHECK-JSON-ERROR
 
