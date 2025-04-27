@@ -24,13 +24,13 @@
            01  LS-CURL-HANDLE-PTR         USAGE POINTER.
 
        LINKAGE SECTION.
-           01  REQUEST-URL                PIC X(1000).
+           01  IN-REQUEST-URL             PIC X(1000).
            COPY remote-service-response IN "support/http".
 
        *> Perform an HTTP GET request at the given URL
        *> and store the response in the RESPONSE variable.
        PROCEDURE DIVISION USING
-           REQUEST-URL
+           IN-REQUEST-URL
            BY REFERENCE RESPONSE.
 
            SET LS-CURL-WRITE-CALLBACK TO
@@ -42,7 +42,7 @@
            CALL "curl_easy_setopt" USING
                BY VALUE    LS-CURL-HANDLE-PTR
                BY VALUE    C-CURLOPT-URL
-               BY CONTENT  FUNCTION TRIM(REQUEST-URL)
+               BY CONTENT  FUNCTION TRIM(IN-REQUEST-URL)
 
            CALL "curl_easy_setopt" USING
                BY VALUE    LS-CURL-HANDLE-PTR
