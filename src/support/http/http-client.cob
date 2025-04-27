@@ -13,15 +13,15 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  CURL-CODE                   USAGE BINARY-LONG.
+           01  LS-CURL-CODE               USAGE BINARY-LONG.
 
        *> https://github.com/curl/curl/blob/master/packages/OS400/curl.inc.in#L1073
            01  CURLOPT-URL                CONSTANT AS 10002.
            01  CURLOPT-WRITEFUNCTION      CONSTANT AS 20011.
            01  CURLOPT-WRITEDATA          CONSTANT AS 10001.
 
-           01  CURL-WRITE-CALLBACK        USAGE PROGRAM-POINTER.
-           01  CURL-HANDLE-PTR            USAGE POINTER.
+           01  LS-CURL-WRITE-CALLBACK     USAGE PROGRAM-POINTER.
+           01  LS-CURL-HANDLE-PTR         USAGE POINTER.
 
        LINKAGE SECTION.
            01  REQUEST-URL                PIC X(1000).
@@ -33,34 +33,34 @@
            REQUEST-URL
            BY REFERENCE RESPONSE.
 
-           SET CURL-WRITE-CALLBACK TO
+           SET LS-CURL-WRITE-CALLBACK TO
                ENTRY "CURL-WRITE-CALLBACK"
 
            CALL "curl_easy_init"
-               RETURNING CURL-HANDLE-PTR
+               RETURNING LS-CURL-HANDLE-PTR
 
            CALL "curl_easy_setopt" USING
-               BY VALUE    CURL-HANDLE-PTR
+               BY VALUE    LS-CURL-HANDLE-PTR
                BY VALUE    CURLOPT-URL
                BY CONTENT  FUNCTION TRIM(REQUEST-URL)
 
            CALL "curl_easy_setopt" USING
-               BY VALUE    CURL-HANDLE-PTR
+               BY VALUE    LS-CURL-HANDLE-PTR
                BY VALUE    CURLOPT-WRITEFUNCTION
-               BY VALUE    CURL-WRITE-CALLBACK
+               BY VALUE    LS-CURL-WRITE-CALLBACK
 
            CALL "curl_easy_setopt" USING
-               BY VALUE    CURL-HANDLE-PTR
+               BY VALUE    LS-CURL-HANDLE-PTR
                BY VALUE    CURLOPT-WRITEDATA
                BY REFERENCE RESPONSE
 
        *> https://curl.se/libcurl/c/curl_easy_perform.html
            CALL "curl_easy_perform" USING
-               BY VALUE    CURL-HANDLE-PTR
-               RETURNING   CURL-CODE
+               BY VALUE    LS-CURL-HANDLE-PTR
+               RETURNING   LS-CURL-CODE
 
            CALL "curl_easy_cleanup" USING
-               BY VALUE CURL-HANDLE-PTR
+               BY VALUE LS-CURL-HANDLE-PTR
 
            GOBACK.
        END PROGRAM HTTP-CLIENT-GET.
