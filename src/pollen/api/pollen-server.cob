@@ -11,6 +11,7 @@
        LOCAL-STORAGE SECTION.
            01  MHD-USE-SELECT-INTERNALLY  CONSTANT AS 8.
            01  MHD-OPTION-END             CONSTANT AS 0.
+           01  PORT_NUMBER                CONSTANT AS 8888.
 
            01  DAEMON-PTR                 USAGE POINTER.
            01  CONNECTION-HANDLER-ENTRY   USAGE PROGRAM-POINTER.
@@ -22,7 +23,7 @@
 
            CALL "MHD_start_daemon" USING
                BY VALUE    MHD-USE-SELECT-INTERNALLY
-               BY VALUE    8888
+               BY VALUE    PORT_NUMBER
                BY VALUE    0
                BY VALUE    0
                BY VALUE    CONNECTION-HANDLER-ENTRY
