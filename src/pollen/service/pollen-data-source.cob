@@ -56,6 +56,8 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
+           01  DATE-FORMAT                     PIC X(10)
+                                               VALUE "YYYY-MM-DD".
            01  CURRENT-DATE-AND-TIME.
                05  CDT-YEAR                    PIC 9(4).
                05  CDT-MONTH                   PIC 9(2). *> 01-12
@@ -116,7 +118,7 @@
 
       *> Replace the date in the URL with the current date.
            INSPECT DATA-URL-OUT
-               REPLACING ALL "YYYY-MM-DD" BY DATE-AND-TIME-STR
+               REPLACING ALL DATE-FORMAT BY DATE-AND-TIME-STR
 
       *> Append the bounding box to the URL.
            STRING FUNCTION TRIM(DATA-URL-OUT) "&" BBOX
@@ -142,6 +144,8 @@
        LOCAL-STORAGE SECTION.
            01  X                              PIC S9(7)V9(8).
            01  Y                              PIC S9(7)V9(8).
+           01  BBOX-WIDTH                     CONSTANT AS 40000.
+           01  BBOX-HEIGHT                    CONSTANT AS 20000.
            01  BBOX-LEFT                      PIC +9(7).9(8).
            01  BBOX-RIGHT                     PIC +9(7).9(8).
            01  BBOX-TOP                       PIC +9(7).9(8).
@@ -163,10 +167,10 @@
                BY REFERENCE X
                BY REFERENCE Y
 
-           COMPUTE BBOX-LEFT = X - 20000
-           COMPUTE BBOX-RIGHT = X + 20000
-           COMPUTE BBOX-TOP = Y + 10000
-           COMPUTE BBOX-BOTTOM = Y - 10000
+           COMPUTE BBOX-LEFT = X - BBOX-WIDTH / 2
+           COMPUTE BBOX-RIGHT = X + BBOX-WIDTH / 2
+           COMPUTE BBOX-TOP = Y + BBOX-HEIGHT / 2
+           COMPUTE BBOX-BOTTOM = Y - BBOX-HEIGHT / 2
 
            STRING
                "BBOX="
