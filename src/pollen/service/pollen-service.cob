@@ -10,8 +10,8 @@
 
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
-       01 BUFFER                   PIC X(10000).
-       01 DATA-URL                 PIC X(1000) VALUE SPACES.
+       01 LS-BUFFER                PIC X(10000).
+       01 LS-DATA-URL              PIC X(1000) VALUE SPACES.
 
        LINKAGE SECTION.
        01 LATITUDE                 PIC S9(3)V9(8).
@@ -26,11 +26,11 @@
            CALL "POLLEN-DATA-SOURCE" USING
                BY REFERENCE LATITUDE
                BY REFERENCE LONGITUDE
-               BY REFERENCE DATA-URL
-               BY REFERENCE BUFFER
+               BY REFERENCE LS-DATA-URL
+               BY REFERENCE LS-BUFFER
 
            CALL "POLLEN-PARSER" USING
-               BY REFERENCE BUFFER
+               BY REFERENCE LS-BUFFER
                RETURNING RETURN-CODE
            IF RETURN-CODE NOT = 0
            THEN
@@ -40,7 +40,7 @@
            END-IF
 
            CALL "POLLEN-RENDER" USING
-               BY REFERENCE DATA-URL
+               BY REFERENCE LS-DATA-URL
                BY REFERENCE POLLEN-OUTPUT
 
            MOVE 0 TO RETURN-CODE
