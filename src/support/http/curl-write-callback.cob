@@ -26,40 +26,40 @@
        *>       void *userdata
        *>   )
 
-           01  PTR                        USAGE POINTER.
-           01  SIZE-MEMB                  PIC 9(5) COMP-5.
-           01  NMEMB                      PIC 9(5) COMP-5.
+           01  IN-PTR                      USAGE POINTER.
+           01  IN-SIZE-MEMB                PIC 9(5) COMP-5.
+           01  IN-NMEMB                    PIC 9(5) COMP-5.
 
-           01  USERDATA.
-               05  BUFFER-DATA            PIC X(10000).
-               05  BUFFER-LENGTH-BYTES    PIC 9(5) COMP-5.
+           01  OUT-USERDATA.
+               05  OUT-BUFFER-DATA         PIC X(10000).
+               05  OUT-BUFFER-LENGTH-BYTES PIC 9(5) COMP-5.
 
        PROCEDURE DIVISION WITH C LINKAGE USING
-           BY VALUE     PTR
-           BY VALUE     SIZE-MEMB
-           BY VALUE     NMEMB
-           BY REFERENCE USERDATA.
+           BY VALUE     IN-PTR
+           BY VALUE     IN-SIZE-MEMB
+           BY VALUE     IN-NMEMB
+           BY REFERENCE OUT-USERDATA.
 
        *> Calculate the length of the response data.
-           COMPUTE RESPONSE-LENGTH-BYTES = SIZE-MEMB * NMEMB
+           COMPUTE OUT-RESPONSE-LENGTH-BYTES = IN-SIZE-MEMB * IN-NMEMB
 
        *> Put the response data into the response-string so
        *> we can manipulate it as a string.
            CALL "memcpy" USING
-               BY REFERENCE RESPONSE-DATA
-               BY VALUE     PTR
-               BY VALUE     RESPONSE-LENGTH-BYTES
+               BY REFERENCE OUT-RESPONSE-DATA
+               BY VALUE     IN-PTR
+               BY VALUE     OUT-RESPONSE-LENGTH-BYTES
 
        *> Append the response data to the data we already have in the buffer.
            STRING
-               RESPONSE-DATA(1:RESPONSE-LENGTH-BYTES)
-               INTO BUFFER-DATA(BUFFER-LENGTH-BYTES + 1:)
+               OUT-RESPONSE-DATA(1:OUT-RESPONSE-LENGTH-BYTES)
+               INTO OUT-BUFFER-DATA(OUT-BUFFER-LENGTH-BYTES + 1:)
            END-STRING
 
-           COMPUTE BUFFER-LENGTH-BYTES =
-               BUFFER-LENGTH-BYTES + RESPONSE-LENGTH-BYTES
+           COMPUTE OUT-BUFFER-LENGTH-BYTES =
+               OUT-BUFFER-LENGTH-BYTES + OUT-RESPONSE-LENGTH-BYTES
 
-           MOVE RESPONSE-LENGTH-BYTES TO RETURN-CODE
+           MOVE OUT-RESPONSE-LENGTH-BYTES TO RETURN-CODE
 
            GOBACK.
        END PROGRAM CURL-WRITE-CALLBACK.

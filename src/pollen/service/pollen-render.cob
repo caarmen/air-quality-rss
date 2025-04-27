@@ -11,7 +11,7 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT POLLEN-FILE ASSIGN TO "pollen.dat"
+           SELECT FD-POLLEN-FILE ASSIGN TO "pollen.dat"
                ORGANIZATION IS SEQUENTIAL.
 
        DATA DIVISION.
@@ -19,63 +19,63 @@
        COPY pollen-data IN "pollen/service".
 
        LOCAL-STORAGE SECTION.
-       01 RESPONSE                    PIC X(10000) VALUE SPACES.
-       01 POLLEN-UPDATED-AT           PIC X(24).
-       01 POLLEN-DISPLAY-NAME         PIC X(16).
-       01 POLLEN-OUTPUT               PIC X(10000) VALUE SPACES.
+       01 LS-RESPONSE                 PIC X(10000) VALUE SPACES.
+       01 LS-POLLEN-UPDATED-AT        PIC X(24).
+       01 LS-POLLEN-DISPLAY-NAME      PIC X(16).
+       01 LS-POLLEN-OUTPUT            PIC X(10000) VALUE SPACES.
 
        LINKAGE SECTION.
-       01 DATA-URL                    PIC X(1000) VALUE SPACES.
-       01 POLLEN-RSS-OUTPUT           PIC X(10000) VALUE SPACES.
+       01 IN-DATA-URL                 PIC X(1000) VALUE SPACES.
+       01 OUT-POLLEN-RSS              PIC X(10000) VALUE SPACES.
 
        PROCEDURE DIVISION USING
-           BY REFERENCE DATA-URL
-           BY REFERENCE POLLEN-RSS-OUTPUT.
+           BY REFERENCE IN-DATA-URL
+           BY REFERENCE OUT-POLLEN-RSS.
 
-           OPEN INPUT POLLEN-FILE
+           OPEN INPUT FD-POLLEN-FILE
 
            *> First read the responsible-pollen
            *> Then read all of the pollen-records until the end of file
-           READ POLLEN-FILE INTO DATE-MAJ
-           STRING DATE-MAJ INTO POLLEN-UPDATED-AT
+           READ FD-POLLEN-FILE INTO F-DATE-MAJ
+           STRING F-DATE-MAJ INTO LS-POLLEN-UPDATED-AT
            END-STRING
 
-           READ POLLEN-FILE INTO RESPONSIBLE-POLLEN
+           READ FD-POLLEN-FILE INTO F-RESPONSIBLE-POLLEN
            STRING
                "Pollen responsable: "
-               FUNCTION TRIM(RESPONSIBLE-POLLEN) X"0A"
-               INTO POLLEN-OUTPUT
+               FUNCTION TRIM(F-RESPONSIBLE-POLLEN) X"0A"
+               INTO LS-POLLEN-OUTPUT
            END-STRING
 
            PERFORM UNTIL EXIT
-               READ POLLEN-FILE INTO POLLEN-RECORD
+               READ FD-POLLEN-FILE INTO F-POLLEN-RECORD
                    AT END
                        EXIT PERFORM
                    NOT AT END
                        CALL "POLLEN-DISPLAY-NAME" USING
-                           BY REFERENCE POLLEN-NAME
-                           BY REFERENCE POLLEN-DISPLAY-NAME
+                           BY REFERENCE F-POLLEN-NAME
+                           BY REFERENCE LS-POLLEN-DISPLAY-NAME
                        END-CALL
                        STRING
-                           FUNCTION TRIM(POLLEN-OUTPUT)
-                           FUNCTION TRIM(POLLEN-DISPLAY-NAME)
+                           FUNCTION TRIM(LS-POLLEN-OUTPUT)
+                           FUNCTION TRIM(LS-POLLEN-DISPLAY-NAME)
                            ": "
-                           POLLEN-CODE X"0A"
-                           INTO POLLEN-OUTPUT
+                           F-POLLEN-CODE X"0A"
+                           INTO LS-POLLEN-OUTPUT
                        END-STRING
                END-READ
            END-PERFORM
 
-           CLOSE POLLEN-FILE
+           CLOSE FD-POLLEN-FILE
 
-           INSPECT POLLEN-OUTPUT
+           INSPECT LS-POLLEN-OUTPUT
                REPLACING ALL X"00" BY SPACE
 
            CALL "RENDER-RSS" USING
-               BY REFERENCE DATA-URL
-               BY REFERENCE POLLEN-UPDATED-AT
-               BY REFERENCE POLLEN-OUTPUT
-               BY REFERENCE POLLEN-RSS-OUTPUT
+               BY REFERENCE IN-DATA-URL
+               BY REFERENCE LS-POLLEN-UPDATED-AT
+               BY REFERENCE LS-POLLEN-OUTPUT
+               BY REFERENCE OUT-POLLEN-RSS
            END-CALL
 
            GOBACK.
@@ -92,33 +92,33 @@
 
        DATA DIVISION.
        LINKAGE SECTION.
-       01 POLLEN-NAME                  PIC X(16).
-       01 POLLEN-DISPLAY-NAME          PIC X(16).
+       01 IN-POLLEN-NAME                   PIC X(16).
+       01 OUT-POLLEN-DISPLAY-NAME          PIC X(16).
 
        PROCEDURE DIVISION USING
-           BY REFERENCE POLLEN-NAME,
-           BY REFERENCE POLLEN-DISPLAY-NAME.
+           BY REFERENCE IN-POLLEN-NAME,
+           BY REFERENCE OUT-POLLEN-DISPLAY-NAME.
 
-           IF POLLEN-NAME(1:9) = "code_ambr"
+           IF IN-POLLEN-NAME(1:9) = "code_ambr"
            THEN
-               MOVE "Ambroise" TO POLLEN-DISPLAY-NAME
-           ELSE IF POLLEN-NAME(1:8) = "code_arm"
+               MOVE "Ambroise" TO OUT-POLLEN-DISPLAY-NAME
+           ELSE IF IN-POLLEN-NAME(1:8) = "code_arm"
                THEN
-                   MOVE "Armoise" TO POLLEN-DISPLAY-NAME
-           ELSE IF POLLEN-NAME(1:8) = "code_aul"
+                   MOVE "Armoise" TO OUT-POLLEN-DISPLAY-NAME
+           ELSE IF IN-POLLEN-NAME(1:8) = "code_aul"
                THEN
-                   MOVE "Aulne" TO POLLEN-DISPLAY-NAME
-           ELSE IF POLLEN-NAME(1:9) = "code_boul"
+                   MOVE "Aulne" TO OUT-POLLEN-DISPLAY-NAME
+           ELSE IF IN-POLLEN-NAME(1:9) = "code_boul"
                THEN
-                   MOVE "Bouleau" TO POLLEN-DISPLAY-NAME
-           ELSE IF POLLEN-NAME(1:9) = "code_gram"
+                   MOVE "Bouleau" TO OUT-POLLEN-DISPLAY-NAME
+           ELSE IF IN-POLLEN-NAME(1:9) = "code_gram"
                THEN
-                   MOVE "Graminées" TO POLLEN-DISPLAY-NAME
-           ELSE IF POLLEN-NAME(1:9) = "code_oliv"
+                   MOVE "Graminées" TO OUT-POLLEN-DISPLAY-NAME
+           ELSE IF IN-POLLEN-NAME(1:9) = "code_oliv"
                THEN
-                   MOVE "Olivier" TO POLLEN-DISPLAY-NAME
+                   MOVE "Olivier" TO OUT-POLLEN-DISPLAY-NAME
            ELSE
-               MOVE POLLEN-NAME TO POLLEN-DISPLAY-NAME
+               MOVE IN-POLLEN-NAME TO OUT-POLLEN-DISPLAY-NAME
            END-IF
 
            GOBACK.
@@ -138,61 +138,64 @@
 
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
-       01 FEED-URL                  PIC X(1000).
-       01 ESCAPED-SOURCE-URL        PIC X(1000) VALUE SPACES.
-       01 ESCAPED-FEED-URL          PIC X(1000) VALUE SPACES.
+       01 LS-FEED-URL               PIC X(1000).
+       01 LS-ESCAPED-SOURCE-URL     PIC X(1000) VALUE SPACES.
+       01 LS-ESCAPED-FEED-URL       PIC X(1000) VALUE SPACES.
 
        LINKAGE SECTION.
-       01 SOURCE-URL                 PIC X(1000).
-       01 DATE-MAJ                   PIC X(24).
-       01 FEED-CONTENT               PIC X(10000) VALUE SPACES.
-       01 RSS-CONTENT                PIC X(10000) VALUE SPACES.
+       01 IN-SOURCE-URL             PIC X(1000).
+       01 IN-DATE-MAJ               PIC X(24).
+       01 IN-FEED-CONTENT           PIC X(10000) VALUE SPACES.
+       01 OUT-RSS-CONTENT           PIC X(10000) VALUE SPACES.
 
        PROCEDURE DIVISION USING
-           BY REFERENCE SOURCE-URL
-           BY REFERENCE DATE-MAJ
-           BY REFERENCE FEED-CONTENT
-           BY REFERENCE RSS-CONTENT.
+           BY REFERENCE IN-SOURCE-URL
+           BY REFERENCE IN-DATE-MAJ
+           BY REFERENCE IN-FEED-CONTENT
+           BY REFERENCE OUT-RSS-CONTENT.
 
-           ACCEPT FEED-URL FROM ENVIRONMENT "POLLEN_FEED_URL"
+           ACCEPT LS-FEED-URL FROM ENVIRONMENT "POLLEN_FEED_URL"
 
            *> Escape & from the URL
            CALL "XML-ENCODE" USING
-               BY REFERENCE SOURCE-URL
-               BY REFERENCE ESCAPED-SOURCE-URL
+               BY REFERENCE IN-SOURCE-URL
+               BY REFERENCE LS-ESCAPED-SOURCE-URL
            END-CALL
            CALL "XML-ENCODE" USING
-               BY REFERENCE FEED-URL
-               BY REFERENCE ESCAPED-FEED-URL
+               BY REFERENCE LS-FEED-URL
+               BY REFERENCE LS-ESCAPED-FEED-URL
            END-CALL
 
            STRING
                '<?xml version="1.0" encoding="utf-8"?>'            X"0A"
                '<feed xmlns="http://www.w3.org/2005/Atom"'         X"0A"
                ' xmlns:dc="http://purl.org/dc/elements/1.1/">'     X"0A"
-               " <updated>" DATE-MAJ "</updated>"                  X"0A"
-               " <dc:date>" DATE-MAJ "</dc:date>"                  X"0A"
+               " <updated>" IN-DATE-MAJ "</updated>"               X"0A"
+               " <dc:date>" IN-DATE-MAJ "</dc:date>"               X"0A"
                " <title>Pollens aujourd'hui</title>"               X"0A"
                " <subtitle>Pollens aujourd'hui</subtitle>"         X"0A"
                ' <link rel="alternate" '                           X"0A"
-               '  href="' FUNCTION TRIM(ESCAPED-FEED-URL) '" />'   X"0A"
-               " <id>" FUNCTION TRIM(ESCAPED-FEED-URL) "</id>"     X"0A"
+               '  href="' FUNCTION TRIM(LS-ESCAPED-FEED-URL)
+               '" />'                                              X"0A"
+               " <id>" FUNCTION TRIM(LS-ESCAPED-FEED-URL) "</id>"  X"0A"
                " <entry>"                                          X"0A"
                "  <title>Rapport de pollens</title>"               X"0A"
                '  <link rel="alternate" '                          X"0A"
-               '   href="' FUNCTION TRIM(ESCAPED-SOURCE-URL) '"/>' X"0A"
-               "  <id>" FUNCTION TRIM(ESCAPED-SOURCE-URL) "</id>"  X"0A"
+               '   href="' FUNCTION TRIM(LS-ESCAPED-SOURCE-URL)
+               '"/>'                                               X"0A"
+               "  <id>" FUNCTION TRIM(LS-ESCAPED-SOURCE-URL)
+               "</id>"                                             X"0A"
                '  <content type="text/plain">'                     X"0A"
-                   FUNCTION TRIM(FEED-CONTENT)
+                   FUNCTION TRIM(IN-FEED-CONTENT)
                "  </content>"                                      X"0A"
                "  <author><name>Atmo France</name></author>"       X"0A"
                "  <dc:creator>Atmo France</dc:creator>"            X"0A"
-               "  <published>" DATE-MAJ "</published>"             X"0A"
-               "  <updated>" DATE-MAJ "</updated>"                 X"0A"
-               "  <dc:date>" DATE-MAJ "</dc:date>"                 X"0A"
+               "  <published>" IN-DATE-MAJ "</published>"          X"0A"
+               "  <updated>" IN-DATE-MAJ "</updated>"              X"0A"
+               "  <dc:date>" IN-DATE-MAJ "</dc:date>"              X"0A"
                " </entry>"                                         X"0A"
                "</feed>"
-               INTO RSS-CONTENT
+               INTO OUT-RSS-CONTENT
            END-STRING
 
            GOBACK.

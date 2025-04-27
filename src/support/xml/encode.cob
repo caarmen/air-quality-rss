@@ -13,33 +13,33 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01 I                            PIC 9(3) VALUE 1.
+           01 LS-I                         PIC 9(3) VALUE 1.
 
        LINKAGE SECTION.
-           01 RAW-TEXT                     PIC X(1000).
-           01 ESCAPED-TEXT                 PIC X(1000) VALUE SPACES.
+           01 IN-RAW-TEXT                  PIC X(1000).
+           01 OUT-ESCAPED-TEXT             PIC X(1000) VALUE SPACES.
 
 
        PROCEDURE DIVISION USING
-           BY REFERENCE RAW-TEXT
-           BY REFERENCE ESCAPED-TEXT.
+           BY REFERENCE IN-RAW-TEXT
+           BY REFERENCE OUT-ESCAPED-TEXT.
 
            *> This could be done more robustly with a thin wrapper to
            *> libxml2 APIs.
-           PERFORM VARYING I FROM 1 BY 1 
-               UNTIL I > LENGTH OF FUNCTION TRIM(RAW-TEXT)
-               EVALUATE RAW-TEXT(I:1)
+           PERFORM VARYING LS-I FROM 1 BY 1 
+               UNTIL LS-I > LENGTH OF FUNCTION TRIM(IN-RAW-TEXT)
+               EVALUATE IN-RAW-TEXT(LS-I:1)
                    WHEN "&"
                        STRING
-                           FUNCTION TRIM(ESCAPED-TEXT)
+                           FUNCTION TRIM(OUT-ESCAPED-TEXT)
                            "&amp;"
-                           INTO ESCAPED-TEXT
+                           INTO OUT-ESCAPED-TEXT
                        END-STRING
                    WHEN OTHER
                        STRING
-                           FUNCTION TRIM(ESCAPED-TEXT)
-                           RAW-TEXT(I:1)
-                           INTO ESCAPED-TEXT
+                           FUNCTION TRIM(OUT-ESCAPED-TEXT)
+                           IN-RAW-TEXT(LS-I:1)
+                           INTO OUT-ESCAPED-TEXT
                        END-STRING
                END-EVALUATE
            END-PERFORM

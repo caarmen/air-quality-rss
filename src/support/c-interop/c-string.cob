@@ -9,18 +9,18 @@
        DATA DIVISION.
 
        LINKAGE SECTION.
-           01  C-STRING                 USAGE POINTER.
-           01  COBOL-STRING             PIC X(10000).
+           01  IN-C-STRING              USAGE POINTER.
+           01  OUT-COBOL-STRING         PIC X(10000).
 
        PROCEDURE DIVISION WITH C LINKAGE USING
-           BY VALUE     C-STRING
-           BY REFERENCE COBOL-STRING.
+           BY VALUE     IN-C-STRING
+           BY REFERENCE OUT-COBOL-STRING.
 
            CALL "strcpy" USING
-               BY REFERENCE COBOL-STRING
-               BY VALUE     C-STRING
+               BY REFERENCE OUT-COBOL-STRING
+               BY VALUE     IN-C-STRING
 
-           INSPECT COBOL-STRING
+           INSPECT OUT-COBOL-STRING
                REPLACING FIRST X"00" BY SPACE
 
            GOBACK.

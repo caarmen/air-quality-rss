@@ -9,27 +9,27 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  MHD-USE-SELECT-INTERNALLY  CONSTANT AS 8.
-           01  MHD-OPTION-END             CONSTANT AS 0.
-           01  PORT_NUMBER                CONSTANT AS 8888.
+           01  C-MHD-USE-SELECT-INTERNALLY   CONSTANT AS 8.
+           01  C-MHD-OPTION-END              CONSTANT AS 0.
+           01  C-PORT_NUMBER                 CONSTANT AS 8888.
 
-           01  DAEMON-PTR                 USAGE POINTER.
-           01  CONNECTION-HANDLER-ENTRY   USAGE PROGRAM-POINTER.
-           01  SERVER-COMMAND             PIC X(80).
+           01  LS-DAEMON-PTR                 USAGE POINTER.
+           01  LS-CONNECTION-HANDLER-ENTRY   USAGE PROGRAM-POINTER.
+           01  LS-SERVER-COMMAND             PIC X(80).
 
        PROCEDURE DIVISION.
-           SET CONNECTION-HANDLER-ENTRY TO
+           SET LS-CONNECTION-HANDLER-ENTRY TO
                ENTRY "MICROHTTPD-ACCESS-HANDLER".
 
            CALL "MHD_start_daemon" USING
-               BY VALUE    MHD-USE-SELECT-INTERNALLY
-               BY VALUE    PORT_NUMBER
+               BY VALUE    C-MHD-USE-SELECT-INTERNALLY
+               BY VALUE    C-PORT_NUMBER
                BY VALUE    0
                BY VALUE    0
-               BY VALUE    CONNECTION-HANDLER-ENTRY
+               BY VALUE    LS-CONNECTION-HANDLER-ENTRY
                BY VALUE    0
-               BY VALUE    MHD-OPTION-END
-               RETURNING   DAEMON-PTR
+               BY VALUE    C-MHD-OPTION-END
+               RETURNING   LS-DAEMON-PTR
            END-CALL
            DISPLAY "Pollen server started, waiting for requests..."
 
@@ -48,78 +48,78 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  MHD-HTTP-OK                CONSTANT AS 200.
-           01  MHD-RESPMEM-PERSISTENT     CONSTANT AS 0.
+           01  C-MHD-HTTP-OK              CONSTANT AS 200.
+           01  C-MHD-RESPMEM-PERSISTENT   CONSTANT AS 0.
 
-           01  RESPONSE.
-               05  STATUS-CODE            PIC 999.
-               05  BODY                   PIC X(10000) VALUE SPACES.
+           01  LS-RESPONSE.
+               05  LS-STATUS-CODE         PIC 999.
+               05  LS-BODY                PIC X(10000) VALUE SPACES.
 
-           01  RESPONSE-PTR               USAGE POINTER.
-           01  MHD-RESULT                 USAGE BINARY-LONG.
+           01  LS-RESPONSE-PTR            USAGE POINTER.
+           01  LS-MHD-RESULT              USAGE BINARY-LONG.
 
-           01  HTTP-METHOD                PIC X(8).
-           01  URL                        PIC X(100).
+           01  LS-HTTP-METHOD             PIC X(8).
+           01  LS-URL                     PIC X(100).
 
        LINKAGE SECTION.
-           01  CLS-PTR                    USAGE POINTER.
-           01  CONNECTION-PTR             USAGE POINTER.
-           01  URL-PTR                    USAGE POINTER.
-           01  METHOD-PTR                 USAGE POINTER.
-           01  VERSION-PTR                USAGE POINTER.
-           01  UPLOAD-DATA-PTR            USAGE POINTER.
-           01  UPLOAD-DATA-SIZE-PTR       USAGE POINTER.
-           01  CON-CLS-PTR-PTR            USAGE POINTER.
+           01  UNUSED-CLS-PTR              USAGE POINTER.
+           01  IN-CONNECTION-PTR           USAGE POINTER.
+           01  IN-URL-PTR                  USAGE POINTER.
+           01  IN-METHOD-PTR               USAGE POINTER.
+           01  UNUSED-VERSION-PTR          USAGE POINTER.
+           01  UNUSED-UPLOAD-DATA-PTR      USAGE POINTER.
+           01  UNUSED-UPLOAD-DATA-SIZE-PTR USAGE POINTER.
+           01  UNUSED-CON-CLS-PTR-PTR      USAGE POINTER.
 
        PROCEDURE DIVISION WITH C LINKAGE USING
-           BY VALUE    CLS-PTR
-           BY VALUE    CONNECTION-PTR
-           BY VALUE    URL-PTR
-           BY VALUE    METHOD-PTR
-           BY VALUE    VERSION-PTR
-           BY VALUE    UPLOAD-DATA-PTR
-           BY VALUE    UPLOAD-DATA-SIZE-PTR
-           BY REFERENCE CON-CLS-PTR-PTR.
+           BY VALUE    UNUSED-CLS-PTR
+           BY VALUE    IN-CONNECTION-PTR
+           BY VALUE    IN-URL-PTR
+           BY VALUE    IN-METHOD-PTR
+           BY VALUE    UNUSED-VERSION-PTR
+           BY VALUE    UNUSED-UPLOAD-DATA-PTR
+           BY VALUE    UNUSED-UPLOAD-DATA-SIZE-PTR
+           BY REFERENCE UNUSED-CON-CLS-PTR-PTR.
 
            CALL "C-STRING" USING
-               BY VALUE    METHOD-PTR
-               BY REFERENCE HTTP-METHOD
+               BY VALUE     IN-METHOD-PTR
+               BY REFERENCE LS-HTTP-METHOD
 
            CALL "C-STRING" USING
-               BY VALUE    URL-PTR
-               BY REFERENCE URL
+               BY VALUE     IN-URL-PTR
+               BY REFERENCE LS-URL
 
            CALL "POLLEN-ROUTER" USING
-               BY VALUE    CONNECTION-PTR
-               BY REFERENCE HTTP-METHOD
-               BY REFERENCE URL
-               BY REFERENCE RESPONSE
+               BY VALUE     IN-CONNECTION-PTR
+               BY REFERENCE LS-HTTP-METHOD
+               BY REFERENCE LS-URL
+               BY REFERENCE LS-RESPONSE
 
 
            CALL "MHD_create_response_from_buffer" USING
-               BY VALUE    LENGTH OF FUNCTION TRIM(BODY)
-               BY VALUE    FUNCTION TRIM(BODY)
-               BY VALUE    MHD-RESPMEM-PERSISTENT
-               RETURNING   RESPONSE-PTR
+               BY VALUE    LENGTH OF FUNCTION TRIM(LS-BODY)
+               BY VALUE    FUNCTION TRIM(LS-BODY)
+               BY VALUE    C-MHD-RESPMEM-PERSISTENT
+               RETURNING   LS-RESPONSE-PTR
            END-CALL
            CALL "MHD_add_response_header" USING
-               BY VALUE    RESPONSE-PTR
+               BY VALUE    LS-RESPONSE-PTR
                BY VALUE    "Content-Type"
                BY VALUE    "application/xml"
            END-CALL
 
            CALL "MHD_queue_response" USING
-               BY VALUE    CONNECTION-PTR
-               BY VALUE    STATUS-CODE
-               BY VALUE    RESPONSE-PTR
-               RETURNING   MHD-RESULT
+               BY VALUE    IN-CONNECTION-PTR
+               BY VALUE    LS-STATUS-CODE
+               BY VALUE    LS-RESPONSE-PTR
+               RETURNING   LS-MHD-RESULT
            END-CALL
 
            CALL "MHD_destroy_response" USING
-               BY VALUE    RESPONSE-PTR
+               BY VALUE    LS-RESPONSE-PTR
            END-CALL
 
-           MOVE MHD-RESULT TO RETURN-CODE
+           MOVE LS-MHD-RESULT TO RETURN-CODE
 
            GOBACK.
        END PROGRAM MICROHTTPD-ACCESS-HANDLER.
