@@ -29,7 +29,7 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  PROPERTY-NAME-PTR               USAGE POINTER.
+           01  LS-PROPERTY-NAME-PTR            USAGE POINTER.
 
        LINKAGE SECTION.
            01  JSON-HANDLE-PTR                 USAGE POINTER.
@@ -41,11 +41,11 @@
 
            CALL "cJSON_GetObjectName" USING
                BY VALUE JSON-HANDLE-PTR
-               RETURNING PROPERTY-NAME-PTR
+               RETURNING LS-PROPERTY-NAME-PTR
 
            CALL "strcpy" USING 
                BY REFERENCE OBJECT-NAME
-               BY VALUE     PROPERTY-NAME-PTR
+               BY VALUE     LS-PROPERTY-NAME-PTR
 
            GOBACK.
        END PROGRAM JSON-GET-OBJECT-NAME.
@@ -62,8 +62,8 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  PROPERTY-VALUE-OBJECT-PTR       USAGE POINTER.
-           01  PROPERTY-VALUE-STRING-PTR       USAGE POINTER.
+           01  LS-PROPERTY-VALUE-OBJECT-PTR    USAGE POINTER.
+           01  LS-PROPERTY-VALUE-STRING-PTR    USAGE POINTER.
 
        LINKAGE SECTION.
            01  JSON-OBJECT-PTR                 USAGE POINTER.
@@ -79,19 +79,19 @@
            CALL "cJSON_GetObjectItem" USING
                BY VALUE JSON-OBJECT-PTR
                BY CONTENT PROPERTY-NAME
-               RETURNING PROPERTY-VALUE-OBJECT-PTR
+               RETURNING LS-PROPERTY-VALUE-OBJECT-PTR
 
            *> We assume the value is a string: get the object's property
            *> value as a c-string.
            CALL "cJSON_GetStringValue" USING
-               BY VALUE PROPERTY-VALUE-OBJECT-PTR
-               RETURNING PROPERTY-VALUE-STRING-PTR
+               BY VALUE LS-PROPERTY-VALUE-OBJECT-PTR
+               RETURNING LS-PROPERTY-VALUE-STRING-PTR
 
            *> Finally convert the c-string to a cobol string.
 
            MOVE SPACES TO PROPERTY-VALUE
            CALL "C-STRING" USING
-               BY VALUE     PROPERTY-VALUE-STRING-PTR
+               BY VALUE     LS-PROPERTY-VALUE-STRING-PTR
                BY REFERENCE PROPERTY-VALUE
 
            GOBACK.
@@ -116,10 +116,10 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  ATTRIBUTE-INDEX                PIC 9       VALUE 1.
-           01  ATTRIBUTE-COUNT                USAGE BINARY-LONG.
-           01  ITER-ATTRIBUTE-HANDLE-PTR      USAGE POINTER.
-           01  ITER-ATTRIBUTE-NAME            PIC X(50).
+           01  LS-ATTRIBUTE-INDEX             PIC 9       VALUE 1.
+           01  LS-ATTRIBUTE-COUNT             USAGE BINARY-LONG.
+           01  LS-ITER-ATTRIBUTE-HANDLE-PTR   USAGE POINTER.
+           01  LS-ITER-ATTRIBUTE-NAME         PIC X(50).
 
        LINKAGE SECTION.
            01  JSON-SOURCE-HANDLE-PTR         USAGE POINTER.
@@ -133,25 +133,25 @@
 
            CALL "cJSON_GetArraySize" USING
                BY VALUE JSON-SOURCE-HANDLE-PTR
-               RETURNING ATTRIBUTE-COUNT
+               RETURNING LS-ATTRIBUTE-COUNT
 
            MOVE NULL TO JSON-FOUND-OBJECT-HANDLE-PTR
 
-           PERFORM VARYING ATTRIBUTE-INDEX FROM 0 BY 1 
-               UNTIL ATTRIBUTE-INDEX = ATTRIBUTE-COUNT 
+           PERFORM VARYING LS-ATTRIBUTE-INDEX FROM 0 BY 1 
+               UNTIL LS-ATTRIBUTE-INDEX = LS-ATTRIBUTE-COUNT 
                  OR JSON-FOUND-OBJECT-HANDLE-PTR NOT = NULL
 
                CALL "cJSON_GetArrayItem" USING
                    BY VALUE JSON-SOURCE-HANDLE-PTR
-                   BY VALUE ATTRIBUTE-INDEX
-                   RETURNING ITER-ATTRIBUTE-HANDLE-PTR
+                   BY VALUE LS-ATTRIBUTE-INDEX
+                   RETURNING LS-ITER-ATTRIBUTE-HANDLE-PTR
 
                CALL "JSON-GET-OBJECT-NAME" USING
-                   BY VALUE     ITER-ATTRIBUTE-HANDLE-PTR
-                   BY REFERENCE ITER-ATTRIBUTE-NAME
+                   BY VALUE     LS-ITER-ATTRIBUTE-HANDLE-PTR
+                   BY REFERENCE LS-ITER-ATTRIBUTE-NAME
 
-               IF ITER-ATTRIBUTE-NAME(1:8) = ATTRIBUTE-NAME
-                   MOVE ITER-ATTRIBUTE-HANDLE-PTR TO
+               IF LS-ITER-ATTRIBUTE-NAME(1:8) = ATTRIBUTE-NAME
+                   MOVE LS-ITER-ATTRIBUTE-HANDLE-PTR TO
                        JSON-FOUND-OBJECT-HANDLE-PTR
                END-IF
 
