@@ -14,18 +14,18 @@
        01 LS-DATA-URL              PIC X(1000) VALUE SPACES.
 
        LINKAGE SECTION.
-       01 LATITUDE                 PIC S9(3)V9(8).
-       01 LONGITUDE                PIC S9(3)V9(8).
-       01 POLLEN-OUTPUT            PIC X(10000) VALUE SPACES.
+       01 IN-LATITUDE              PIC S9(3)V9(8).
+       01 IN-LONGITUDE             PIC S9(3)V9(8).
+       01 OUT-POLLEN-RSS           PIC X(10000) VALUE SPACES.
 
        PROCEDURE DIVISION USING
-           BY REFERENCE LATITUDE
-           BY REFERENCE LONGITUDE
-           BY REFERENCE POLLEN-OUTPUT.
+           BY REFERENCE IN-LATITUDE
+           BY REFERENCE IN-LONGITUDE
+           BY REFERENCE OUT-POLLEN-RSS.
 
            CALL "POLLEN-DATA-SOURCE" USING
-               BY REFERENCE LATITUDE
-               BY REFERENCE LONGITUDE
+               BY REFERENCE IN-LATITUDE
+               BY REFERENCE IN-LONGITUDE
                BY REFERENCE LS-DATA-URL
                BY REFERENCE LS-BUFFER
 
@@ -41,7 +41,7 @@
 
            CALL "POLLEN-RENDER" USING
                BY REFERENCE LS-DATA-URL
-               BY REFERENCE POLLEN-OUTPUT
+               BY REFERENCE OUT-POLLEN-RSS
 
            MOVE 0 TO RETURN-CODE
            GOBACK.
