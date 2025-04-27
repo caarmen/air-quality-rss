@@ -32,19 +32,19 @@
            01  LS-PROPERTY-NAME-PTR            USAGE POINTER.
 
        LINKAGE SECTION.
-           01  JSON-HANDLE-PTR                 USAGE POINTER.
-           01  OBJECT-NAME                     PIC X(50).
+           01  IN-JSON-HANDLE-PTR              USAGE POINTER.
+           01  OUT-OBJECT-NAME                 PIC X(50).
 
        PROCEDURE DIVISION USING
-           BY VALUE     JSON-HANDLE-PTR
-           BY REFERENCE OBJECT-NAME.
+           BY VALUE     IN-JSON-HANDLE-PTR
+           BY REFERENCE OUT-OBJECT-NAME.
 
            CALL "cJSON_GetObjectName" USING
-               BY VALUE JSON-HANDLE-PTR
+               BY VALUE IN-JSON-HANDLE-PTR
                RETURNING LS-PROPERTY-NAME-PTR
 
            CALL "strcpy" USING 
-               BY REFERENCE OBJECT-NAME
+               BY REFERENCE OUT-OBJECT-NAME
                BY VALUE     LS-PROPERTY-NAME-PTR
 
            GOBACK.
@@ -66,19 +66,19 @@
            01  LS-PROPERTY-VALUE-STRING-PTR    USAGE POINTER.
 
        LINKAGE SECTION.
-           01  JSON-OBJECT-PTR                 USAGE POINTER.
-           01  PROPERTY-NAME                   PIC X(50).
-           01  PROPERTY-VALUE                  PIC X(50).
+           01  IN-JSON-OBJECT-PTR              USAGE POINTER.
+           01  IN-PROPERTY-NAME                PIC X(50).
+           01  OUT-PROPERTY-VALUE              PIC X(50).
 
        PROCEDURE DIVISION USING
-           BY VALUE     JSON-OBJECT-PTR
-           BY REFERENCE PROPERTY-NAME
-           BY REFERENCE PROPERTY-VALUE.
+           BY VALUE     IN-JSON-OBJECT-PTR
+           BY REFERENCE IN-PROPERTY-NAME
+           BY REFERENCE OUT-PROPERTY-VALUE.
 
            *> Get the value of the object's property as a cJSON object.
            CALL "cJSON_GetObjectItem" USING
-               BY VALUE JSON-OBJECT-PTR
-               BY CONTENT PROPERTY-NAME
+               BY VALUE IN-JSON-OBJECT-PTR
+               BY CONTENT IN-PROPERTY-NAME
                RETURNING LS-PROPERTY-VALUE-OBJECT-PTR
 
            *> We assume the value is a string: get the object's property
@@ -89,10 +89,10 @@
 
            *> Finally convert the c-string to a cobol string.
 
-           MOVE SPACES TO PROPERTY-VALUE
+           MOVE SPACES TO OUT-PROPERTY-VALUE
            CALL "C-STRING" USING
                BY VALUE     LS-PROPERTY-VALUE-STRING-PTR
-               BY REFERENCE PROPERTY-VALUE
+               BY REFERENCE OUT-PROPERTY-VALUE
 
            GOBACK.
        END PROGRAM JSON-GET-PROPERTY-STRING-VALUE.
@@ -116,33 +116,33 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  LS-ATTRIBUTE-INDEX             PIC 9       VALUE 1.
-           01  LS-ATTRIBUTE-COUNT             USAGE BINARY-LONG.
-           01  LS-ITER-ATTRIBUTE-HANDLE-PTR   USAGE POINTER.
-           01  LS-ITER-ATTRIBUTE-NAME         PIC X(50).
+           01  LS-ATTRIBUTE-INDEX                PIC 9 VALUE 1.
+           01  LS-ATTRIBUTE-COUNT                USAGE BINARY-LONG.
+           01  LS-ITER-ATTRIBUTE-HANDLE-PTR      USAGE POINTER.
+           01  LS-ITER-ATTRIBUTE-NAME            PIC X(50).
 
        LINKAGE SECTION.
-           01  JSON-SOURCE-HANDLE-PTR         USAGE POINTER.
-           01  ATTRIBUTE-NAME                 PIC X(50) VALUE SPACES.
-           01  JSON-FOUND-OBJECT-HANDLE-PTR   USAGE POINTER.
+           01  IN-JSON-SOURCE-HANDLE-PTR         USAGE POINTER.
+           01  IN-ATTRIBUTE-NAME                 PIC X(50) VALUE SPACES.
+           01  OUT-JSON-FOUND-OBJECT-HANDLE-PTR  USAGE POINTER.
 
        PROCEDURE DIVISION USING
-           ATTRIBUTE-NAME
-           BY VALUE     JSON-SOURCE-HANDLE-PTR
-           BY REFERENCE JSON-FOUND-OBJECT-HANDLE-PTR.
+           IN-ATTRIBUTE-NAME
+           BY VALUE     IN-JSON-SOURCE-HANDLE-PTR
+           BY REFERENCE OUT-JSON-FOUND-OBJECT-HANDLE-PTR.
 
            CALL "cJSON_GetArraySize" USING
-               BY VALUE JSON-SOURCE-HANDLE-PTR
+               BY VALUE IN-JSON-SOURCE-HANDLE-PTR
                RETURNING LS-ATTRIBUTE-COUNT
 
-           MOVE NULL TO JSON-FOUND-OBJECT-HANDLE-PTR
+           MOVE NULL TO OUT-JSON-FOUND-OBJECT-HANDLE-PTR
 
            PERFORM VARYING LS-ATTRIBUTE-INDEX FROM 0 BY 1 
                UNTIL LS-ATTRIBUTE-INDEX = LS-ATTRIBUTE-COUNT 
-                 OR JSON-FOUND-OBJECT-HANDLE-PTR NOT = NULL
+                 OR OUT-JSON-FOUND-OBJECT-HANDLE-PTR NOT = NULL
 
                CALL "cJSON_GetArrayItem" USING
-                   BY VALUE JSON-SOURCE-HANDLE-PTR
+                   BY VALUE IN-JSON-SOURCE-HANDLE-PTR
                    BY VALUE LS-ATTRIBUTE-INDEX
                    RETURNING LS-ITER-ATTRIBUTE-HANDLE-PTR
 
@@ -150,9 +150,9 @@
                    BY VALUE     LS-ITER-ATTRIBUTE-HANDLE-PTR
                    BY REFERENCE LS-ITER-ATTRIBUTE-NAME
 
-               IF LS-ITER-ATTRIBUTE-NAME(1:8) = ATTRIBUTE-NAME
+               IF LS-ITER-ATTRIBUTE-NAME(1:8) = IN-ATTRIBUTE-NAME
                    MOVE LS-ITER-ATTRIBUTE-HANDLE-PTR TO
-                       JSON-FOUND-OBJECT-HANDLE-PTR
+                       OUT-JSON-FOUND-OBJECT-HANDLE-PTR
                END-IF
 
            END-PERFORM
