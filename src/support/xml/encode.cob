@@ -13,7 +13,7 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01 I                            PIC 9(3) VALUE 1.
+           01 LS-I                         PIC 9(3) VALUE 1.
 
        LINKAGE SECTION.
            01 RAW-TEXT                     PIC X(1000).
@@ -26,9 +26,9 @@
 
            *> This could be done more robustly with a thin wrapper to
            *> libxml2 APIs.
-           PERFORM VARYING I FROM 1 BY 1 
-               UNTIL I > LENGTH OF FUNCTION TRIM(RAW-TEXT)
-               EVALUATE RAW-TEXT(I:1)
+           PERFORM VARYING LS-I FROM 1 BY 1 
+               UNTIL LS-I > LENGTH OF FUNCTION TRIM(RAW-TEXT)
+               EVALUATE RAW-TEXT(LS-I:1)
                    WHEN "&"
                        STRING
                            FUNCTION TRIM(ESCAPED-TEXT)
@@ -38,7 +38,7 @@
                    WHEN OTHER
                        STRING
                            FUNCTION TRIM(ESCAPED-TEXT)
-                           RAW-TEXT(I:1)
+                           RAW-TEXT(LS-I:1)
                            INTO ESCAPED-TEXT
                        END-STRING
                END-EVALUATE
