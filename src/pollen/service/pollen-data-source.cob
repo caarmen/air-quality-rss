@@ -58,12 +58,12 @@
        LOCAL-STORAGE SECTION.
            01  DATE-FORMAT                     PIC X(10)
                                                VALUE "YYYY-MM-DD".
-           01  CURRENT-DATE-AND-TIME.
-               05  CDT-YEAR                    PIC 9(4).
-               05  CDT-MONTH                   PIC 9(2). *> 01-12
-               05  CDT-DAY                     PIC 9(2). *> 01-31
-           01  DATE-AND-TIME-STR               PIC X(10).
-           01  BASE-URL                        PIC X(100).
+           01  LS-CURRENT-DATE-AND-TIME.
+               05  LS-CDT-YEAR                 PIC 9(4).
+               05  LS-CDT-MONTH                PIC 9(2). *> 01-12
+               05  LS-CDT-DAY                  PIC 9(2). *> 01-31
+           01  LS-DATE-AND-TIME-STR            PIC X(10).
+           01  LS-BASE-URL                     PIC X(100).
            01  BASE-URL-DEFAULT                PIC X(100) VALUE
                    "https://data.atmo-france.org/geoserver/ind_pol/ows".
            01  QUERY-STRING                    PIC X(1000) VALUE
@@ -79,7 +79,7 @@
                "&INFO_FORMAT=application%2Fjson" &
                "&X=535&Y=284".
 
-           01  BBOX                           PIC X(1000) VALUE SPACES.
+           01  LS-BBOX                        PIC X(1000) VALUE SPACES.
 
        LINKAGE SECTION.
            01  LATITUDE                       PIC S9(3)V9(8).
@@ -92,36 +92,36 @@
            BY REFERENCE DATA-URL-OUT.
 
            MOVE FUNCTION CURRENT-DATE
-               TO CURRENT-DATE-AND-TIME
+               TO LS-CURRENT-DATE-AND-TIME
 
            STRING
-               CDT-YEAR "-" CDT-MONTH "-" CDT-DAY
-               INTO DATE-AND-TIME-STR
+               LS-CDT-YEAR "-" LS-CDT-MONTH "-" LS-CDT-DAY
+               INTO LS-DATE-AND-TIME-STR
            END-STRING
 
            CALL "BOUNDING-BOX-STR" USING
                BY REFERENCE LATITUDE
                BY REFERENCE LONGITUDE
-               BY REFERENCE BBOX
+               BY REFERENCE LS-BBOX
 
       *> Get the pollen source host from the environment.
       *> This is useful for testing purposes.
-           ACCEPT BASE-URL FROM ENVIRONMENT "POLLEN_BASE_URL"
-           IF FUNCTION TRIM(BASE-URL) = ""
+           ACCEPT LS-BASE-URL FROM ENVIRONMENT "POLLEN_BASE_URL"
+           IF FUNCTION TRIM(LS-BASE-URL) = ""
            THEN
-               MOVE BASE-URL-DEFAULT TO BASE-URL
+               MOVE BASE-URL-DEFAULT TO LS-BASE-URL
            END-IF
-           STRING FUNCTION TRIM(BASE-URL)
+           STRING FUNCTION TRIM(LS-BASE-URL)
                QUERY-STRING
                INTO DATA-URL-OUT
            END-STRING
 
       *> Replace the date in the URL with the current date.
            INSPECT DATA-URL-OUT
-               REPLACING ALL DATE-FORMAT BY DATE-AND-TIME-STR
+               REPLACING ALL DATE-FORMAT BY LS-DATE-AND-TIME-STR
 
       *> Append the bounding box to the URL.
-           STRING FUNCTION TRIM(DATA-URL-OUT) "&" BBOX
+           STRING FUNCTION TRIM(DATA-URL-OUT) "&" LS-BBOX
                INTO DATA-URL-OUT
            END-STRING
 
@@ -142,14 +142,14 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  X                              PIC S9(7)V9(8).
-           01  Y                              PIC S9(7)V9(8).
-           01  BBOX-WIDTH                     CONSTANT AS 40000.
-           01  BBOX-HEIGHT                    CONSTANT AS 20000.
-           01  BBOX-LEFT                      PIC +9(7).9(8).
-           01  BBOX-RIGHT                     PIC +9(7).9(8).
-           01  BBOX-TOP                       PIC +9(7).9(8).
-           01  BBOX-BOTTOM                    PIC +9(7).9(8).
+           01  LS-X                           PIC S9(7)V9(8).
+           01  LS-Y                           PIC S9(7)V9(8).
+           01  LS-BBOX-WIDTH                  CONSTANT AS 40000.
+           01  LS-BBOX-HEIGHT                 CONSTANT AS 20000.
+           01  LS-BBOX-LEFT                   PIC +9(7).9(8).
+           01  LS-BBOX-RIGHT                  PIC +9(7).9(8).
+           01  LS-BBOX-TOP                    PIC +9(7).9(8).
+           01  LS-BBOX-BOTTOM                 PIC +9(7).9(8).
 
        LINKAGE SECTION.
            01  LATITUDE                       PIC S9(3)V9(8).
@@ -164,18 +164,18 @@
            CALL "LAT-LONG-TO-WEB-MERCATOR" USING
                BY REFERENCE LATITUDE
                BY REFERENCE LONGITUDE
-               BY REFERENCE X
-               BY REFERENCE Y
+               BY REFERENCE LS-X
+               BY REFERENCE LS-Y
 
-           COMPUTE BBOX-LEFT = X - BBOX-WIDTH / 2
-           COMPUTE BBOX-RIGHT = X + BBOX-WIDTH / 2
-           COMPUTE BBOX-TOP = Y + BBOX-HEIGHT / 2
-           COMPUTE BBOX-BOTTOM = Y - BBOX-HEIGHT / 2
+           COMPUTE LS-BBOX-LEFT = LS-X - LS-BBOX-WIDTH / 2
+           COMPUTE LS-BBOX-RIGHT = LS-X + LS-BBOX-WIDTH / 2
+           COMPUTE LS-BBOX-TOP = LS-Y + LS-BBOX-HEIGHT / 2
+           COMPUTE LS-BBOX-BOTTOM = LS-Y - LS-BBOX-HEIGHT / 2
 
            STRING
                "BBOX="
-               BBOX-LEFT "%2C" BBOX-BOTTOM "%2C"
-               BBOX-RIGHT "%2C" BBOX-TOP
+               LS-BBOX-LEFT "%2C" LS-BBOX-BOTTOM "%2C"
+               LS-BBOX-RIGHT "%2C" LS-BBOX-TOP
                "&HEIGHT=500&WIDTH=1000"
                INTO BOUNDING-BOX
            END-STRING
