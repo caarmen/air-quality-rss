@@ -13,10 +13,10 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  LATITUDE                   PIC S9(3)V9(8).
-           01  LONGITUDE                  PIC S9(3)V9(8).
-           01  QUERY-PARAM-LATITUDE       PIC X(16) VALUE "latitude".
-           01  QUERY-PARAM-LONGITUDE      PIC X(16) VALUE "longitude".
+           01  LS-LATITUDE-DEGREES        PIC S9(3)V9(8).
+           01  LS-LONGITUDE-DEGREES       PIC S9(3)V9(8).
+           01  LS-QUERY-PARAM-LATITUDE    PIC X(16) VALUE "latitude".
+           01  LS-QUERY-PARAM-LONGITUDE   PIC X(16) VALUE "longitude".
 
        LINKAGE SECTION.
            01  CONNECTION-PTR             USAGE POINTER.
@@ -44,8 +44,8 @@
 
                CALL "PARSE-NUMERIC-QUERY-PARAM" USING
                    BY VALUE     CONNECTION-PTR
-                   BY REFERENCE QUERY-PARAM-LATITUDE
-                   BY REFERENCE LATITUDE
+                   BY REFERENCE LS-QUERY-PARAM-LATITUDE
+                   BY REFERENCE LS-LATITUDE-DEGREES
                    RETURNING RETURN-CODE
                IF RETURN-CODE NOT = 0
                THEN
@@ -59,8 +59,8 @@
 
                CALL "PARSE-NUMERIC-QUERY-PARAM" USING
                    BY VALUE     CONNECTION-PTR
-                   BY REFERENCE QUERY-PARAM-LONGITUDE
-                   BY REFERENCE LONGITUDE
+                   BY REFERENCE LS-QUERY-PARAM-LONGITUDE
+                   BY REFERENCE LS-LONGITUDE-DEGREES
                IF RETURN-CODE NOT = 0
                THEN
                    MOVE 400 TO STATUS-CODE
@@ -72,8 +72,8 @@
                *> We have all we need, call the pollen service.
 
                CALL "POLLEN-SERVICE" USING
-                   BY REFERENCE LATITUDE
-                   BY REFERENCE LONGITUDE
+                   BY REFERENCE LS-LATITUDE-DEGREES
+                   BY REFERENCE LS-LONGITUDE-DEGREES
                    BY REFERENCE BODY
                    RETURNING RETURN-CODE
                IF RETURN-CODE NOT = 0
