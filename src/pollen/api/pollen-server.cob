@@ -62,35 +62,35 @@
            01  LS-URL                     PIC X(100).
 
        LINKAGE SECTION.
-           01  CLS-PTR                    USAGE POINTER.
-           01  CONNECTION-PTR             USAGE POINTER.
-           01  URL-PTR                    USAGE POINTER.
-           01  METHOD-PTR                 USAGE POINTER.
-           01  VERSION-PTR                USAGE POINTER.
-           01  UPLOAD-DATA-PTR            USAGE POINTER.
-           01  UPLOAD-DATA-SIZE-PTR       USAGE POINTER.
-           01  CON-CLS-PTR-PTR            USAGE POINTER.
+           01  UNUSED-CLS-PTR              USAGE POINTER.
+           01  IN-CONNECTION-PTR           USAGE POINTER.
+           01  IN-URL-PTR                  USAGE POINTER.
+           01  IN-METHOD-PTR               USAGE POINTER.
+           01  UNUSED-VERSION-PTR          USAGE POINTER.
+           01  UNUSED-UPLOAD-DATA-PTR      USAGE POINTER.
+           01  UNUSED-UPLOAD-DATA-SIZE-PTR USAGE POINTER.
+           01  UNUSED-CON-CLS-PTR-PTR      USAGE POINTER.
 
        PROCEDURE DIVISION WITH C LINKAGE USING
-           BY VALUE    CLS-PTR
-           BY VALUE    CONNECTION-PTR
-           BY VALUE    URL-PTR
-           BY VALUE    METHOD-PTR
-           BY VALUE    VERSION-PTR
-           BY VALUE    UPLOAD-DATA-PTR
-           BY VALUE    UPLOAD-DATA-SIZE-PTR
-           BY REFERENCE CON-CLS-PTR-PTR.
+           BY VALUE    UNUSED-CLS-PTR
+           BY VALUE    IN-CONNECTION-PTR
+           BY VALUE    IN-URL-PTR
+           BY VALUE    IN-METHOD-PTR
+           BY VALUE    UNUSED-VERSION-PTR
+           BY VALUE    UNUSED-UPLOAD-DATA-PTR
+           BY VALUE    UNUSED-UPLOAD-DATA-SIZE-PTR
+           BY REFERENCE UNUSED-CON-CLS-PTR-PTR.
 
            CALL "C-STRING" USING
-               BY VALUE    METHOD-PTR
+               BY VALUE     IN-METHOD-PTR
                BY REFERENCE LS-HTTP-METHOD
 
            CALL "C-STRING" USING
-               BY VALUE    URL-PTR
+               BY VALUE     IN-URL-PTR
                BY REFERENCE LS-URL
 
            CALL "POLLEN-ROUTER" USING
-               BY VALUE    CONNECTION-PTR
+               BY VALUE     IN-CONNECTION-PTR
                BY REFERENCE LS-HTTP-METHOD
                BY REFERENCE LS-URL
                BY REFERENCE LS-RESPONSE
@@ -109,7 +109,7 @@
            END-CALL
 
            CALL "MHD_queue_response" USING
-               BY VALUE    CONNECTION-PTR
+               BY VALUE    IN-CONNECTION-PTR
                BY VALUE    LS-STATUS-CODE
                BY VALUE    LS-RESPONSE-PTR
                RETURNING   LS-MHD-RESULT
