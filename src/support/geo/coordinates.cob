@@ -15,9 +15,8 @@
        DATA DIVISION.
 
        WORKING-STORAGE SECTION.
-           01  PI                           PIC S9(3)V99999999 
-                                               VALUE 3.14159265.
-           01  EARTH-RADIUS                 PIC S9(7) VALUE 6378137.
+           01  PI                           CONSTANT AS 3.14159265.
+           01  EARTH-RADIUS                 CONSTANT AS 6378137.
 
        LINKAGE SECTION.
            01  LATITUDE                     PIC S9(3)V9(8).
