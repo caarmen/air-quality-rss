@@ -19,53 +19,54 @@
            01  LS-QUERY-PARAM-LONGITUDE   PIC X(16) VALUE "longitude".
 
        LINKAGE SECTION.
-           01  CONNECTION-PTR             USAGE POINTER.
-           01  HTTP-METHOD                PIC X(8).
-           01  URL                        PIC X(100).
-           01  RESPONSE.
-               05  STATUS-CODE            PIC 999.
-               05  BODY                   PIC X(10000)     VALUE SPACES.
+           01  IN-CONNECTION-PTR          USAGE POINTER.
+           01  IN-HTTP-METHOD             PIC X(8).
+           01  IN-URL                     PIC X(100).
+           01  OUT-RESPONSE.
+               05  OUT-STATUS-CODE        PIC 999.
+               05  OUT-BODY               PIC X(10000)     VALUE SPACES.
 
        PROCEDURE DIVISION
            USING
-               BY VALUE    CONNECTION-PTR
-               BY REFERENCE HTTP-METHOD
-               BY REFERENCE URL
-               BY REFERENCE RESPONSE.
+               BY VALUE     IN-CONNECTION-PTR
+               BY REFERENCE IN-HTTP-METHOD
+               BY REFERENCE IN-URL
+               BY REFERENCE OUT-RESPONSE.
 
-           DISPLAY "Incoming " HTTP-METHOD " request for " URL ".".
+           DISPLAY "Incoming " IN-HTTP-METHOD " request for "
+               IN-URL ".".
 
-           IF FUNCTION TRIM(HTTP-METHOD) = "GET"
-               AND FUNCTION TRIM(URL) = "/pollen-rss"
+           IF FUNCTION TRIM(IN-HTTP-METHOD) = "GET"
+               AND FUNCTION TRIM(IN-URL) = "/pollen-rss"
            THEN
-               MOVE 200 TO STATUS-CODE
+               MOVE 200 TO OUT-STATUS-CODE
 
                *> Parse the latitude query parameter
 
                CALL "PARSE-NUMERIC-QUERY-PARAM" USING
-                   BY VALUE     CONNECTION-PTR
+                   BY VALUE     IN-CONNECTION-PTR
                    BY REFERENCE LS-QUERY-PARAM-LATITUDE
                    BY REFERENCE LS-LATITUDE-DEGREES
                    RETURNING RETURN-CODE
                IF RETURN-CODE NOT = 0
                THEN
-                   MOVE 400 TO STATUS-CODE
+                   MOVE 400 TO OUT-STATUS-CODE
                    MOVE "Bad Request: missing latitude query param"
-                       TO BODY
+                       TO OUT-BODY
                    GOBACK
                END-IF
 
                *> Parse the longitude query parameter
 
                CALL "PARSE-NUMERIC-QUERY-PARAM" USING
-                   BY VALUE     CONNECTION-PTR
+                   BY VALUE     IN-CONNECTION-PTR
                    BY REFERENCE LS-QUERY-PARAM-LONGITUDE
                    BY REFERENCE LS-LONGITUDE-DEGREES
                IF RETURN-CODE NOT = 0
                THEN
-                   MOVE 400 TO STATUS-CODE
+                   MOVE 400 TO OUT-STATUS-CODE
                    MOVE "Bad Request: missing longitude query param"
-                       TO BODY
+                       TO OUT-BODY
                    GOBACK
                END-IF
 
@@ -74,18 +75,18 @@
                CALL "POLLEN-SERVICE" USING
                    BY REFERENCE LS-LATITUDE-DEGREES
                    BY REFERENCE LS-LONGITUDE-DEGREES
-                   BY REFERENCE BODY
+                   BY REFERENCE OUT-BODY
                    RETURNING RETURN-CODE
                IF RETURN-CODE NOT = 0
                THEN
-                   MOVE 500 TO STATUS-CODE
+                   MOVE 500 TO OUT-STATUS-CODE
                    MOVE "Internal Server Error: pollen service failed"
-                       TO BODY
+                       TO OUT-BODY
                END-IF
 
            ELSE
-               MOVE 404 TO STATUS-CODE
-               MOVE "Not Found" TO BODY
+               MOVE 404 TO OUT-STATUS-CODE
+               MOVE "Not Found" TO OUT-BODY
            END-IF.
 
            GOBACK.
