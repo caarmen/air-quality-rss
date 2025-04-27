@@ -15,7 +15,7 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT POLLEN-FILE ASSIGN TO "pollen.dat"
+           SELECT FD-POLLEN-FILE ASSIGN TO "pollen.dat"
                ORGANIZATION IS SEQUENTIAL.
 
        DATA DIVISION.
@@ -109,7 +109,7 @@
 
            IF LS-JSON-PROPERTIES-PTR NOT = NULL
            THEN
-               OPEN OUTPUT POLLEN-FILE
+               OPEN OUTPUT FD-POLLEN-FILE
 
                *> Get the "date_maj" attribute, which is a datetime
                *> string. We don't have any datetime logic for
@@ -118,9 +118,9 @@
                CALL "JSON-GET-PROPERTY-STRING-VALUE" USING
                    BY VALUE LS-JSON-PROPERTIES-PTR
                    BY REFERENCE LS-DATE-MAJ-ATTRIBUTE
-                   BY REFERENCE DATE-MAJ
+                   BY REFERENCE F-DATE-MAJ
                PERFORM CHECK-JSON-ERROR
-               WRITE DATE-MAJ
+               WRITE F-DATE-MAJ
 
                *> Get the "pollen_resp" attribute, which is a
                *> string containing potentially multiple pollen
@@ -129,9 +129,9 @@
                CALL "JSON-GET-PROPERTY-STRING-VALUE" USING
                    BY VALUE LS-JSON-PROPERTIES-PTR
                    BY REFERENCE LS-POLLEN-RESP-ATTRIBUTE
-                   BY REFERENCE RESPONSIBLE-POLLEN
+                   BY REFERENCE F-RESPONSIBLE-POLLEN
                PERFORM CHECK-JSON-ERROR
-               WRITE RESPONSIBLE-POLLEN
+               WRITE F-RESPONSIBLE-POLLEN
 
                CALL "cJSON_GetArraySize" USING
                    BY VALUE LS-JSON-PROPERTIES-PTR
@@ -169,16 +169,16 @@
                            AND LS-PROPERTY-NAME-VAL(1:9)
                                NOT = "code_zone"
                        THEN
-                           MOVE LS-PROPERTY-NAME-VAL TO POLLEN-NAME
-                           *> POLLEN-CODE will be like 2
+                           MOVE LS-PROPERTY-NAME-VAL TO F-POLLEN-NAME
+                           *> F-POLLEN-CODE will be like 2
                            CALL "cJSON_GetIntValue" USING
                                BY VALUE LS-PROPERTY-ATTR-PTR
-                               RETURNING POLLEN-CODE
+                               RETURNING F-POLLEN-CODE
                        PERFORM CHECK-JSON-ERROR
-                           WRITE POLLEN-RECORD
+                           WRITE F-POLLEN-RECORD
                        END-IF
                END-PERFORM
-               CLOSE POLLEN-FILE
+               CLOSE FD-POLLEN-FILE
            END-IF
            MOVE 0 TO RETURN-CODE
            GOBACK.

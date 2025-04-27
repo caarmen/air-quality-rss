@@ -11,7 +11,7 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT POLLEN-FILE ASSIGN TO "pollen.dat"
+           SELECT FD-POLLEN-FILE ASSIGN TO "pollen.dat"
                ORGANIZATION IS SEQUENTIAL.
 
        DATA DIVISION.
@@ -32,41 +32,41 @@
            BY REFERENCE DATA-URL
            BY REFERENCE POLLEN-RSS-OUTPUT.
 
-           OPEN INPUT POLLEN-FILE
+           OPEN INPUT FD-POLLEN-FILE
 
            *> First read the responsible-pollen
            *> Then read all of the pollen-records until the end of file
-           READ POLLEN-FILE INTO DATE-MAJ
-           STRING DATE-MAJ INTO LS-POLLEN-UPDATED-AT
+           READ FD-POLLEN-FILE INTO F-DATE-MAJ
+           STRING F-DATE-MAJ INTO LS-POLLEN-UPDATED-AT
            END-STRING
 
-           READ POLLEN-FILE INTO RESPONSIBLE-POLLEN
+           READ FD-POLLEN-FILE INTO F-RESPONSIBLE-POLLEN
            STRING
                "Pollen responsable: "
-               FUNCTION TRIM(RESPONSIBLE-POLLEN) X"0A"
+               FUNCTION TRIM(F-RESPONSIBLE-POLLEN) X"0A"
                INTO LS-POLLEN-OUTPUT
            END-STRING
 
            PERFORM UNTIL EXIT
-               READ POLLEN-FILE INTO POLLEN-RECORD
+               READ FD-POLLEN-FILE INTO F-POLLEN-RECORD
                    AT END
                        EXIT PERFORM
                    NOT AT END
                        CALL "POLLEN-DISPLAY-NAME" USING
-                           BY REFERENCE POLLEN-NAME
+                           BY REFERENCE F-POLLEN-NAME
                            BY REFERENCE LS-POLLEN-DISPLAY-NAME
                        END-CALL
                        STRING
                            FUNCTION TRIM(LS-POLLEN-OUTPUT)
                            FUNCTION TRIM(LS-POLLEN-DISPLAY-NAME)
                            ": "
-                           POLLEN-CODE X"0A"
+                           F-POLLEN-CODE X"0A"
                            INTO LS-POLLEN-OUTPUT
                        END-STRING
                END-READ
            END-PERFORM
 
-           CLOSE POLLEN-FILE
+           CLOSE FD-POLLEN-FILE
 
            INSPECT LS-POLLEN-OUTPUT
                REPLACING ALL X"00" BY SPACE
