@@ -23,24 +23,24 @@
        COPY pollen-data IN "pollen/service".
 
        LOCAL-STORAGE SECTION.
-       01 JSON-ERROR-PTR               USAGE POINTER.
-       01 JSON-ERROR-MSG               PIC X(10000).
-       01 JSON-ROOT-PTR                USAGE POINTER.
-       01 JSON-FEATURES-PTR            USAGE POINTER.
-       01 JSON-FIRST-FEATURE-PTR       USAGE POINTER.
-       01 JSON-PROPERTIES-PTR          USAGE POINTER.
-       01 JSON-POLLEN-DATE-MAJ-PTR     USAGE POINTER.
-       01 JSON-POLLEN-RESP-PTR         USAGE POINTER.
-       01 PROPERTY-ATTR-INDEX          PIC 999 VALUE 1.
-       01 PROPERTY-ATTR-PTR            USAGE POINTER.
-       01 PROPERTY-NAME-VAL            PIC X(50).
-       01 JSON-PROPERTIES-SIZE         USAGE BINARY-LONG.
-       01 FEATURES-ATTRIBUTE           PIC X(50) VALUE "features".
-       01 PROPERTIES-ATTRIBUTE         PIC X(50) 
+       01 LS-JSON-ERROR-PTR            USAGE POINTER.
+       01 LS-JSON-ERROR-MSG            PIC X(10000).
+       01 LS-JSON-ROOT-PTR             USAGE POINTER.
+       01 LS-JSON-FEATURES-PTR         USAGE POINTER.
+       01 LS-JSON-FIRST-FEATURE-PTR    USAGE POINTER.
+       01 LS-JSON-PROPERTIES-PTR       USAGE POINTER.
+       01 LS-JSON-POLLEN-DATE-MAJ-PTR  USAGE POINTER.
+       01 LS-JSON-POLLEN-RESP-PTR      USAGE POINTER.
+       01 LS-PROPERTY-ATTR-INDEX       PIC 999 VALUE 1.
+       01 LS-PROPERTY-ATTR-PTR         USAGE POINTER.
+       01 LS-PROPERTY-NAME-VAL         PIC X(50).
+       01 LS-JSON-PROPERTIES-SIZE      USAGE BINARY-LONG.
+       01 LS-FEATURES-ATTRIBUTE        PIC X(50) VALUE "features".
+       01 LS-PROPERTIES-ATTRIBUTE      PIC X(50)
                                            VALUE "properties" & X"00".
-       01 DATE-MAJ-ATTRIBUTE           PIC X(50) 
+       01 LS-DATE-MAJ-ATTRIBUTE        PIC X(50)
                                            VALUE "date_maj" & X"00".
-       01 POLLEN-RESP-ATTRIBUTE        PIC X(50) 
+       01 LS-POLLEN-RESP-ATTRIBUTE     PIC X(50)
                                            VALUE "pollen_resp" & X"00".
 
        LINKAGE SECTION.
@@ -76,24 +76,24 @@
       *> Parse the raw txt and get a handle to the JSON root element.
            CALL "cJSON_Parse" USING
                BY CONTENT FUNCTION TRIM(POLLEN-JSON-INPUT)
-               RETURNING JSON-ROOT-PTR
+               RETURNING LS-JSON-ROOT-PTR
            PERFORM CHECK-JSON-ERROR
 
       *> Get the "features" attribute, which is an array:
            CALL "JSON-GET-OBJECT" USING
-               BY CONTENT FEATURES-ATTRIBUTE
-               BY VALUE JSON-ROOT-PTR
-               BY REFERENCE JSON-FEATURES-PTR
+               BY CONTENT LS-FEATURES-ATTRIBUTE
+               BY VALUE LS-JSON-ROOT-PTR
+               BY REFERENCE LS-JSON-FEATURES-PTR
            PERFORM CHECK-JSON-ERROR
 
       *> Get the first feature (there's only ever one it seems).
            CALL "cJSON_GetArrayItem" USING
-               BY VALUE JSON-FEATURES-PTR
+               BY VALUE LS-JSON-FEATURES-PTR
                0
-               RETURNING JSON-FIRST-FEATURE-PTR
+               RETURNING LS-JSON-FIRST-FEATURE-PTR
            PERFORM CHECK-JSON-ERROR
 
-           IF JSON-FIRST-FEATURE-PTR = NULL
+           IF LS-JSON-FIRST-FEATURE-PTR = NULL
            THEN
                 *> No features found, exit.
                 DISPLAY "No features found in JSON data."
@@ -102,12 +102,12 @@
            END-IF
            *> Get the "properties" attribute, which is an object:
            CALL "cJSON_GetObjectItem" USING
-               BY VALUE JSON-FIRST-FEATURE-PTR
-               BY CONTENT PROPERTIES-ATTRIBUTE
-               RETURNING JSON-PROPERTIES-PTR
+               BY VALUE LS-JSON-FIRST-FEATURE-PTR
+               BY CONTENT LS-PROPERTIES-ATTRIBUTE
+               RETURNING LS-JSON-PROPERTIES-PTR
            PERFORM CHECK-JSON-ERROR
 
-           IF JSON-PROPERTIES-PTR NOT = NULL
+           IF LS-JSON-PROPERTIES-PTR NOT = NULL
            THEN
                OPEN OUTPUT POLLEN-FILE
 
@@ -116,8 +116,8 @@
                *> this attribute. We just store it as a string
                *> to use it in the rss date fields.
                CALL "JSON-GET-PROPERTY-STRING-VALUE" USING
-                   BY VALUE JSON-PROPERTIES-PTR
-                   BY REFERENCE DATE-MAJ-ATTRIBUTE
+                   BY VALUE LS-JSON-PROPERTIES-PTR
+                   BY REFERENCE LS-DATE-MAJ-ATTRIBUTE
                    BY REFERENCE DATE-MAJ
                PERFORM CHECK-JSON-ERROR
                WRITE DATE-MAJ
@@ -127,51 +127,52 @@
                *> names separated by spaces. For now we just store
                *> it as is without any parsing.
                CALL "JSON-GET-PROPERTY-STRING-VALUE" USING
-                   BY VALUE JSON-PROPERTIES-PTR
-                   BY REFERENCE POLLEN-RESP-ATTRIBUTE
+                   BY VALUE LS-JSON-PROPERTIES-PTR
+                   BY REFERENCE LS-POLLEN-RESP-ATTRIBUTE
                    BY REFERENCE RESPONSIBLE-POLLEN
                PERFORM CHECK-JSON-ERROR
                WRITE RESPONSIBLE-POLLEN
 
                CALL "cJSON_GetArraySize" USING
-                   BY VALUE JSON-PROPERTIES-PTR
-                   RETURNING JSON-PROPERTIES-SIZE
+                   BY VALUE LS-JSON-PROPERTIES-PTR
+                   RETURNING LS-JSON-PROPERTIES-SIZE
                PERFORM CHECK-JSON-ERROR
 
                *> Iterate over all the properties, looking for
                *> the ones prefixed with code_. These are the pollen
                *> codes (except for code_qual and code_zone).
-               PERFORM VARYING PROPERTY-ATTR-INDEX FROM 0 BY 1 
-                   UNTIL PROPERTY-ATTR-INDEX = JSON-PROPERTIES-SIZE
-                       MOVE " " TO PROPERTY-NAME-VAL
-                       *> PROPERTY-ATTR-PTR points to an object
+               PERFORM VARYING LS-PROPERTY-ATTR-INDEX FROM 0 BY 1
+                   UNTIL LS-PROPERTY-ATTR-INDEX
+                       = LS-JSON-PROPERTIES-SIZE
+                       MOVE " " TO LS-PROPERTY-NAME-VAL
+                       *> LS-PROPERTY-ATTR-PTR points to an object
                        *> containing the name (code_boul) and value
                        *> (2) of one of the properties.
                        CALL "cJSON_GetArrayItem" USING
-                           BY VALUE JSON-PROPERTIES-PTR
-                           PROPERTY-ATTR-INDEX
-                           RETURNING PROPERTY-ATTR-PTR
+                           BY VALUE LS-JSON-PROPERTIES-PTR
+                           LS-PROPERTY-ATTR-INDEX
+                           RETURNING LS-PROPERTY-ATTR-PTR
                        PERFORM CHECK-JSON-ERROR
 
-                       *> PROPERTY-NAME-VAL will be like "code_boul"
+                       *> LS-PROPERTY-NAME-VAL will be like "code_boul"
                        CALL "JSON-GET-OBJECT-NAME" USING
-                           BY VALUE PROPERTY-ATTR-PTR
-                           BY REFERENCE PROPERTY-NAME-VAL
+                           BY VALUE LS-PROPERTY-ATTR-PTR
+                           BY REFERENCE LS-PROPERTY-NAME-VAL
                        PERFORM CHECK-JSON-ERROR
 
                        *> Ignore code_qual and code_zone which
                        *> aren't pollen codes. All other code_
                        *> attributes are pollen codes.
-                       IF PROPERTY-NAME-VAL(1:5) = "code_"
-                           AND PROPERTY-NAME-VAL(1:9) 
+                       IF LS-PROPERTY-NAME-VAL(1:5) = "code_"
+                           AND LS-PROPERTY-NAME-VAL(1:9)
                                NOT = "code_qual"
-                           AND PROPERTY-NAME-VAL(1:9) 
+                           AND LS-PROPERTY-NAME-VAL(1:9)
                                NOT = "code_zone"
                        THEN
-                           MOVE PROPERTY-NAME-VAL TO POLLEN-NAME
+                           MOVE LS-PROPERTY-NAME-VAL TO POLLEN-NAME
                            *> POLLEN-CODE will be like 2
                            CALL "cJSON_GetIntValue" USING
-                               BY VALUE PROPERTY-ATTR-PTR
+                               BY VALUE LS-PROPERTY-ATTR-PTR
                                RETURNING POLLEN-CODE
                        PERFORM CHECK-JSON-ERROR
                            WRITE POLLEN-RECORD
@@ -185,7 +186,7 @@
       *> ===============================================================
       *> PARAGRAPH: CHECK-JSON-ERROR
       *> PURPOSE: Check if the cJSON library has "raised an error".
-      *>          This is done by setting the JSON-ERROR-PTR to a
+      *>          This is done by setting the LS-JSON-ERROR-PTR to a
       *>          position in the json input where the error starts.
       *>          If this happens:
       *>            - log the error information,
@@ -194,14 +195,15 @@
       *> ===============================================================
        CHECK-JSON-ERROR.
            CALL "cJSON_GetErrorPtr"
-               RETURNING JSON-ERROR-PTR
-           IF JSON-ERROR-PTR NOT = NULL
+               RETURNING LS-JSON-ERROR-PTR
+           IF LS-JSON-ERROR-PTR NOT = NULL
            THEN
                DISPLAY "Json error occurred"
                CALL "C-STRING" USING
-                   BY VALUE     JSON-ERROR-PTR
-                   BY REFERENCE JSON-ERROR-MSG
-               DISPLAY "Json error ptr: " FUNCTION TRIM (JSON-ERROR-MSG)
+                   BY VALUE     LS-JSON-ERROR-PTR
+                   BY REFERENCE LS-JSON-ERROR-MSG
+               DISPLAY "Json error ptr: "
+                   FUNCTION TRIM (LS-JSON-ERROR-MSG)
                MOVE 1 to RETURN-CODE
                GOBACK
            END-IF.
