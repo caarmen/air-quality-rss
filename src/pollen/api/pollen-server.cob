@@ -13,12 +13,12 @@
            01  MHD-OPTION-END             CONSTANT AS 0.
            01  PORT_NUMBER                CONSTANT AS 8888.
 
-           01  DAEMON-PTR                 USAGE POINTER.
-           01  CONNECTION-HANDLER-ENTRY   USAGE PROGRAM-POINTER.
-           01  SERVER-COMMAND             PIC X(80).
+           01  LS-DAEMON-PTR                 USAGE POINTER.
+           01  LS-CONNECTION-HANDLER-ENTRY   USAGE PROGRAM-POINTER.
+           01  LS-SERVER-COMMAND             PIC X(80).
 
        PROCEDURE DIVISION.
-           SET CONNECTION-HANDLER-ENTRY TO
+           SET LS-CONNECTION-HANDLER-ENTRY TO
                ENTRY "MICROHTTPD-ACCESS-HANDLER".
 
            CALL "MHD_start_daemon" USING
@@ -26,10 +26,10 @@
                BY VALUE    PORT_NUMBER
                BY VALUE    0
                BY VALUE    0
-               BY VALUE    CONNECTION-HANDLER-ENTRY
+               BY VALUE    LS-CONNECTION-HANDLER-ENTRY
                BY VALUE    0
                BY VALUE    MHD-OPTION-END
-               RETURNING   DAEMON-PTR
+               RETURNING   LS-DAEMON-PTR
            END-CALL
            DISPLAY "Pollen server started, waiting for requests..."
 
@@ -51,15 +51,15 @@
            01  MHD-HTTP-OK                CONSTANT AS 200.
            01  MHD-RESPMEM-PERSISTENT     CONSTANT AS 0.
 
-           01  RESPONSE.
-               05  STATUS-CODE            PIC 999.
-               05  BODY                   PIC X(10000) VALUE SPACES.
+           01  LS-RESPONSE.
+               05  LS-STATUS-CODE         PIC 999.
+               05  LS-BODY                PIC X(10000) VALUE SPACES.
 
-           01  RESPONSE-PTR               USAGE POINTER.
-           01  MHD-RESULT                 USAGE BINARY-LONG.
+           01  LS-RESPONSE-PTR            USAGE POINTER.
+           01  LS-MHD-RESULT              USAGE BINARY-LONG.
 
-           01  HTTP-METHOD                PIC X(8).
-           01  URL                        PIC X(100).
+           01  LS-HTTP-METHOD             PIC X(8).
+           01  LS-URL                     PIC X(100).
 
        LINKAGE SECTION.
            01  CLS-PTR                    USAGE POINTER.
@@ -83,43 +83,43 @@
 
            CALL "C-STRING" USING
                BY VALUE    METHOD-PTR
-               BY REFERENCE HTTP-METHOD
+               BY REFERENCE LS-HTTP-METHOD
 
            CALL "C-STRING" USING
                BY VALUE    URL-PTR
-               BY REFERENCE URL
+               BY REFERENCE LS-URL
 
            CALL "POLLEN-ROUTER" USING
                BY VALUE    CONNECTION-PTR
-               BY REFERENCE HTTP-METHOD
-               BY REFERENCE URL
-               BY REFERENCE RESPONSE
+               BY REFERENCE LS-HTTP-METHOD
+               BY REFERENCE LS-URL
+               BY REFERENCE LS-RESPONSE
 
 
            CALL "MHD_create_response_from_buffer" USING
-               BY VALUE    LENGTH OF FUNCTION TRIM(BODY)
-               BY VALUE    FUNCTION TRIM(BODY)
+               BY VALUE    LENGTH OF FUNCTION TRIM(LS-BODY)
+               BY VALUE    FUNCTION TRIM(LS-BODY)
                BY VALUE    MHD-RESPMEM-PERSISTENT
-               RETURNING   RESPONSE-PTR
+               RETURNING   LS-RESPONSE-PTR
            END-CALL
            CALL "MHD_add_response_header" USING
-               BY VALUE    RESPONSE-PTR
+               BY VALUE    LS-RESPONSE-PTR
                BY VALUE    "Content-Type"
                BY VALUE    "application/xml"
            END-CALL
 
            CALL "MHD_queue_response" USING
                BY VALUE    CONNECTION-PTR
-               BY VALUE    STATUS-CODE
-               BY VALUE    RESPONSE-PTR
-               RETURNING   MHD-RESULT
+               BY VALUE    LS-STATUS-CODE
+               BY VALUE    LS-RESPONSE-PTR
+               RETURNING   LS-MHD-RESULT
            END-CALL
 
            CALL "MHD_destroy_response" USING
-               BY VALUE    RESPONSE-PTR
+               BY VALUE    LS-RESPONSE-PTR
            END-CALL
 
-           MOVE MHD-RESULT TO RETURN-CODE
+           MOVE LS-MHD-RESULT TO RETURN-CODE
 
            GOBACK.
        END PROGRAM MICROHTTPD-ACCESS-HANDLER.
