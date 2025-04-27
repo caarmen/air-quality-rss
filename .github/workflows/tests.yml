@@ -18,9 +18,6 @@ jobs:
           id: setup-bats
           uses: bats-core/bats-action@3.0.0
 
-        - name: Build the docker image
-          run: docker build -t pollen-rss .
-
         - name: Prepare reports directory
           run: mkdir -p reports
 
