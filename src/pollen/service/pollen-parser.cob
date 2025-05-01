@@ -23,28 +23,34 @@
        COPY pollen-data IN "pollen/service".
 
        LOCAL-STORAGE SECTION.
-       01 LS-JSON-ERROR-PTR            USAGE POINTER.
-       01 LS-JSON-ERROR-MSG            PIC X(10000).
-       01 LS-JSON-ROOT-PTR             USAGE POINTER.
-       01 LS-JSON-FEATURES-PTR         USAGE POINTER.
-       01 LS-JSON-FIRST-FEATURE-PTR    USAGE POINTER.
-       01 LS-JSON-PROPERTIES-PTR       USAGE POINTER.
-       01 LS-JSON-POLLEN-DATE-MAJ-PTR  USAGE POINTER.
-       01 LS-JSON-POLLEN-RESP-PTR      USAGE POINTER.
-       01 LS-PROPERTY-ATTR-INDEX       PIC 999 VALUE 1.
-       01 LS-PROPERTY-ATTR-PTR         USAGE POINTER.
-       01 LS-PROPERTY-NAME-VAL         PIC X(50).
-       01 LS-JSON-PROPERTIES-SIZE      USAGE BINARY-LONG.
-       01 LS-FEATURES-ATTRIBUTE        PIC X(50) VALUE "features".
-       01 LS-PROPERTIES-ATTRIBUTE      PIC X(50)
-                                           VALUE "properties" & X"00".
-       01 LS-DATE-MAJ-ATTRIBUTE        PIC X(50)
-                                           VALUE "date_maj" & X"00".
-       01 LS-POLLEN-RESP-ATTRIBUTE     PIC X(50)
-                                           VALUE "pollen_resp" & X"00".
+      *> C-pointers used with cJSON for parsing the JSON data:
+       01 LS-JSON-ERROR-PTR             USAGE POINTER.
+       01 LS-JSON-ERROR-MSG             PIC X(10000).
+       01 LS-JSON-ROOT-PTR              USAGE POINTER.
+       01 LS-JSON-FEATURES-PTR          USAGE POINTER.
+       01 LS-JSON-FIRST-FEATURE-PTR     USAGE POINTER.
+       01 LS-JSON-PROPERTIES-PTR        USAGE POINTER.
+       01 LS-JSON-POLLEN-DATE-MAJ-PTR   USAGE POINTER.
+       01 LS-JSON-POLLEN-RESP-PTR       USAGE POINTER.
+
+      *> Data items for parsing json properties when we don't
+      *> know the names of the properties in advance.
+       01 LS-PROPERTY-ATTR-INDEX        PIC 999 VALUE 1.
+       01 LS-PROPERTY-ATTR-PTR          USAGE POINTER.
+       01 LS-PROPERTY-NAME-VAL          PIC X(50).
+       01 LS-JSON-PROPERTIES-SIZE       USAGE BINARY-LONG.
+
+      *> Names of some specific json properties we know.
+       01 LS-FEATURES-ATTRIBUTE         PIC X(50) VALUE "features".
+       01 LS-PROPERTIES-ATTRIBUTE       PIC X(50)
+                                            VALUE "properties" & X"00".
+       01 LS-DATE-MAJ-ATTRIBUTE         PIC X(50)
+                                            VALUE "date_maj" & X"00".
+       01 LS-POLLEN-RESP-ATTRIBUTE      PIC X(50)
+                                            VALUE "pollen_resp" & X"00".
 
        LINKAGE SECTION.
-       01 IN-POLLEN-JSON               PIC X(10000).
+       01 IN-POLLEN-JSON                PIC X(10000).
 
        PROCEDURE DIVISION WITH C LINKAGE USING
            BY REFERENCE IN-POLLEN-JSON.
