@@ -25,7 +25,7 @@
        01 LS-POLLEN-OUTPUT            PIC X(10000) VALUE SPACES.
        *> LS-POLLEN-REPORT-ID: string which is unique for each
        *> combination of pollen data fields: date_maj (day component
-       *> only), and the code and value of each pollen.
+       *> only), responsible pollen, and the code and value of
        01 LS-POLLEN-REPORT-ID         PIC X(100) VALUE SPACES.
 
        LINKAGE SECTION.
@@ -55,6 +55,14 @@
                "Pollen responsable: "
                FUNCTION TRIM(F-RESPONSIBLE-POLLEN) X"0A"
                INTO LS-POLLEN-OUTPUT
+           END-STRING
+
+           *> Add the responsible pollen to the pollen report id.
+           STRING
+               FUNCTION TRIM(LS-POLLEN-REPORT-ID)
+               ","
+               FUNCTION TRIM(F-RESPONSIBLE-POLLEN)
+               INTO LS-POLLEN-REPORT-ID
            END-STRING
 
            PERFORM UNTIL EXIT
