@@ -12,7 +12,7 @@
   <title>Rapport de pollens</title>
   <link rel="alternate" 
    href="http://host.docker.internal:8000/ows?REQUEST=GetFeatureInfo&amp;SERVICE=WMS&amp;SRS=EPSG%3A3857&amp;STYLES=&amp;VERSION=1.3&amp;FILTER=%3CPropertyIsEqualTo%20matchCase%3D%22true%22%3E%3CPropertyName%3Edate_ech%3C%2FPropertyName%3E%3CLiteral%3E__TODAY__%3C%2FLiteral%3E%3C%2FPropertyIsEqualTo%3E&amp;SORTBY=date_dif%20D&amp;LAYERS=ind_pol%3Aind_national_pol&amp;QUERY_LAYERS=ind_pol%3Aind_national_pol&amp;INFO_FORMAT=application%2Fjson&amp;X=535&amp;Y=284&amp;BBOX=+0242389.29014960%2C+6238417.60989521%2C+0282389.29014960%2C+6258417.60989521&amp;HEIGHT=500&amp;WIDTH=1000"/>
-  <id>http://host.docker.internal:8000/ows?REQUEST=GetFeatureInfo&amp;SERVICE=WMS&amp;SRS=EPSG%3A3857&amp;STYLES=&amp;VERSION=1.3&amp;FILTER=%3CPropertyIsEqualTo%20matchCase%3D%22true%22%3E%3CPropertyName%3Edate_ech%3C%2FPropertyName%3E%3CLiteral%3E__TODAY__%3C%2FLiteral%3E%3C%2FPropertyIsEqualTo%3E&amp;SORTBY=date_dif%20D&amp;LAYERS=ind_pol%3Aind_national_pol&amp;QUERY_LAYERS=ind_pol%3Aind_national_pol&amp;INFO_FORMAT=application%2Fjson&amp;X=535&amp;Y=284&amp;BBOX=+0242389.29014960%2C+6238417.60989521%2C+0282389.29014960%2C+6258417.60989521&amp;HEIGHT=500&amp;WIDTH=1000</id>
+  <id>2025-04-26,aul1,boul1,oliv1,gram2,arm1,ambr1</id>
   <content type="text/plain">
 Pollen responsable: GRAMINEE                                                        
 Aulne: 1

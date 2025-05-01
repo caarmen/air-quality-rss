@@ -23,6 +23,10 @@
        01 LS-POLLEN-UPDATED-AT        PIC X(24).
        01 LS-POLLEN-DISPLAY-NAME      PIC X(16).
        01 LS-POLLEN-OUTPUT            PIC X(10000) VALUE SPACES.
+       *> LS-POLLEN-REPORT-ID: string which is unique for each
+       *> combination of pollen data fields: date_maj (day component
+       *> only), and the code and value of each pollen.
+       01 LS-POLLEN-REPORT-ID         PIC X(100) VALUE SPACES.
 
        LINKAGE SECTION.
        01 IN-DATA-URL                 PIC X(1000) VALUE SPACES.
@@ -38,6 +42,12 @@
            *> Then read all of the pollen-records until the end of file
            READ FD-POLLEN-FILE INTO F-DATE-MAJ
            STRING F-DATE-MAJ INTO LS-POLLEN-UPDATED-AT
+           END-STRING
+
+           *> Add the date to the pollen report id.
+           STRING
+               LS-POLLEN-UPDATED-AT(1:10)
+               INTO LS-POLLEN-REPORT-ID
            END-STRING
 
            READ FD-POLLEN-FILE INTO F-RESPONSIBLE-POLLEN
@@ -63,6 +73,15 @@
                            F-POLLEN-CODE X"0A"
                            INTO LS-POLLEN-OUTPUT
                        END-STRING
+                       *> Add the pollen name and code to the pollen
+                       *> report id.
+                       STRING
+                           FUNCTION TRIM(LS-POLLEN-REPORT-ID)
+                           ","
+                           FUNCTION TRIM(F-POLLEN-NAME(6:10))
+                           F-POLLEN-CODE
+                           INTO LS-POLLEN-REPORT-ID
+                       END-STRING
                END-READ
            END-PERFORM
 
@@ -72,6 +91,7 @@
                REPLACING ALL X"00" BY SPACE
 
            CALL "RENDER-RSS" USING
+               BY REFERENCE LS-POLLEN-REPORT-ID
                BY REFERENCE IN-DATA-URL
                BY REFERENCE LS-POLLEN-UPDATED-AT
                BY REFERENCE LS-POLLEN-OUTPUT
@@ -145,12 +165,14 @@
        01 LS-UPDATED-AT             PIC X(24).
 
        LINKAGE SECTION.
+       01 IN-ID                     PIC X(100).
        01 IN-SOURCE-URL             PIC X(1000).
        01 IN-DATE-MAJ               PIC X(24).
        01 IN-FEED-CONTENT           PIC X(10000) VALUE SPACES.
        01 OUT-RSS-CONTENT           PIC X(10000) VALUE SPACES.
 
        PROCEDURE DIVISION USING
+           BY REFERENCE IN-ID
            BY REFERENCE IN-SOURCE-URL
            BY REFERENCE IN-DATE-MAJ
            BY REFERENCE IN-FEED-CONTENT
@@ -191,8 +213,7 @@
                '  <link rel="alternate" '                          X"0A"
                '   href="' FUNCTION TRIM(LS-ESCAPED-SOURCE-URL)
                '"/>'                                               X"0A"
-               "  <id>" FUNCTION TRIM(LS-ESCAPED-SOURCE-URL)
-               "</id>"                                             X"0A"
+               "  <id>" FUNCTION TRIM(IN-ID) "</id>"               X"0A"
                '  <content type="text/plain">'                     X"0A"
                    FUNCTION TRIM(IN-FEED-CONTENT)
                "  </content>"                                      X"0A"
