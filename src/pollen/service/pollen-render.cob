@@ -25,7 +25,8 @@
        01 LS-POLLEN-OUTPUT            PIC X(10000) VALUE SPACES.
        *> LS-POLLEN-DATA-HASH: string which is unique for each
        *> combination of pollen data fields: date_maj (day component
-       *> only), and the code and value of each pollen.
+       *> only), responsible pollen, and the code and value of
+       *> each pollen.
        01 LS-POLLEN-DATA-HASH         PIC X(100) VALUE SPACES.
 
        LINKAGE SECTION.
@@ -45,7 +46,7 @@
            END-STRING
            *> Add the date to the pollen data hash.
            STRING
-               F-DATE-MAJ(1:10)
+               LS-POLLEN-UPDATED-AT(1:10)
                INTO LS-POLLEN-DATA-HASH
            END-STRING
 
@@ -54,6 +55,11 @@
                "Pollen responsable: "
                FUNCTION TRIM(F-RESPONSIBLE-POLLEN) X"0A"
                INTO LS-POLLEN-OUTPUT
+           END-STRING
+           STRING
+               FUNCTION TRIM(LS-POLLEN-DATA-HASH)
+               FUNCTION TRIM(F-RESPONSIBLE-POLLEN)
+               INTO LS-POLLEN-DATA-HASH
            END-STRING
 
            PERFORM UNTIL EXIT
