@@ -43,9 +43,9 @@
                BY VALUE IN-JSON-HANDLE-PTR
                RETURNING LS-PROPERTY-NAME-PTR
 
-           CALL "strcpy" USING 
-               BY REFERENCE OUT-OBJECT-NAME
+           CALL "C-STRING" USING
                BY VALUE     LS-PROPERTY-NAME-PTR
+               BY REFERENCE OUT-OBJECT-NAME
 
            GOBACK.
        END PROGRAM JSON-GET-OBJECT-NAME.
