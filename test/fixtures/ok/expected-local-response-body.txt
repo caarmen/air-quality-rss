@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
  xmlns:dc="http://purl.org/dc/elements/1.1/">
- <updated>2025-04-26T10:07:03.267Z</updated>
- <dc:date>2025-04-26T10:07:03.267Z</dc:date>
+ <updated>2025-04-26T00:00:00.000Z</updated>
+ <dc:date>2025-04-26T00:00:00.000Z</dc:date>
  <title>Pollens aujourd'hui</title>
  <subtitle>Pollens aujourd'hui</subtitle>
  <link rel="alternate" 
@@ -24,8 +24,8 @@ Ambroise: 1
   </content>
   <author><name>Atmo France</name></author>
   <dc:creator>Atmo France</dc:creator>
-  <published>2025-04-26T10:07:03.267Z</published>
-  <updated>2025-04-26T10:07:03.267Z</updated>
-  <dc:date>2025-04-26T10:07:03.267Z</dc:date>
+  <published>2025-04-26T00:00:00.000Z</published>
+  <updated>2025-04-26T00:00:00.000Z</updated>
+  <dc:date>2025-04-26T00:00:00.000Z</dc:date>
  </entry>
 </feed>
