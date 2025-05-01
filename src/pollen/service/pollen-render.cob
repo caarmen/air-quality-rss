@@ -142,6 +142,8 @@
        01 LS-ESCAPED-SOURCE-URL     PIC X(1000) VALUE SPACES.
        01 LS-ESCAPED-FEED-URL       PIC X(1000) VALUE SPACES.
 
+       01 LS-UPDATED-AT             PIC X(24).
+
        LINKAGE SECTION.
        01 IN-SOURCE-URL             PIC X(1000).
        01 IN-DATE-MAJ               PIC X(24).
@@ -166,12 +168,18 @@
                BY REFERENCE LS-ESCAPED-FEED-URL
            END-CALL
 
+           *> Set the updated datetime to midnight UTC.
+           *> This is to avoid too many updates in the RSS feed.
+           STRING IN-DATE-MAJ(1:10) "T00:00:00.000Z"
+                INTO LS-UPDATED-AT
+           END-STRING
+
            STRING
                '<?xml version="1.0" encoding="utf-8"?>'            X"0A"
                '<feed xmlns="http://www.w3.org/2005/Atom"'         X"0A"
                ' xmlns:dc="http://purl.org/dc/elements/1.1/">'     X"0A"
-               " <updated>" IN-DATE-MAJ "</updated>"               X"0A"
-               " <dc:date>" IN-DATE-MAJ "</dc:date>"               X"0A"
+               " <updated>" LS-UPDATED-AT "</updated>"             X"0A"
+               " <dc:date>" LS-UPDATED-AT "</dc:date>"             X"0A"
                " <title>Pollens aujourd'hui</title>"               X"0A"
                " <subtitle>Pollens aujourd'hui</subtitle>"         X"0A"
                ' <link rel="alternate" '                           X"0A"
@@ -190,9 +198,9 @@
                "  </content>"                                      X"0A"
                "  <author><name>Atmo France</name></author>"       X"0A"
                "  <dc:creator>Atmo France</dc:creator>"            X"0A"
-               "  <published>" IN-DATE-MAJ "</published>"          X"0A"
-               "  <updated>" IN-DATE-MAJ "</updated>"              X"0A"
-               "  <dc:date>" IN-DATE-MAJ "</dc:date>"              X"0A"
+               "  <published>" LS-UPDATED-AT "</published>"        X"0A"
+               "  <updated>" LS-UPDATED-AT "</updated>"            X"0A"
+               "  <dc:date>" LS-UPDATED-AT "</dc:date>"            X"0A"
                " </entry>"                                         X"0A"
                "</feed>"
                INTO OUT-RSS-CONTENT
