@@ -48,6 +48,11 @@
                                             VALUE "date_maj" & X"00".
        01 LS-POLLEN-RESP-ATTRIBUTE      PIC X(50)
                                             VALUE "pollen_resp" & X"00".
+      *> Local storage to hold the values of the json properties
+      *> in memory, before we write them to the file.
+       01 LS-RESPONSIBLE-POLLEN         PIC X(64).
+       01 LS-DATE-MAJ                   PIC X(24).
+       01 LS-POLLEN-CODE                PIC 9(1).
 
        LINKAGE SECTION.
        01 IN-POLLEN-JSON                PIC X(10000).
@@ -124,8 +129,9 @@
                CALL "JSON-GET-PROPERTY-STRING-VALUE" USING
                    BY VALUE LS-JSON-PROPERTIES-PTR
                    BY REFERENCE LS-DATE-MAJ-ATTRIBUTE
-                   BY REFERENCE F-DATE-MAJ
+                   BY REFERENCE LS-DATE-MAJ
                PERFORM CHECK-JSON-ERROR
+               MOVE LS-DATE-MAJ TO F-DATE-MAJ
                WRITE F-DATE-MAJ
 
                *> Get the "pollen_resp" attribute, which is a
@@ -135,8 +141,9 @@
                CALL "JSON-GET-PROPERTY-STRING-VALUE" USING
                    BY VALUE LS-JSON-PROPERTIES-PTR
                    BY REFERENCE LS-POLLEN-RESP-ATTRIBUTE
-                   BY REFERENCE F-RESPONSIBLE-POLLEN
+                   BY REFERENCE LS-RESPONSIBLE-POLLEN
                PERFORM CHECK-JSON-ERROR
+               MOVE LS-RESPONSIBLE-POLLEN TO F-RESPONSIBLE-POLLEN
                WRITE F-RESPONSIBLE-POLLEN
 
                CALL "cJSON_GetArraySize" USING
@@ -179,8 +186,9 @@
                            *> F-POLLEN-CODE will be like 2
                            CALL "cJSON_GetIntValue" USING
                                BY VALUE LS-PROPERTY-ATTR-PTR
-                               RETURNING F-POLLEN-CODE
+                               RETURNING LS-POLLEN-CODE
                        PERFORM CHECK-JSON-ERROR
+                           MOVE LS-POLLEN-CODE TO F-POLLEN-CODE
                            WRITE F-POLLEN-RECORD
                        END-IF
                END-PERFORM
