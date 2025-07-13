@@ -4,23 +4,12 @@
       *>          data and writes the relevant information to a file.
       *>          We write to a file because the number of pollen
       *>          records is unknown.
-      *>
-      *>          TODO: maybe the number of pollen records is indeed
-      *>          known. If so, we can use a table instead of a file.
       *> ===============================================================
 
        IDENTIFICATION DIVISION.
        PROGRAM-ID. POLLEN-PARSER.
 
-       ENVIRONMENT DIVISION.
-       INPUT-OUTPUT SECTION.
-       FILE-CONTROL.
-           SELECT FD-POLLEN-FILE ASSIGN TO "pollen.dat"
-               ORGANIZATION IS SEQUENTIAL.
-
        DATA DIVISION.
-       FILE SECTION.
-       COPY pollen-data IN "pollen/service".
 
        LOCAL-STORAGE SECTION.
       *> C-pointers used with cJSON for parsing the JSON data:
@@ -56,9 +45,11 @@
 
        LINKAGE SECTION.
        01 IN-POLLEN-JSON                PIC X(10000).
+       COPY "pollen-data" IN "pollen/service".
 
        PROCEDURE DIVISION WITH C LINKAGE USING
-           BY REFERENCE IN-POLLEN-JSON.
+           BY REFERENCE IN-POLLEN-JSON
+           POLLEN-GRP.
 
       *> ===============================================================
       *> The json input looks like this:
@@ -120,7 +111,6 @@
 
            IF LS-JSON-PROPERTIES-PTR NOT = NULL
            THEN
-               OPEN OUTPUT FD-POLLEN-FILE
 
                *> Get the "date_maj" attribute, which is a datetime
                *> string. We don't have any datetime logic for
@@ -131,8 +121,7 @@
                    BY REFERENCE LS-DATE-MAJ-ATTRIBUTE
                    BY REFERENCE LS-DATE-MAJ
                PERFORM CHECK-JSON-ERROR
-               MOVE LS-DATE-MAJ TO F-DATE-MAJ
-               WRITE F-DATE-MAJ
+               MOVE LS-DATE-MAJ TO POLLEN-DATE-MAJ
 
                *> Get the "pollen_resp" attribute, which is a
                *> string containing potentially multiple pollen
@@ -143,8 +132,7 @@
                    BY REFERENCE LS-POLLEN-RESP-ATTRIBUTE
                    BY REFERENCE LS-RESPONSIBLE-POLLEN
                PERFORM CHECK-JSON-ERROR
-               MOVE LS-RESPONSIBLE-POLLEN TO F-RESPONSIBLE-POLLEN
-               WRITE F-RESPONSIBLE-POLLEN
+               MOVE LS-RESPONSIBLE-POLLEN TO POLLEN-RESPONSIBLE
 
                CALL "cJSON_GetArraySize" USING
                    BY VALUE LS-JSON-PROPERTIES-PTR
@@ -157,42 +145,44 @@
                PERFORM VARYING LS-PROPERTY-ATTR-INDEX FROM 0 BY 1
                    UNTIL LS-PROPERTY-ATTR-INDEX
                        = LS-JSON-PROPERTIES-SIZE
-                       MOVE " " TO LS-PROPERTY-NAME-VAL
-                       *> LS-PROPERTY-ATTR-PTR points to an object
-                       *> containing the name (code_boul) and value
-                       *> (2) of one of the properties.
-                       CALL "cJSON_GetArrayItem" USING
-                           BY VALUE LS-JSON-PROPERTIES-PTR
-                           LS-PROPERTY-ATTR-INDEX
-                           RETURNING LS-PROPERTY-ATTR-PTR
-                       PERFORM CHECK-JSON-ERROR
+                       OR POLLEN-CODE-COUNT >= C-POLLEN-MAX-CODES
+                   MOVE " " TO LS-PROPERTY-NAME-VAL
+                   *> LS-PROPERTY-ATTR-PTR points to an object
+                   *> containing the name (code_boul) and value
+                   *> (2) of one of the properties.
+                   CALL "cJSON_GetArrayItem" USING
+                       BY VALUE LS-JSON-PROPERTIES-PTR
+                       LS-PROPERTY-ATTR-INDEX
+                       RETURNING LS-PROPERTY-ATTR-PTR
+                   PERFORM CHECK-JSON-ERROR
 
-                       *> LS-PROPERTY-NAME-VAL will be like "code_boul"
-                       CALL "JSON-GET-OBJECT-NAME" USING
+                   *> LS-PROPERTY-NAME-VAL will be like "code_boul"
+                   CALL "JSON-GET-OBJECT-NAME" USING
+                       BY VALUE LS-PROPERTY-ATTR-PTR
+                       BY REFERENCE LS-PROPERTY-NAME-VAL
+                   PERFORM CHECK-JSON-ERROR
+
+                   *> Ignore code_qual and code_zone which
+                   *> aren't pollen codes. All other code_
+                   *> attributes are pollen codes.
+                   IF LS-PROPERTY-NAME-VAL(1:5) = "code_"
+                       AND LS-PROPERTY-NAME-VAL(1:9)
+                           NOT = "code_qual"
+                       AND LS-PROPERTY-NAME-VAL(1:9)
+                           NOT = "code_zone"
+                   THEN
+                       ADD 1 TO POLLEN-CODE-COUNT
+                       MOVE LS-PROPERTY-NAME-VAL
+                           TO POLLEN-CODE-NAME(POLLEN-CODE-COUNT)
+                       CALL "cJSON_GetIntValue" USING
                            BY VALUE LS-PROPERTY-ATTR-PTR
-                           BY REFERENCE LS-PROPERTY-NAME-VAL
+                           RETURNING LS-POLLEN-CODE
                        PERFORM CHECK-JSON-ERROR
-
-                       *> Ignore code_qual and code_zone which
-                       *> aren't pollen codes. All other code_
-                       *> attributes are pollen codes.
-                       IF LS-PROPERTY-NAME-VAL(1:5) = "code_"
-                           AND LS-PROPERTY-NAME-VAL(1:9)
-                               NOT = "code_qual"
-                           AND LS-PROPERTY-NAME-VAL(1:9)
-                               NOT = "code_zone"
-                       THEN
-                           MOVE LS-PROPERTY-NAME-VAL TO F-POLLEN-NAME
-                           *> F-POLLEN-CODE will be like 2
-                           CALL "cJSON_GetIntValue" USING
-                               BY VALUE LS-PROPERTY-ATTR-PTR
-                               RETURNING LS-POLLEN-CODE
-                       PERFORM CHECK-JSON-ERROR
-                           MOVE LS-POLLEN-CODE TO F-POLLEN-CODE
-                           WRITE F-POLLEN-RECORD
-                       END-IF
+                       *> POLLEN-CODE-VALUE will be like 2
+                       MOVE LS-POLLEN-CODE
+                           TO POLLEN-CODE-VALUE(POLLEN-CODE-COUNT)
+                   END-IF
                END-PERFORM
-               CLOSE FD-POLLEN-FILE
            END-IF
            MOVE 0 TO RETURN-CODE
            GOBACK.

@@ -61,7 +61,7 @@ function wait_for_text_in_file() {
     file_path=$1
     search_string=$2
     echo "# Waiting for '${search_string}' in ${file_path}..." >&3
-    for i in {1..10}
+    for i in {1..100}
     do
         if grep --quiet "${search_string}" "${file_path}"
         then

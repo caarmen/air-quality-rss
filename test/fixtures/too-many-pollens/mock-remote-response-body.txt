@@ -1,0 +1,98 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "ind_national_pol.fid-68c60665_196724093b1_-1127",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [247600, 6250040],
+              [247760, 6251040],
+              [248440, 6252670],
+              [249990, 6253930],
+              [254300, 6255480],
+              [256450, 6256920],
+              [258250, 6257990],
+              [263340, 6258210],
+              [265980, 6258110],
+              [267050, 6256140],
+              [268370, 6254260],
+              [268660, 6253360],
+              [268870, 6250320],
+              [268990, 6249320],
+              [268530, 6246830],
+              [270240, 6248020],
+              [272490, 6248580],
+              [274660, 6247600],
+              [274480, 6245430],
+              [273980, 6244100],
+              [269390, 6245060],
+              [266060, 6245340],
+              [263180, 6243770],
+              [262290, 6243690],
+              [259590, 6243870],
+              [257610, 6244760],
+              [256180, 6245240],
+              [254860, 6245780],
+              [251890, 6246730],
+              [247600, 6250040]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "the_geom",
+      "properties": {
+        "gml_id": 3085201,
+        "aasqa": "11",
+        "date_maj": "2025-04-26T10:07:03.267Z",
+        "partition_field": "112025w17",
+        "code_qual": 2,
+        "lib_qual": "Faible",
+        "date_dif": "2025-04-26T10:42:40Z",
+        "source": "Airparif",
+        "type_zone": "commune",
+        "lib_zone": "Paris",
+        "code_aul": 1,
+        "code_boul": 1,
+        "code_oliv": 1,
+        "code_gram": 2,
+        "code_arm": 1,
+        "code_ambr": 1,
+        "code_pol1": 1,
+        "code_pol2": 1,
+        "code_pol3": 1,
+        "code_pol4": 1,
+        "code_pol5": 1,
+        "code_pol6": 1,
+        "code_pol7": 1,
+        "code_pol8": 1,
+        "code_pol9": 1,
+        "conc_aul": 0.7,
+        "conc_boul": 5.5,
+        "conc_oliv": 0,
+        "conc_gram": 12.9,
+        "conc_arm": 0,
+        "conc_ambr": 0,
+        "pollen_resp": "GRAMINEE",
+        "alerte": false,
+        "date_ech": "2025-04-26",
+        "code_zone": "75056",
+        "name": null
+      },
+      "bbox": [247600, 6243690, 274660, 6258210]
+    }
+  ],
+  "totalFeatures": "unknown",
+  "numberReturned": 1,
+  "timeStamp": "2025-04-26T13:19:52.737Z",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::3857"
+    }
+  },
+  "bbox": [247600, 6243690, 274660, 6258210]
+}

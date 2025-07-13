@@ -12,6 +12,7 @@
        LOCAL-STORAGE SECTION.
        01 LS-BUFFER                PIC X(10000).
        01 LS-DATA-URL              PIC X(1000) VALUE SPACES.
+       COPY "pollen-data" IN "pollen/service".
 
        LINKAGE SECTION.
        01 IN-LATITUDE-DEGREES      PIC S9(3)V9(8).
@@ -31,6 +32,7 @@
 
            CALL "POLLEN-PARSER" USING
                BY REFERENCE LS-BUFFER
+               POLLEN-GRP
                RETURNING RETURN-CODE
            IF RETURN-CODE NOT = 0
            THEN
@@ -41,6 +43,7 @@
 
            CALL "POLLEN-RENDER" USING
                BY REFERENCE LS-DATA-URL
+               BY REFERENCE POLLEN-GRP
                BY REFERENCE OUT-POLLEN-RSS
 
            MOVE 0 TO RETURN-CODE
