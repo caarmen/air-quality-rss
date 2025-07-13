@@ -8,16 +8,7 @@
 
        PROGRAM-ID. POLLEN-RENDER.
 
-       ENVIRONMENT DIVISION.
-       INPUT-OUTPUT SECTION.
-       FILE-CONTROL.
-           SELECT FD-POLLEN-FILE ASSIGN TO "pollen.dat"
-               ORGANIZATION IS SEQUENTIAL.
-
        DATA DIVISION.
-       FILE SECTION.
-       COPY pollen-data IN "pollen/service".
-
        LOCAL-STORAGE SECTION.
        01 LS-RESPONSE                 PIC X(10000) VALUE SPACES.
        01 LS-POLLEN-UPDATED-AT        PIC X(24).
@@ -30,18 +21,17 @@
 
        LINKAGE SECTION.
        01 IN-DATA-URL                 PIC X(1000) VALUE SPACES.
+       COPY pollen-data IN "pollen/service".
        01 OUT-POLLEN-RSS              PIC X(10000) VALUE SPACES.
 
        PROCEDURE DIVISION USING
            BY REFERENCE IN-DATA-URL
+           POLLEN-GRP
            BY REFERENCE OUT-POLLEN-RSS.
-
-           OPEN INPUT FD-POLLEN-FILE
 
            *> First read the responsible-pollen
            *> Then read all of the pollen-records until the end of file
-           READ FD-POLLEN-FILE INTO F-DATE-MAJ
-           STRING F-DATE-MAJ INTO LS-POLLEN-UPDATED-AT
+           STRING POLLEN-DATE-MAJ INTO LS-POLLEN-UPDATED-AT
            END-STRING
 
            *> Add the date to the pollen report id.
@@ -50,10 +40,9 @@
                INTO LS-POLLEN-REPORT-ID
            END-STRING
 
-           READ FD-POLLEN-FILE INTO F-RESPONSIBLE-POLLEN
            STRING
                "Pollen responsable: "
-               FUNCTION TRIM(F-RESPONSIBLE-POLLEN) X"0A"
+               FUNCTION TRIM(POLLEN-RESPONSIBLE) X"0A"
                INTO LS-POLLEN-OUTPUT
            END-STRING
 
@@ -61,39 +50,36 @@
            STRING
                FUNCTION TRIM(LS-POLLEN-REPORT-ID)
                ","
-               FUNCTION TRIM(F-RESPONSIBLE-POLLEN)
+               FUNCTION TRIM(POLLEN-RESPONSIBLE)
                INTO LS-POLLEN-REPORT-ID
            END-STRING
 
-           PERFORM UNTIL EXIT
-               READ FD-POLLEN-FILE INTO F-POLLEN-RECORD
-                   AT END
-                       EXIT PERFORM
-                   NOT AT END
-                       CALL "POLLEN-DISPLAY-NAME" USING
-                           BY REFERENCE F-POLLEN-NAME
-                           BY REFERENCE LS-POLLEN-DISPLAY-NAME
-                       END-CALL
-                       STRING
-                           FUNCTION TRIM(LS-POLLEN-OUTPUT)
-                           FUNCTION TRIM(LS-POLLEN-DISPLAY-NAME)
-                           ": "
-                           F-POLLEN-CODE X"0A"
-                           INTO LS-POLLEN-OUTPUT
-                       END-STRING
-                       *> Add the pollen name and code to the pollen
-                       *> report id.
-                       STRING
-                           FUNCTION TRIM(LS-POLLEN-REPORT-ID)
-                           ","
-                           FUNCTION TRIM(F-POLLEN-NAME(6:10))
-                           F-POLLEN-CODE
-                           INTO LS-POLLEN-REPORT-ID
-                       END-STRING
-               END-READ
-           END-PERFORM
+           PERFORM VARYING POLLEN-CODE-INDEX FROM 1
+               BY 1 UNTIL POLLEN-CODE-INDEX > POLLEN-CODE-COUNT
 
-           CLOSE FD-POLLEN-FILE
+               CALL "POLLEN-DISPLAY-NAME" USING
+                   BY REFERENCE POLLEN-CODE-NAME(POLLEN-CODE-INDEX)
+                   BY REFERENCE LS-POLLEN-DISPLAY-NAME
+               END-CALL
+               STRING
+                   FUNCTION TRIM(LS-POLLEN-OUTPUT)
+                   FUNCTION TRIM(LS-POLLEN-DISPLAY-NAME)
+                   ": "
+                   POLLEN-CODE-VALUE(POLLEN-CODE-INDEX) X"0A"
+                   INTO LS-POLLEN-OUTPUT
+               END-STRING
+               *> Add the pollen name and code to the pollen
+               *> report id.
+               STRING
+                   FUNCTION TRIM(LS-POLLEN-REPORT-ID)
+                   ","
+                   FUNCTION TRIM(POLLEN-CODE-NAME(
+                       POLLEN-CODE-INDEX)(6:10)
+                   )
+                   POLLEN-CODE-VALUE(POLLEN-CODE-INDEX)
+                   INTO LS-POLLEN-REPORT-ID
+               END-STRING
+           END-PERFORM
 
            INSPECT LS-POLLEN-OUTPUT
                REPLACING ALL X"00" BY SPACE
