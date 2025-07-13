@@ -21,10 +21,10 @@ Olivier: 1
 Graminées: 2
 Armoise: 1
 Ambroise: 1
-code_pol1: 1
-code_pol2: 1
-code_pol3: 1
-code_pol4: 1
+pol1: 1
+pol2: 1
+pol3: 1
+pol4: 1
   </content>
   <author><name>Atmo France</name></author>
   <dc:creator>Atmo France</dc:creator>

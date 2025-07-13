@@ -131,6 +131,9 @@
            ELSE IF IN-POLLEN-NAME(1:9) = "code_oliv"
                THEN
                    MOVE "Olivier" TO OUT-POLLEN-DISPLAY-NAME
+           ELSE IF IN-POLLEN-NAME(1:5) = "code_"
+               MOVE IN-POLLEN-NAME(6:10)
+               TO OUT-POLLEN-DISPLAY-NAME
            ELSE
                MOVE IN-POLLEN-NAME TO OUT-POLLEN-DISPLAY-NAME
            END-IF
