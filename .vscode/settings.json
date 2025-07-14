@@ -1,0 +1,11 @@
+{
+  "fortran.linter.compiler": "Disabled",
+  "fortran.fortls.directories": [
+    "../../others/netcdf-fortran/fortran/",
+    "build/http-client/src/http_client_external/src",
+    "build/json-fortran/src/json_fortran_external/src",
+    "build/http-client/src/http_client_external/build/dependencies/stdlib/src",
+    "src/pollutant/**",
+  ],
+  "fortran.formatting.formatter": "fprettify",
+}

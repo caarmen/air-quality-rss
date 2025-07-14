@@ -2,3 +2,4 @@ build/
 pollen.dat
 reports/
 logs/
+*.mod

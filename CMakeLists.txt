@@ -7,6 +7,8 @@ set(COB_COPY_DIR "${CMAKE_SOURCE_DIR}/src")
 # Set C standard and output dir
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+include(cmake/pollutant.cmake)
 
 # C source
 set(C_SOURCES
@@ -93,9 +95,13 @@ target_link_libraries(pollen-rss
     microhttpd
     curl
     cjson
+    pollutant-core
 )
 
 # Ensure COBOL objects are built first
 add_custom_target(cobol_objects ALL DEPENDS ${COB_OBJECTS})
-add_dependencies(pollen-rss cobol_objects)
+add_dependencies(pollen-rss cobol_objects pollutant-core)
 
+if(DEFINED ENV{BUILD_EXAMPLES})
+    add_subdirectory(examples)
+endif()

@@ -17,6 +17,8 @@ Atmo France in a format compatible with RSS feeds.
 ### Local
 Build the project with `./build.sh`.
 
+To build the examples, set the `BUILD_EXAMPLES` environment variable: `BUILD_EXAMPLES=1 ./build.sh`. The example binaries are created in `build/examples/bin/`
+
 Set the following environment variables:
 * `POLLEN_FEED_URL`: the URL of the rss feed. This is used in the `<link>` and `<id>` tags of the RSS feed.
 
