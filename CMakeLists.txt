@@ -24,6 +24,8 @@ set(COB_OTHER
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-parser.cob
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-render.cob
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-service.cob
+    ${CMAKE_SOURCE_DIR}/src/pollutant/service/pollutant-service.cob
+    ${CMAKE_SOURCE_DIR}/src/pollutant/service/pollutant-render.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/c-interop/c-string.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/geo/coordinates.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/http/curl-write-callback.cob

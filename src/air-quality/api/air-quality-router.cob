@@ -37,7 +37,8 @@
                IN-URL ".".
 
            IF FUNCTION TRIM(IN-HTTP-METHOD) = "GET"
-               AND FUNCTION TRIM(IN-URL) = "/pollen-rss"
+               AND (FUNCTION TRIM(IN-URL) = "/pollen-rss"
+               OR FUNCTION TRIM(IN-URL) = "/pollutant-rss")
            THEN
                MOVE 200 TO OUT-STATUS-CODE
 
@@ -70,19 +71,28 @@
                    GOBACK
                END-IF
 
-               *> We have all we need, call the pollen service.
-
-               CALL "POLLEN-SERVICE" USING
-                   BY REFERENCE IN-URL
-                   BY REFERENCE LS-LATITUDE-DEGREES
-                   BY REFERENCE LS-LONGITUDE-DEGREES
-                   BY REFERENCE OUT-BODY
-                   RETURNING RETURN-CODE
+               EVALUATE FUNCTION TRIM(IN-URL)
+                   WHEN "/pollen-rss"
+                       CALL "POLLEN-SERVICE" USING
+                           BY REFERENCE IN-URL
+                           BY REFERENCE LS-LATITUDE-DEGREES
+                           BY REFERENCE LS-LONGITUDE-DEGREES
+                           BY REFERENCE OUT-BODY
+                           RETURNING RETURN-CODE
+                   WHEN "/pollutant-rss"
+                       CALL "POLLUTANT-SERVICE" USING
+                           BY REFERENCE IN-URL
+                           BY REFERENCE LS-LATITUDE-DEGREES
+                           BY REFERENCE LS-LONGITUDE-DEGREES
+                           BY REFERENCE OUT-BODY
+                           RETURNING RETURN-CODE
+               END-EVALUATE
                IF RETURN-CODE NOT = 0
                THEN
                    MOVE 500 TO OUT-STATUS-CODE
-                   MOVE "Internal Server Error: pollen service failed"
-                       TO OUT-BODY
+                   STRING "Internal Server Error: "
+                       FUNCTION TRIM(IN-URL) " failed" INTO OUT-BODY
+                   END-STRING
                END-IF
 
            ELSE
