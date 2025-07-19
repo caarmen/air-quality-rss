@@ -14,6 +14,69 @@ module pollutant_provider
 contains
 
    !-----------------------------------------------------------------------
+   ! C binding for the Fortran subroutine to get pollutant pollutant data.
+   ! This function retrieves pollutant data for a specific date and
+   ! geographical coordinates, and returns the pollutant names and averages.
+   !
+   ! Arguments:
+   !
+   !   in  :: date_str           - Date string in the format YYYYMMDD
+   !   in  :: target_lat         - Target latitude
+   !   in  :: target_lon         - Target longitude
+   !   in  :: max_pollutants     - Maximum number of pollutants to retrieve
+   !
+   !   out :: pollutant_count    - Number of pollutants found
+   !   out :: pollutant_names    - Array of pollutant names
+   !   out :: pollutant_averages - Array of pollutant averages
+   !-----------------------------------------------------------------------
+   subroutine get_pollutant_pollutant_data_c( &
+      date_str, &
+      target_lat, &
+      target_lon, &
+      max_pollutants, &
+      pollutant_count, &
+      pollutant_names, &
+      pollutant_averages, &
+      pollutant_indices &
+      ) &
+      bind(C, name="get_pollutant_pollutant_data")
+      use iso_c_binding, only: c_char, c_float, c_int, c_null_char
+      use stdlib_strings, only: to_c_char
+      implicit none
+      character(kind=c_char), dimension(8), intent(in) :: date_str
+      real(c_float), intent(in) :: target_lat, target_lon
+      integer(c_int), intent(in) :: max_pollutants
+      integer(c_int), intent(out) :: pollutant_count
+      real(c_float), intent(out), dimension(max_pollutants) :: pollutant_averages
+      integer(c_int), intent(out), dimension(max_pollutants) :: pollutant_indices
+      character(kind=c_char), dimension(5, max_pollutants), intent(out) :: pollutant_names
+
+      character(len=8) :: date_str_f90
+      integer :: i
+
+      type(pollutant_pollutant_data), dimension(max_pollutants):: data
+      ! convert C string to Fortran string
+      do i = 1, 8
+         date_str_f90(i:i) = trim(adjustl(date_str(i)))
+      end do
+
+      call get_pollutant_pollutant_data( &
+         date_str_f90, &
+         target_lat, &
+         target_lon, &
+         size(data), &
+         pollutant_count, &
+         data &
+         )
+
+      do i = 1, pollutant_count
+         pollutant_names(:, i) = to_c_char(data(i)%pollutant_name)
+         pollutant_averages(i) = data(i)%average_value
+         pollutant_indices(i) = data(i)%index
+      end do
+   end subroutine
+
+   !-----------------------------------------------------------------------
    ! Subroutine to get pollutant pollutant data for a specific date and
    ! geographical coordinates.
    ! Arguments:
