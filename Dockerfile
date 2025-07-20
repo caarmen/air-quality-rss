@@ -43,5 +43,5 @@ RUN ./build.sh
 EXPOSE 8888
 
 # Run the binary produced by the build (adjust for your binary path)
-CMD ["./build/bin/pollen-rss"]
+CMD ["./build/bin/air-quality-rss"]
 

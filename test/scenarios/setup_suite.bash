@@ -3,5 +3,5 @@
 setup_suite() {
     rm -rf logs
     echo "# Building the Docker image..." >&3
-    docker build -t pollen-rss .
+    docker build -t air-quality-rss .
 }

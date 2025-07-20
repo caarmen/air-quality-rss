@@ -1,11 +1,11 @@
 
       *> ===============================================================
-      *> PROGRAM: POLLEN-RSS
-      *> PURPOSE: Entry point for the pollen RSS server.
+      *> PROGRAM: AIR-QUALITY-RSS
+      *> PURPOSE: Entry point for the air quality RSS server.
       *> ===============================================================
 
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. POLLEN-RSS.
+       PROGRAM-ID. AIR-QUALITY-RSS.
 
        PROCEDURE DIVISION.
 

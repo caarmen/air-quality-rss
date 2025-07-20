@@ -29,11 +29,11 @@ function launch_local_server() {
         -e POLLEN_FEED_URL="http://localhost:8888/pollen-rss?latitude=48.8439104&longitude=2.3570831" \
         --detach \
         --add-host=host.docker.internal:host-gateway \
-        pollen-rss)
+        air-quality-rss)
     docker logs -f "${docker_container_id}" > "${test_log_folder}/pollen-server.log" 2>&1 &
     wait_for_text_in_file \
         "${test_log_folder}/pollen-server.log" \
-        "Pollen server started"
+        "Air quality server started"
 }
 
 # Function to launch the remote server.

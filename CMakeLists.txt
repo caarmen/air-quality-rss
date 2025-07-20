@@ -16,7 +16,7 @@ set(C_SOURCES
 )
 
 # COBOL files
-set(COB_MAIN ${CMAKE_SOURCE_DIR}/src/pollen/pollen-rss.cob)  # Needs -x
+set(COB_MAIN ${CMAKE_SOURCE_DIR}/src/air-quality/air-quality-rss.cob)  # Needs -x
 set(COB_OTHER
     ${CMAKE_SOURCE_DIR}/src/pollen/api/pollen-router.cob
     ${CMAKE_SOURCE_DIR}/src/pollen/api/pollen-server.cob
@@ -70,18 +70,18 @@ endforeach()
 add_library(c_wrappers OBJECT ${C_SOURCES})
 
 # Link everything into the final executable
-add_executable(pollen-rss
+add_executable(air-quality-rss
     $<TARGET_OBJECTS:c_wrappers>
     ${COB_OBJECTS}
 )
 
-target_link_options(pollen-rss PRIVATE
+target_link_options(air-quality-rss PRIVATE
     -flto=auto
     -ffat-lto-objects
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    target_link_options(pollen-rss PRIVATE
+    target_link_options(air-quality-rss PRIVATE
         -Wl,--export-dynamic
         -Wl,-Bsymbolic-functions
         -Wl,-z,relro
@@ -89,7 +89,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     )
 endif()
 
-target_link_libraries(pollen-rss
+target_link_libraries(air-quality-rss
     cob
     m
     microhttpd
@@ -100,7 +100,7 @@ target_link_libraries(pollen-rss
 
 # Ensure COBOL objects are built first
 add_custom_target(cobol_objects ALL DEPENDS ${COB_OBJECTS})
-add_dependencies(pollen-rss cobol_objects pollutant-core)
+add_dependencies(air-quality-rss cobol_objects pollutant-core)
 
 if(DEFINED ENV{BUILD_EXAMPLES})
     add_subdirectory(examples)
