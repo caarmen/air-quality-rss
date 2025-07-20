@@ -1,10 +1,10 @@
       *> ===============================================================
-      *> PROGRAM: POLLEN-SERVER
+      *> PROGRAM: AIR-QUALITY-SERVER
       *> PURPOSE: Starts the HTTP server and binds the request handler.
       *> ===============================================================
 
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. POLLEN-SERVER.
+       PROGRAM-ID. AIR-QUALITY-SERVER.
 
        DATA DIVISION.
 
@@ -31,10 +31,10 @@
                BY VALUE    C-MHD-OPTION-END
                RETURNING   LS-DAEMON-PTR
            END-CALL
-           DISPLAY "Pollen server started, waiting for requests..."
+           DISPLAY "Air quality server started, waiting for requests..."
 
            GOBACK.
-       END PROGRAM POLLEN-SERVER.
+       END PROGRAM AIR-QUALITY-SERVER.
 
       *> ===============================================================
       *> PROGRAM: MICROHTTPD-ACCESS-HANDLER
@@ -89,7 +89,7 @@
                BY VALUE     IN-URL-PTR
                BY REFERENCE LS-URL
 
-           CALL "POLLEN-ROUTER" USING
+           CALL "AIR-QUALITY-ROUTER" USING
                BY VALUE     IN-CONNECTION-PTR
                BY REFERENCE LS-HTTP-METHOD
                BY REFERENCE LS-URL

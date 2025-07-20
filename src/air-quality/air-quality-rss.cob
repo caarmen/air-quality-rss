@@ -9,7 +9,7 @@
 
        PROCEDURE DIVISION.
 
-           CALL "POLLEN-SERVER".
+           CALL "AIR-QUALITY-SERVER".
 
            *> Wait for incoming connections
            PERFORM FOREVER

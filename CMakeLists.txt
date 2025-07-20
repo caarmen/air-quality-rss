@@ -18,8 +18,8 @@ set(C_SOURCES
 # COBOL files
 set(COB_MAIN ${CMAKE_SOURCE_DIR}/src/air-quality/air-quality-rss.cob)  # Needs -x
 set(COB_OTHER
-    ${CMAKE_SOURCE_DIR}/src/pollen/api/pollen-router.cob
-    ${CMAKE_SOURCE_DIR}/src/pollen/api/pollen-server.cob
+    ${CMAKE_SOURCE_DIR}/src/air-quality/api/air-quality-router.cob
+    ${CMAKE_SOURCE_DIR}/src/air-quality/api/air-quality-server.cob
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-data-source.cob
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-parser.cob
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-render.cob
