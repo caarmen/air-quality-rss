@@ -12,7 +12,7 @@ include(cmake/pollutant.cmake)
 
 # C source
 set(C_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/support/json/cJSON-wrapper.c
+    ${CMAKE_SOURCE_DIR}/src/support/cob/json/cJSON-wrapper.c
 )
 
 # COBOL files
@@ -24,13 +24,13 @@ set(COB_OTHER
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-parser.cob
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-render.cob
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-service.cob
-    ${CMAKE_SOURCE_DIR}/src/support/c-interop/c-string.cob
-    ${CMAKE_SOURCE_DIR}/src/support/geo/coordinates.cob
-    ${CMAKE_SOURCE_DIR}/src/support/http/curl-write-callback.cob
-    ${CMAKE_SOURCE_DIR}/src/support/http/http-client.cob
-    ${CMAKE_SOURCE_DIR}/src/support/http/query-param-parser.cob
-    ${CMAKE_SOURCE_DIR}/src/support/json/json-parser.cob
-    ${CMAKE_SOURCE_DIR}/src/support/xml/encode.cob
+    ${CMAKE_SOURCE_DIR}/src/support/cob/c-interop/c-string.cob
+    ${CMAKE_SOURCE_DIR}/src/support/cob/geo/coordinates.cob
+    ${CMAKE_SOURCE_DIR}/src/support/cob/http/curl-write-callback.cob
+    ${CMAKE_SOURCE_DIR}/src/support/cob/http/http-client.cob
+    ${CMAKE_SOURCE_DIR}/src/support/cob/http/query-param-parser.cob
+    ${CMAKE_SOURCE_DIR}/src/support/cob/json/json-parser.cob
+    ${CMAKE_SOURCE_DIR}/src/support/cob/xml/encode.cob
 ) # No -x
 
 # Output COBOL objects

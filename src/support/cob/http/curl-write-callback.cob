@@ -13,7 +13,7 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           COPY remote-service-response IN "support/http".
+           COPY remote-service-response IN "support/cob/http".
 
        LINKAGE SECTION.
 

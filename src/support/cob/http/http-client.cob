@@ -25,7 +25,7 @@
 
        LINKAGE SECTION.
            01  IN-REQUEST-URL             PIC X(1000).
-           COPY remote-service-response IN "support/http".
+           COPY remote-service-response IN "support/cob/http".
 
        *> Perform an HTTP GET request at the given URL
        *> and store the response in the RESPONSE variable.
