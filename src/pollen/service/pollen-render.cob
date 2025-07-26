@@ -12,12 +12,18 @@
        LOCAL-STORAGE SECTION.
        01 LS-RESPONSE                 PIC X(10000) VALUE SPACES.
        01 LS-POLLEN-UPDATED-AT        PIC X(24).
+       01 LS-AUTHOR                   PIC X(100) VALUE "Atmo France".
+       01 LS-FEED-TITLE               PIC X(100)
+                                      VALUE "Pollens aujourd'hui".
+       01 LS-ENTRY-TITLE              PIC X(100)
+                                      VALUE "Rapport de pollens".
        01 LS-POLLEN-DISPLAY-NAME      PIC X(16).
        01 LS-POLLEN-OUTPUT            PIC X(10000) VALUE SPACES.
        *> LS-POLLEN-REPORT-ID: string which is unique for each
        *> combination of pollen data fields: date_maj (day component
        *> only), responsible pollen, and the code and value of
        01 LS-POLLEN-REPORT-ID         PIC X(100) VALUE SPACES.
+       01 LS-FEED-URL                 PIC X(1000).
 
        LINKAGE SECTION.
        01 IN-DATA-URL                 PIC X(1000) VALUE SPACES.
@@ -84,10 +90,16 @@
            INSPECT LS-POLLEN-OUTPUT
                REPLACING ALL X"00" BY SPACE
 
+           ACCEPT LS-FEED-URL FROM ENVIRONMENT "POLLEN_FEED_URL"
+
            CALL "RENDER-RSS" USING
                BY REFERENCE LS-POLLEN-REPORT-ID
                BY REFERENCE IN-DATA-URL
+               BY REFERENCE LS-FEED-URL
                BY REFERENCE LS-POLLEN-UPDATED-AT
+               BY REFERENCE LS-AUTHOR
+               BY REFERENCE LS-FEED-TITLE
+               BY REFERENCE LS-ENTRY-TITLE
                BY REFERENCE LS-POLLEN-OUTPUT
                BY REFERENCE OUT-POLLEN-RSS
            END-CALL
@@ -155,7 +167,6 @@
 
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
-       01 LS-FEED-URL               PIC X(1000).
        01 LS-ESCAPED-SOURCE-URL     PIC X(1000) VALUE SPACES.
        01 LS-ESCAPED-FEED-URL       PIC X(1000) VALUE SPACES.
 
@@ -164,18 +175,24 @@
        LINKAGE SECTION.
        01 IN-ID                     PIC X(100).
        01 IN-SOURCE-URL             PIC X(1000).
+       01 IN-FEED-URL               PIC X(1000).
        01 IN-DATE-MAJ               PIC X(24).
+       01 IN-AUTHOR                 PIC X(100).
+       01 IN-FEED-TITLE             PIC X(100) VALUE SPACES.
+       01 IN-ENTRY-TITLE            PIC X(100) VALUE SPACES.
        01 IN-FEED-CONTENT           PIC X(10000) VALUE SPACES.
        01 OUT-RSS-CONTENT           PIC X(10000) VALUE SPACES.
 
        PROCEDURE DIVISION USING
            BY REFERENCE IN-ID
            BY REFERENCE IN-SOURCE-URL
+           BY REFERENCE IN-FEED-URL
            BY REFERENCE IN-DATE-MAJ
+           BY REFERENCE IN-AUTHOR
+           BY REFERENCE IN-FEED-TITLE
+           BY REFERENCE IN-ENTRY-TITLE
            BY REFERENCE IN-FEED-CONTENT
            BY REFERENCE OUT-RSS-CONTENT.
-
-           ACCEPT LS-FEED-URL FROM ENVIRONMENT "POLLEN_FEED_URL"
 
            *> Escape & from the URL
            CALL "XML-ENCODE" USING
@@ -183,7 +200,7 @@
                BY REFERENCE LS-ESCAPED-SOURCE-URL
            END-CALL
            CALL "XML-ENCODE" USING
-               BY REFERENCE LS-FEED-URL
+               BY REFERENCE IN-FEED-URL
                BY REFERENCE LS-ESCAPED-FEED-URL
            END-CALL
 
@@ -199,14 +216,15 @@
                ' xmlns:dc="http://purl.org/dc/elements/1.1/">'     X"0A"
                " <updated>" LS-UPDATED-AT "</updated>"             X"0A"
                " <dc:date>" LS-UPDATED-AT "</dc:date>"             X"0A"
-               " <title>Pollens aujourd'hui</title>"               X"0A"
-               " <subtitle>Pollens aujourd'hui</subtitle>"         X"0A"
+               " <title>" FUNCTION TRIM(IN-FEED-TITLE) "</title>"  X"0A"
+               " <subtitle>" FUNCTION TRIM(IN-FEED-TITLE)
+               "</subtitle>"                                       X"0A"
                ' <link rel="alternate" '                           X"0A"
                '  href="' FUNCTION TRIM(LS-ESCAPED-FEED-URL)
                '" />'                                              X"0A"
                " <id>" FUNCTION TRIM(LS-ESCAPED-FEED-URL) "</id>"  X"0A"
                " <entry>"                                          X"0A"
-               "  <title>Rapport de pollens</title>"               X"0A"
+               "  <title>"FUNCTION TRIM(IN-ENTRY-TITLE)"</title>"  X"0A"
                '  <link rel="alternate" '                          X"0A"
                '   href="' FUNCTION TRIM(LS-ESCAPED-SOURCE-URL)
                '"/>'                                               X"0A"
@@ -214,8 +232,10 @@
                '  <content type="text/plain">'                     X"0A"
                    FUNCTION TRIM(IN-FEED-CONTENT)
                "  </content>"                                      X"0A"
-               "  <author><name>Atmo France</name></author>"       X"0A"
-               "  <dc:creator>Atmo France</dc:creator>"            X"0A"
+               "  <author><name>" FUNCTION TRIM(IN-AUTHOR)
+               "</name></author>"                                  X"0A"
+               "  <dc:creator>"FUNCTION TRIM(IN-AUTHOR)
+               "</dc:creator>"                                     X"0A"
                "  <published>" LS-UPDATED-AT "</published>"        X"0A"
                "  <updated>" LS-UPDATED-AT "</updated>"            X"0A"
                "  <dc:date>" LS-UPDATED-AT "</dc:date>"            X"0A"
