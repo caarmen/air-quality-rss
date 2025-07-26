@@ -30,6 +30,7 @@ set(COB_OTHER
     ${CMAKE_SOURCE_DIR}/src/support/cob/http/http-client.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/http/query-param-parser.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/json/json-parser.cob
+    ${CMAKE_SOURCE_DIR}/src/support/cob/rss/render-rss.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/xml/encode.cob
 ) # No -x
 
