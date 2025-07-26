@@ -15,11 +15,13 @@
        COPY "pollen-data" IN "pollen/service".
 
        LINKAGE SECTION.
+       01 IN-URL                   PIC X(100).
        01 IN-LATITUDE-DEGREES      PIC S9(3)V9(8).
        01 IN-LONGITUDE-DEGREES     PIC S9(3)V9(8).
        01 OUT-POLLEN-RSS           PIC X(10000) VALUE SPACES.
 
        PROCEDURE DIVISION USING
+           BY REFERENCE IN-URL
            BY REFERENCE IN-LATITUDE-DEGREES
            BY REFERENCE IN-LONGITUDE-DEGREES
            BY REFERENCE OUT-POLLEN-RSS.
@@ -43,6 +45,9 @@
 
            CALL "POLLEN-RENDER" USING
                BY REFERENCE LS-DATA-URL
+               BY REFERENCE IN-URL
+               BY REFERENCE IN-LATITUDE-DEGREES
+               BY REFERENCE IN-LONGITUDE-DEGREES
                BY REFERENCE POLLEN-GRP
                BY REFERENCE OUT-POLLEN-RSS
 

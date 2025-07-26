@@ -26,7 +26,7 @@ function launch_local_server() {
     docker_container_id=$(docker run --rm -p 8888:8888 \
         -v /etc/localtime:/etc/localtime:ro \
         -e POLLEN_BASE_URL="${pollen_base_url}" \
-        -e POLLEN_FEED_URL="http://localhost:8888/pollen-rss?latitude=48.8439104&longitude=2.3570831" \
+        -e BASE_FEED_URL="http://localhost:8888" \
         --detach \
         --add-host=host.docker.internal:host-gateway \
         air-quality-rss)

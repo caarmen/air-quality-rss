@@ -11,6 +11,8 @@
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
        01 LS-RESPONSE                 PIC X(10000) VALUE SPACES.
+       01 LS-LATITUDE-DISPLAY         PIC -ZZ9.999999.
+       01 LS-LONGITUDE-DISPLAY        PIC -ZZ9.999999.
        01 LS-POLLEN-UPDATED-AT        PIC X(24).
        01 LS-AUTHOR                   PIC X(100) VALUE "Atmo France".
        01 LS-FEED-TITLE               PIC X(100)
@@ -27,11 +29,17 @@
 
        LINKAGE SECTION.
        01 IN-DATA-URL                 PIC X(1000) VALUE SPACES.
+       01 IN-URL                        PIC X(100).
+       01 IN-LATITUDE-DEGREES           PIC S9(3)V9(8).
+       01 IN-LONGITUDE-DEGREES          PIC S9(3)V9(8).
        COPY pollen-data IN "pollen/service".
        01 OUT-POLLEN-RSS              PIC X(10000) VALUE SPACES.
 
        PROCEDURE DIVISION USING
            BY REFERENCE IN-DATA-URL
+           BY REFERENCE IN-URL
+           BY REFERENCE IN-LATITUDE-DEGREES
+           BY REFERENCE IN-LONGITUDE-DEGREES
            POLLEN-GRP
            BY REFERENCE OUT-POLLEN-RSS.
 
@@ -90,7 +98,15 @@
            INSPECT LS-POLLEN-OUTPUT
                REPLACING ALL X"00" BY SPACE
 
-           ACCEPT LS-FEED-URL FROM ENVIRONMENT "POLLEN_FEED_URL"
+           ACCEPT LS-FEED-URL FROM ENVIRONMENT "BASE_FEED_URL"
+           MOVE IN-LATITUDE-DEGREES TO LS-LATITUDE-DISPLAY
+           MOVE IN-LONGITUDE-DEGREES TO LS-LONGITUDE-DISPLAY
+           STRING FUNCTION TRIM(LS-FEED-URL)
+               FUNCTION TRIM(IN-URL)
+               "?latitude=" LS-LATITUDE-DISPLAY
+               "&longitude=" LS-LONGITUDE-DISPLAY
+               INTO LS-FEED-URL
+           END-STRING
 
            CALL "RENDER-RSS" USING
                BY REFERENCE LS-POLLEN-REPORT-ID

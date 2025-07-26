@@ -6,10 +6,10 @@ Atmo France in a format compatible with RSS feeds.
 ## Running
 ### Docker
 * Fetch the image: `docker pull ghcr.io/caarmen/air-quality-rss:latest`
-* Run it, setting `POLLEN_FEED_URL` to the url you want to appear in the `<link>` and `<id>` tags of the RSS feed:
+* Run it, setting `BASE_FEED_URL` to the url you want to appear in the `<link>` and `<id>` tags of the RSS feed:
 ```bash
  docker run \
-   -e POLLEN_FEED_URL=localhost:8888 \
+   -e BASE_FEED_URL=http://localhost:8888 \
    -p 8888:8888 \
    ghcr.io/caarmen/air-quality-rss:latest
 ```
@@ -20,7 +20,7 @@ Build the project with `./build.sh`.
 To build the examples, set the `BUILD_EXAMPLES` environment variable: `BUILD_EXAMPLES=1 ./build.sh`. The example binaries are created in `build/examples/bin/`
 
 Set the following environment variables:
-* `POLLEN_FEED_URL`: the URL of the rss feed. This is used in the `<link>` and `<id>` tags of the RSS feed.
+* `BASE_FEED_URL`: the base URL of the rss feed. This is used in the `<link>` and `<id>` tags of the RSS feed.
 
 Run the project with `build/bin/air-quality-rss`.
 

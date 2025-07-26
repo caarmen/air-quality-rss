@@ -73,6 +73,7 @@
                *> We have all we need, call the pollen service.
 
                CALL "POLLEN-SERVICE" USING
+                   BY REFERENCE IN-URL
                    BY REFERENCE LS-LATITUDE-DEGREES
                    BY REFERENCE LS-LONGITUDE-DEGREES
                    BY REFERENCE OUT-BODY

@@ -6,8 +6,8 @@
  <title>Pollens aujourd'hui</title>
  <subtitle>Pollens aujourd'hui</subtitle>
  <link rel="alternate" 
-  href="http://localhost:8888/pollen-rss?latitude=48.8439104&amp;longitude=2.3570831" />
- <id>http://localhost:8888/pollen-rss?latitude=48.8439104&amp;longitude=2.3570831</id>
+  href="http://localhost:8888/pollen-rss?latitude=48.843910&amp;longitude=2.357083" />
+ <id>http://localhost:8888/pollen-rss?latitude=48.843910&amp;longitude=2.357083</id>
  <entry>
   <title>Rapport de pollens</title>
   <link rel="alternate" 
