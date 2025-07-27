@@ -13,7 +13,7 @@ load "../support/test-actions.bash"
     launch_remote_server "remote-server-200-error"
 
     # WHEN a request is made to the local pollen server
-    call_local_server "latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollen-rss?latitude=48.8439104&longitude=2.3570831"
 
     # THEN the local pollen server should return the expected error.
     [ "$http_status" -eq 500 ]
@@ -30,7 +30,7 @@ load "../support/test-actions.bash"
     # GIVEN a remote pollen server is offline
 
     # WHEN a request is made to the local pollen server
-    call_local_server "latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollen-rss?latitude=48.8439104&longitude=2.3570831"
 
     # THEN the local pollen server should return the expected error.
     [ "$http_status" -eq 500 ]

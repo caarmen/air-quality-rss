@@ -18,7 +18,7 @@ teardown() {
 
 function launch_local_server() {
     pollen_base_url=$1
-    # Start the local pollen server.
+    # Start the local air quality server.
     #
     # The --add-host argument is to make `host.docker.internal` available inside the container.
     # This is needed to connect to the local server from inside the container.
@@ -30,9 +30,9 @@ function launch_local_server() {
         --detach \
         --add-host=host.docker.internal:host-gateway \
         air-quality-rss)
-    docker logs -f "${docker_container_id}" > "${test_log_folder}/pollen-server.log" 2>&1 &
+    docker logs -f "${docker_container_id}" > "${test_log_folder}/air-quality-server.log" 2>&1 &
     wait_for_text_in_file \
-        "${test_log_folder}/pollen-server.log" \
+        "${test_log_folder}/air-quality-server.log" \
         "Air quality server started"
 }
 
@@ -81,13 +81,13 @@ function wait_for_text_in_file() {
 # and actual-response-metadata.json
 # and the http status code to the variable http_status.
 function call_local_server() {
-    query_string=$1
+    request_uri=$1
     # Call the local server
     curl \
         --silent \
         --output "${test_log_folder}/actual-local-response-body.txt" \
         --write-out "%{json}" \
-        "http://localhost:8888/pollen-rss?${query_string}" \
+        "http://localhost:8888${request_uri}" \
         >  "${test_log_folder}/actual-local-response-metadata.json"
     http_status=$(jq -r '.http_code' \
         "${test_log_folder}/actual-local-response-metadata.json"\

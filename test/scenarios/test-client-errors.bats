@@ -9,7 +9,7 @@ load "../support/test-actions.bash"
     # THEN the local pollen server should return the expected error.
 
     # WHEN a request is made to the local pollen server
-    call_local_server "longitude=2.3570831"
+    call_local_server "/pollen-rss?longitude=2.3570831"
 
     # THEN the local pollen server should return the expected error.
     [ "$http_status" -eq 400 ]
@@ -23,7 +23,7 @@ load "../support/test-actions.bash"
     # THEN the local pollen server should return the expected error.
 
     # WHEN a request is made to the local pollen server
-    call_local_server "latitude=48.8439104"
+    call_local_server "/pollen-rss?latitude=48.8439104"
 
     # THEN the local pollen server should return the expected error.
     [ "$http_status" -eq 400 ]
@@ -37,7 +37,7 @@ load "../support/test-actions.bash"
     # THEN the local pollen server should return the expected error.
 
     # WHEN a request is made to the local pollen server
-    call_local_server ""
+    call_local_server "/pollen-rss?"
 
     # THEN the local pollen server should return the expected error.
     [ "$http_status" -eq 400 ]

@@ -14,7 +14,7 @@ load "../support/test-actions.bash"
     launch_remote_server "ok"
 
     # WHEN a request is made to the local pollen server
-    call_local_server "latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollen-rss?latitude=48.8439104&longitude=2.3570831"
 
     # THEN the local pollen server should return a valid RSS feed
     [ "$http_status" -eq 200 ]
@@ -34,7 +34,7 @@ load "../support/test-actions.bash"
     launch_local_server
 
     # WHEN a request is made to the local pollen server
-    call_local_server "latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollen-rss?latitude=48.8439104&longitude=2.3570831"
 
     # THEN the local pollen server should return a valid RSS feed
     [ "$http_status" -eq 200 ]
@@ -62,7 +62,7 @@ load "../support/test-actions.bash"
     launch_remote_server "too-many-pollens"
 
     # WHEN a request is made to the local pollen server
-    call_local_server "latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollen-rss?latitude=48.8439104&longitude=2.3570831"
 
     # THEN the local pollen server should return a valid RSS feed
     # for the first 10 pollens only
