@@ -8,7 +8,9 @@ test_log_folder="" # Set in setup()
 setup() {
     test_log_folder="logs/${BATS_TEST_NAME}"
     mkdir -p "${test_log_folder}"
-    launch_local_server "http://host.docker.internal:8000/ows"
+    launch_local_server \
+        "http://host.docker.internal:8000/ows" \
+        "http://host.docker.internal:8000/metadata.json"
 }
 teardown() {
     echo "# Stopping servers..." >&3
@@ -18,22 +20,25 @@ teardown() {
 
 function launch_local_server() {
     pollen_base_url=$1
-    # Start the local pollen server.
+    pollutant_metadata_url=$2
+    # Start the local air quality server.
     #
     # The --add-host argument is to make `host.docker.internal` available inside the container.
     # This is needed to connect to the local server from inside the container.
     # https://medium.com/@TimvanBaarsen/how-to-connect-to-the-docker-host-from-inside-a-docker-container-112b4c71bc66
     docker_container_id=$(docker run --rm -p 8888:8888 \
         -v /etc/localtime:/etc/localtime:ro \
+        -v /tmp/prevair:/tmp/prevair:ro \
         -e POLLEN_BASE_URL="${pollen_base_url}" \
-        -e POLLEN_FEED_URL="http://localhost:8888/pollen-rss?latitude=48.8439104&longitude=2.3570831" \
+        -e POLLUTANT_METADATA_URL="${pollutant_metadata_url}" \
+        -e BASE_FEED_URL="http://localhost:8888" \
         --detach \
         --add-host=host.docker.internal:host-gateway \
-        pollen-rss)
-    docker logs -f "${docker_container_id}" > "${test_log_folder}/pollen-server.log" 2>&1 &
+        air-quality-rss)
+    docker logs -f "${docker_container_id}" > "${test_log_folder}/air-quality-server.log" 2>&1 &
     wait_for_text_in_file \
-        "${test_log_folder}/pollen-server.log" \
-        "Pollen server started"
+        "${test_log_folder}/air-quality-server.log" \
+        "Air quality server started"
 }
 
 # Function to launch the remote server.
@@ -44,6 +49,9 @@ function launch_remote_server() {
     status_code=$(cat \
         "${fixture_folder}/${fixture_name}/mock-remote-response-status-code.txt"\
     )
+    # Copy any pollutant files to the /tmp/prevair folder
+    rm -f /tmp/prevair/*.nc
+    cp "${fixture_folder}/${fixture_name}"/*.nc /tmp/prevair/ 2>/dev/null || true
     # Start the remote server
     node test/mockserver/mockserver.mjs \
         "${fixture_folder}/$fixture_name/mock-remote-response-body.txt" \
@@ -81,13 +89,13 @@ function wait_for_text_in_file() {
 # and actual-response-metadata.json
 # and the http status code to the variable http_status.
 function call_local_server() {
-    query_string=$1
+    request_uri=$1
     # Call the local server
     curl \
         --silent \
         --output "${test_log_folder}/actual-local-response-body.txt" \
         --write-out "%{json}" \
-        "http://localhost:8888/pollen-rss?${query_string}" \
+        "http://localhost:8888${request_uri}" \
         >  "${test_log_folder}/actual-local-response-metadata.json"
     http_status=$(jq -r '.http_code' \
         "${test_log_folder}/actual-local-response-metadata.json"\

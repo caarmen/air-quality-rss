@@ -14,7 +14,7 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           COPY remote-service-response IN "support/http".
+           COPY remote-service-response IN "support/cob/http".
 
        LINKAGE SECTION.
            01  IN-LATITUDE-DEGREES            PIC S9(3)V9(8).

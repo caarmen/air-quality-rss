@@ -6,12 +6,25 @@ FROM ubuntu:24.10
 # Install dependencies: build essentials, CMake, COBOL compiler, and libraries
 RUN apt-get update && apt-get install -y \
     build-essential \
+    curl \
     cmake \
+    git \
     gnucobol \
     libmicrohttpd-dev \
     libcurl4-gnutls-dev \
     libcjson-dev \
+    gfortran \
+    libnetcdf-dev \
+    libnetcdff-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Clone and build fpm from source
+RUN git clone https://github.com/fortran-lang/fpm.git /opt/fpm && \
+    cd /opt/fpm && \
+    git checkout v0.12.0 && \
+    ./install.sh
+
+ENV PATH="/root/.local/bin:${PATH}"
 
 # Set the working directory to /app
 WORKDIR /app
@@ -19,6 +32,7 @@ WORKDIR /app
 # Copy the entire source code into the container
 COPY build.sh .
 COPY CMakeLists.txt .
+COPY cmake cmake/
 COPY src src/
 
 # Run the build script
@@ -29,5 +43,5 @@ RUN ./build.sh
 EXPOSE 8888
 
 # Run the binary produced by the build (adjust for your binary path)
-CMD ["./build/bin/pollen-rss"]
+CMD ["./build/bin/air-quality-rss"]
 

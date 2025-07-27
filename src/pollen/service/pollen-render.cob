@@ -11,21 +11,35 @@
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
        01 LS-RESPONSE                 PIC X(10000) VALUE SPACES.
+       01 LS-LATITUDE-DISPLAY         PIC -ZZ9.999999.
+       01 LS-LONGITUDE-DISPLAY        PIC -ZZ9.999999.
        01 LS-POLLEN-UPDATED-AT        PIC X(24).
+       01 LS-AUTHOR                   PIC X(100) VALUE "Atmo France".
+       01 LS-FEED-TITLE               PIC X(100)
+                                      VALUE "Pollens aujourd'hui".
+       01 LS-ENTRY-TITLE              PIC X(100)
+                                      VALUE "Rapport de pollens".
        01 LS-POLLEN-DISPLAY-NAME      PIC X(16).
        01 LS-POLLEN-OUTPUT            PIC X(10000) VALUE SPACES.
        *> LS-POLLEN-REPORT-ID: string which is unique for each
        *> combination of pollen data fields: date_maj (day component
        *> only), responsible pollen, and the code and value of
        01 LS-POLLEN-REPORT-ID         PIC X(100) VALUE SPACES.
+       01 LS-FEED-URL                 PIC X(1000).
 
        LINKAGE SECTION.
        01 IN-DATA-URL                 PIC X(1000) VALUE SPACES.
+       01 IN-URL                        PIC X(100).
+       01 IN-LATITUDE-DEGREES           PIC S9(3)V9(8).
+       01 IN-LONGITUDE-DEGREES          PIC S9(3)V9(8).
        COPY pollen-data IN "pollen/service".
        01 OUT-POLLEN-RSS              PIC X(10000) VALUE SPACES.
 
        PROCEDURE DIVISION USING
            BY REFERENCE IN-DATA-URL
+           BY REFERENCE IN-URL
+           BY REFERENCE IN-LATITUDE-DEGREES
+           BY REFERENCE IN-LONGITUDE-DEGREES
            POLLEN-GRP
            BY REFERENCE OUT-POLLEN-RSS.
 
@@ -84,10 +98,24 @@
            INSPECT LS-POLLEN-OUTPUT
                REPLACING ALL X"00" BY SPACE
 
+           ACCEPT LS-FEED-URL FROM ENVIRONMENT "BASE_FEED_URL"
+           MOVE IN-LATITUDE-DEGREES TO LS-LATITUDE-DISPLAY
+           MOVE IN-LONGITUDE-DEGREES TO LS-LONGITUDE-DISPLAY
+           STRING FUNCTION TRIM(LS-FEED-URL)
+               FUNCTION TRIM(IN-URL)
+               "?latitude=" LS-LATITUDE-DISPLAY
+               "&longitude=" LS-LONGITUDE-DISPLAY
+               INTO LS-FEED-URL
+           END-STRING
+
            CALL "RENDER-RSS" USING
                BY REFERENCE LS-POLLEN-REPORT-ID
                BY REFERENCE IN-DATA-URL
+               BY REFERENCE LS-FEED-URL
                BY REFERENCE LS-POLLEN-UPDATED-AT
+               BY REFERENCE LS-AUTHOR
+               BY REFERENCE LS-FEED-TITLE
+               BY REFERENCE LS-ENTRY-TITLE
                BY REFERENCE LS-POLLEN-OUTPUT
                BY REFERENCE OUT-POLLEN-RSS
            END-CALL
@@ -141,89 +169,3 @@
            GOBACK.
 
        END PROGRAM POLLEN-DISPLAY-NAME.
-
-      *> ===============================================================
-      *> PROGRAM: RENDER-RSS
-      *> PURPOSE: Render the given FEED-CONTENT to an RSS feed format.
-      *>          The SOURCE-URL is escaped to be used in the RSS feed.
-      *>          The DATE-MAJ is used to set the updated date of the
-      *>          feed.
-      *> ===============================================================
-
-       IDENTIFICATION DIVISION.
-       PROGRAM-ID. RENDER-RSS.
-
-       DATA DIVISION.
-       LOCAL-STORAGE SECTION.
-       01 LS-FEED-URL               PIC X(1000).
-       01 LS-ESCAPED-SOURCE-URL     PIC X(1000) VALUE SPACES.
-       01 LS-ESCAPED-FEED-URL       PIC X(1000) VALUE SPACES.
-
-       01 LS-UPDATED-AT             PIC X(24).
-
-       LINKAGE SECTION.
-       01 IN-ID                     PIC X(100).
-       01 IN-SOURCE-URL             PIC X(1000).
-       01 IN-DATE-MAJ               PIC X(24).
-       01 IN-FEED-CONTENT           PIC X(10000) VALUE SPACES.
-       01 OUT-RSS-CONTENT           PIC X(10000) VALUE SPACES.
-
-       PROCEDURE DIVISION USING
-           BY REFERENCE IN-ID
-           BY REFERENCE IN-SOURCE-URL
-           BY REFERENCE IN-DATE-MAJ
-           BY REFERENCE IN-FEED-CONTENT
-           BY REFERENCE OUT-RSS-CONTENT.
-
-           ACCEPT LS-FEED-URL FROM ENVIRONMENT "POLLEN_FEED_URL"
-
-           *> Escape & from the URL
-           CALL "XML-ENCODE" USING
-               BY REFERENCE IN-SOURCE-URL
-               BY REFERENCE LS-ESCAPED-SOURCE-URL
-           END-CALL
-           CALL "XML-ENCODE" USING
-               BY REFERENCE LS-FEED-URL
-               BY REFERENCE LS-ESCAPED-FEED-URL
-           END-CALL
-
-           *> Set the updated datetime to midnight UTC.
-           *> This is to avoid too many updates in the RSS feed.
-           STRING IN-DATE-MAJ(1:10) "T00:00:00.000Z"
-                INTO LS-UPDATED-AT
-           END-STRING
-
-           STRING
-               '<?xml version="1.0" encoding="utf-8"?>'            X"0A"
-               '<feed xmlns="http://www.w3.org/2005/Atom"'         X"0A"
-               ' xmlns:dc="http://purl.org/dc/elements/1.1/">'     X"0A"
-               " <updated>" LS-UPDATED-AT "</updated>"             X"0A"
-               " <dc:date>" LS-UPDATED-AT "</dc:date>"             X"0A"
-               " <title>Pollens aujourd'hui</title>"               X"0A"
-               " <subtitle>Pollens aujourd'hui</subtitle>"         X"0A"
-               ' <link rel="alternate" '                           X"0A"
-               '  href="' FUNCTION TRIM(LS-ESCAPED-FEED-URL)
-               '" />'                                              X"0A"
-               " <id>" FUNCTION TRIM(LS-ESCAPED-FEED-URL) "</id>"  X"0A"
-               " <entry>"                                          X"0A"
-               "  <title>Rapport de pollens</title>"               X"0A"
-               '  <link rel="alternate" '                          X"0A"
-               '   href="' FUNCTION TRIM(LS-ESCAPED-SOURCE-URL)
-               '"/>'                                               X"0A"
-               "  <id>" FUNCTION TRIM(IN-ID) "</id>"               X"0A"
-               '  <content type="text/plain">'                     X"0A"
-                   FUNCTION TRIM(IN-FEED-CONTENT)
-               "  </content>"                                      X"0A"
-               "  <author><name>Atmo France</name></author>"       X"0A"
-               "  <dc:creator>Atmo France</dc:creator>"            X"0A"
-               "  <published>" LS-UPDATED-AT "</published>"        X"0A"
-               "  <updated>" LS-UPDATED-AT "</updated>"            X"0A"
-               "  <dc:date>" LS-UPDATED-AT "</dc:date>"            X"0A"
-               " </entry>"                                         X"0A"
-               "</feed>"
-               INTO OUT-RSS-CONTENT
-           END-STRING
-
-           GOBACK.
-
-       END PROGRAM RENDER-RSS.
