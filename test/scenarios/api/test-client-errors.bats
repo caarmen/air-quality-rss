@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 # shellcheck shell=bash
 
-load "../support/test-actions.bash"
+load "../../support/test-actions.bash"
 
 @test "Test missing latitude" {
     # GIVEN a local pollen server waiting for a request
@@ -13,7 +13,7 @@ load "../support/test-actions.bash"
 
     # THEN the local pollen server should return the expected error.
     [ "$http_status" -eq 400 ]
-    run compare_response "missing-latitude"
+    run compare_response "api/missing-latitude"
     [ "$status" -eq 0 ]
 }
 
@@ -27,7 +27,7 @@ load "../support/test-actions.bash"
 
     # THEN the local pollen server should return the expected error.
     [ "$http_status" -eq 400 ]
-    run compare_response "missing-longitude"
+    run compare_response "api/missing-longitude"
     [ "$status" -eq 0 ]
 }
 
@@ -41,6 +41,6 @@ load "../support/test-actions.bash"
 
     # THEN the local pollen server should return the expected error.
     [ "$http_status" -eq 400 ]
-    run compare_response "missing-latitude-longitude"
+    run compare_response "api/missing-latitude-longitude"
     [ "$status" -eq 0 ]
 }
