@@ -8,7 +8,9 @@ test_log_folder="" # Set in setup()
 setup() {
     test_log_folder="logs/${BATS_TEST_NAME}"
     mkdir -p "${test_log_folder}"
-    launch_local_server "http://host.docker.internal:8000/ows"
+    launch_local_server \
+        "http://host.docker.internal:8000/ows" \
+        "http://host.docker.internal:8000/metadata.json"
 }
 teardown() {
     echo "# Stopping servers..." >&3
@@ -18,6 +20,7 @@ teardown() {
 
 function launch_local_server() {
     pollen_base_url=$1
+    pollutant_metadata_url=$2
     # Start the local air quality server.
     #
     # The --add-host argument is to make `host.docker.internal` available inside the container.
@@ -25,7 +28,9 @@ function launch_local_server() {
     # https://medium.com/@TimvanBaarsen/how-to-connect-to-the-docker-host-from-inside-a-docker-container-112b4c71bc66
     docker_container_id=$(docker run --rm -p 8888:8888 \
         -v /etc/localtime:/etc/localtime:ro \
+        -v /tmp/prevair:/tmp/prevair:ro \
         -e POLLEN_BASE_URL="${pollen_base_url}" \
+        -e POLLUTANT_METADATA_URL="${pollutant_metadata_url}" \
         -e BASE_FEED_URL="http://localhost:8888" \
         --detach \
         --add-host=host.docker.internal:host-gateway \
@@ -44,6 +49,9 @@ function launch_remote_server() {
     status_code=$(cat \
         "${fixture_folder}/${fixture_name}/mock-remote-response-status-code.txt"\
     )
+    # Copy any pollutant files to the /tmp/prevair folder
+    rm -f /tmp/prevair/*.nc
+    cp "${fixture_folder}/${fixture_name}"/*.nc /tmp/prevair/ 2>/dev/null || true
     # Start the remote server
     node test/mockserver/mockserver.mjs \
         "${fixture_folder}/$fixture_name/mock-remote-response-body.txt" \

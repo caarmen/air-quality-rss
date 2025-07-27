@@ -18,14 +18,14 @@ load "../../support/test-actions.bash"
 }
 
 @test "Test missing longitude" {
-    # GIVEN a local pollen server waiting for a request
-    # WHEN a request is made to the local pollen server without a longitude query parameter
-    # THEN the local pollen server should return the expected error.
+    # GIVEN a local pollutant server waiting for a request
+    # WHEN a request is made to the local pollutant server without a longitude query parameter
+    # THEN the local pollutant server should return the expected error.
 
-    # WHEN a request is made to the local pollen server
-    call_local_server "/pollen-rss?latitude=48.8439104"
+    # WHEN a request is made to the local pollutant server
+    call_local_server "/pollutant-rss?latitude=48.8439104"
 
-    # THEN the local pollen server should return the expected error.
+    # THEN the local pollutant server should return the expected error.
     [ "$http_status" -eq 400 ]
     run compare_response "api/missing-longitude"
     [ "$status" -eq 0 ]

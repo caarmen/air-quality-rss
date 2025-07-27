@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+ xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <updated>2025-07-27T00:00:01.000Z</updated>
+ <dc:date>2025-07-27T00:00:01.000Z</dc:date>
+ <title>Polluants aujourd'hui</title>
+ <subtitle>Polluants aujourd'hui</subtitle>
+ <link rel="alternate" 
+  href="http://localhost:8888/pollutant-rss?latitude=48.843910&amp;longitude=2.357083" />
+ <id>http://localhost:8888/pollutant-rss?latitude=48.843910&amp;longitude=2.357083</id>
+ <entry>
+  <title>Rapport de polluants</title>
+  <link rel="alternate" 
+   href="https://www.atmo-france.org/indiceatmo?bbox=2.347083,48.853910,2.367083,48.833910"/>
+  <id>20250727,O32</id>
+  <content type="text/plain">
+O3: 68.0 µg/m³ (2)
+  </content>
+  <author><name>PREV'AIR</name></author>
+  <dc:creator>PREV'AIR</dc:creator>
+  <published>2025-07-27T00:00:01.000Z</published>
+  <updated>2025-07-27T00:00:01.000Z</updated>
+  <dc:date>2025-07-27T00:00:01.000Z</dc:date>
+ </entry>
+</feed>
