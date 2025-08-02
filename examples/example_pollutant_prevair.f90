@@ -5,7 +5,7 @@
 ! pollutant values.
 !
 ! Usage:
-!   ./example_pollutant_f90 <latitude> <longitude>
+!   ./example_pollutant_prevair_f90 <latitude> <longitude>
 !-----------------------------------------------------------------------
 program main
    use prevair_pollutant_provider
