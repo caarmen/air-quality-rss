@@ -2,12 +2,12 @@
     "data": [
         {
             "id": "a2a4f9f0-1abf-447f-adf8-d5c9f92837be",
-            "title": "PREVAIR.prevision.20250727.MOYJ0.PM25.public.nc",
+            "title": "PREVAIR.prevision.__TODAY_SHORT__.MOYJ0.PM25.public.nc",
             "description": null,
             "filetype": "file",
             "type": "main",
             "format": "nc",
-            "url": "file:///tmp/prevair/PREVAIR.prevision.20250727.moyj0.PM25.public.nc",
+            "url": "file:///tmp/prevair/PREVAIR.prevision.__TODAY_SHORT__.moyj0.PM25.public.nc",
             "latest": "https://www.data.gouv.fr/api/1/datasets/r/a2a4f9f0-1abf-447f-adf8-d5c9f92837be",
             "checksum": {
                 "type": "sha1",

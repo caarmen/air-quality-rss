@@ -49,12 +49,22 @@ function launch_remote_server() {
     status_code=$(cat \
         "${fixture_folder}/${fixture_name}/mock-remote-response-status-code.txt"\
     )
+    today_short=$(date +%Y%m%d)
+    sed -e \
+        "s/__TODAY_SHORT__/${today_short}/" \
+        "${fixture_folder}/${fixture_name}/mock-remote-response-body.txt" \
+        > "${test_log_folder}/mock-remote-response-body.txt"
     # Copy any pollutant files to the /tmp/prevair folder
     rm -f /tmp/prevair/*.nc
     cp "${fixture_folder}/${fixture_name}"/*.nc /tmp/prevair/ 2>/dev/null || true
+    for file in /tmp/prevair/*__TODAY_SHORT__*; do
+        [ -e "${file}" ] || continue
+        new_name="${file/__TODAY_SHORT__/$today_short}"
+        mv "$file" "$new_name"
+    done
     # Start the remote server
     node test/mockserver/mockserver.mjs \
-        "${fixture_folder}/$fixture_name/mock-remote-response-body.txt" \
+        "${test_log_folder}/mock-remote-response-body.txt" \
         "${status_code}" > "${test_log_folder}/mockserver.log" 2>&1 &
     wait_for_text_in_file \
         "${test_log_folder}/mockserver.log" \
@@ -110,8 +120,9 @@ function call_local_server() {
 function compare_response() {
     fixture_name=$1
     today=$(date +%Y-%m-%d)
+    today_short=$(date +%Y%m%d)
     sed -e \
-        "s/__TODAY__/$today/" \
+        "s/__TODAY__/${today}/;s/__TODAY_SHORT__/${today_short}/" \
         "${fixture_folder}/${fixture_name}/expected-local-response-body.txt" \
         > "${test_log_folder}/expected-local-response-body.txt"
     diff_content=$(diff \
