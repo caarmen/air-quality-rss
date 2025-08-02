@@ -3,7 +3,7 @@
 #include <string.h>
 
 // Fortran subroutine declaration
-void get_pollutant_pollutant_data(
+void get_prevair_pollutant_data(
     const char date_str[8],
     float* target_lat,
     float* target_lon,
@@ -25,7 +25,7 @@ int main() {
     float pollutant_averages[10];    // max_pollutants floats
     int pollutant_indices[10];        // max_pollutants integers
 
-    get_pollutant_pollutant_data(
+    get_prevair_pollutant_data(
         date_str,
         &lat,
         &lon,

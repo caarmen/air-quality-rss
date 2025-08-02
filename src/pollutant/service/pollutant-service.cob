@@ -36,7 +36,7 @@
                LS-CDT-YEAR LS-CDT-MONTH LS-CDT-DAY
                INTO LS-DATE-STR
            END-STRING
-           CALL "get_pollutant_pollutant_data" USING
+           CALL "get_prevair_pollutant_data" USING
                LS-DATE-STR
                IN-LATITUDE-DEGREES
                IN-LONGITUDE-DEGREES
