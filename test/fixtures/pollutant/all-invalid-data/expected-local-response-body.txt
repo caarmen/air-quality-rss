@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"
  xmlns:dc="http://purl.org/dc/elements/1.1/">
- <updated>2025-07-27T00:00:00.000Z</updated>
- <dc:date>2025-07-27T00:00:00.000Z</dc:date>
+ <updated>__TODAY__T00:00:00.000Z</updated>
+ <dc:date>__TODAY__T00:00:00.000Z</dc:date>
  <title>Polluants aujourd'hui</title>
  <subtitle>Polluants aujourd'hui</subtitle>
  <link rel="alternate" 
