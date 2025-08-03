@@ -42,6 +42,7 @@ contains
       bind(C, name="get_prevair_pollutant_data")
       use iso_c_binding, only: c_char, c_float, c_int, c_null_char
       use stdlib_strings, only: to_c_char
+      use c_string
       implicit none
       character(kind=c_char), dimension(8), intent(in) :: date_str
       real(c_float), intent(in) :: target_lat, target_lon
@@ -56,9 +57,7 @@ contains
 
       type(prevair_pollutant_pollutant_data), dimension(max_pollutants):: data
       ! convert C string to Fortran string
-      do i = 1, 8
-         date_str_f90(i:i) = trim(adjustl(date_str(i)))
-      end do
+      call to_fortran_string(date_str, 8, date_str_f90)
 
       call get_prevair_pollutant_data( &
          date_str_f90, &

@@ -58,6 +58,7 @@ set(FORTRAN_LIBRARY_SOURCES
     ${CMAKE_SOURCE_DIR}/src/support/f90/datetime.f90
     ${CMAKE_SOURCE_DIR}/src/support/f90/file-downloader.f90
     ${CMAKE_SOURCE_DIR}/src/support/f90/geo.f90
+    ${CMAKE_SOURCE_DIR}/src/support/f90/c-string.f90
 )
 
 # Build the Fortran sources into a static library.
