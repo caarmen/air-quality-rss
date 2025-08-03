@@ -35,12 +35,22 @@ Query params:
 Example: localhost:8888/pollen-rss?latitude=45.758&longitude=4.7
 
 #### Pollutant RSS feed
+##### Prev'air data source
 `/pollutant-rss/prevair`: returns an RSS feed with pollutant data.
 Query params:
 * `latitude`: latitude of the location to fetch pollutant info for.
 * `longitude`: latitude of the location to fetch pollutant info for.
 
 Example: localhost:8888/pollutant-rss/prevair?latitude=45.758&longitude=4.7
+
+##### Atmo-france data source
+`/pollutant-rss/atmo-france`: returns an RSS feed with pollutant data.
+Query params:
+* `code_zone`: INSEE code commune (**not postal code**)
+
+Example for Paris: localhost:8888/pollutant-rss/atmo-france?code_zone=75056
+
+☝️ Find the code commune for a city on the INSEE website: https://www.insee.fr/fr/recherche/recherche-geographique
 
 # License
 This project is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.
@@ -55,7 +65,7 @@ The project has the following dependencies:
 * [json-fortran](https://github.com/jacobwilliams/json-fortran) - BSD 3-Clause License.
 * [netcdf-fortran](https://github.com/Unidata/netcdf-fortran) - Apache License 2.0.
 * [netcdf-c](https://github.com/Unidata/netcdf-c) - BSD 3-Clause License.
-* Pollen source: [Atmo France](https://www.atmo-france.org/article/atmo-data-un-acces-unique-aux-donnees-produites-par-les-aasqa) and AASQA (Associations 
+* Pollen and pollutant source: [Atmo France](https://www.atmo-france.org/article/atmo-data-un-acces-unique-aux-donnees-produites-par-les-aasqa) and AASQA (Associations
 agréées de surveillance de la qualité de l’air).
 * Pollutant source: [PREV'AIR](https://www.prevair.org/): Données issues de la plateforme nationale de prévision de la qualité de l'air www.prevair.org
 

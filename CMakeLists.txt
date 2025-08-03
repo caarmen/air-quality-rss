@@ -24,6 +24,8 @@ set(COB_OTHER
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-parser.cob
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-render.cob
     ${CMAKE_SOURCE_DIR}/src/pollen/service/pollen-service.cob
+    ${CMAKE_SOURCE_DIR}/src/pollutant/service/atmo-france/pollutant-service.cob
+    ${CMAKE_SOURCE_DIR}/src/pollutant/service/atmo-france/pollutant-render.cob
     ${CMAKE_SOURCE_DIR}/src/pollutant/service/prevair/pollutant-service.cob
     ${CMAKE_SOURCE_DIR}/src/pollutant/service/prevair/pollutant-render.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/c-interop/c-string.cob
