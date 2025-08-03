@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+ xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <updated>__TODAY__T00:00:00.000Z</updated>
+ <dc:date>__TODAY__T00:00:00.000Z</dc:date>
+ <title>Polluants aujourd'hui</title>
+ <subtitle>Polluants aujourd'hui</subtitle>
+ <link rel="alternate" 
+  href="http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056" />
+ <id>http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056</id>
+</feed>

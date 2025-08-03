@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+ xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <updated>__TODAY__T00:00:01.000Z</updated>
+ <dc:date>__TODAY__T00:00:01.000Z</dc:date>
+ <title>Polluants aujourd'hui</title>
+ <subtitle>Polluants aujourd'hui</subtitle>
+ <link rel="alternate" 
+  href="http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056" />
+ <id>http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056</id>
+ <entry>
+  <title>Rapport de polluants</title>
+  <link rel="alternate" 
+   href="https://explore.data.gouv.fr/fr/datasets/6149925a2ff0ab6cebdd6fe8/?code_zone__exact=75056#/resources/d2b9e8e6-8b0b-4bb6-9851-b4fa2efc8201"/>
+  <id>__TODAY__,NO22,O32,PM101,PM2.51,SO21</id>
+  <content type="text/plain">
+NO2: 2
+O3: 2
+PM10: 1
+PM2.5: 1
+SO2: 1
+  </content>
+  <author><name>Atmo France</name></author>
+  <dc:creator>Atmo France</dc:creator>
+  <published>__TODAY__T00:00:01.000Z</published>
+  <updated>__TODAY__T00:00:01.000Z</updated>
+  <dc:date>__TODAY__T00:00:01.000Z</dc:date>
+ </entry>
+</feed>
