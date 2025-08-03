@@ -1,12 +1,12 @@
 
       *> ===============================================================
-      *> PROGRAM: POLLUTANT-RENDER
+      *> PROGRAM: PREVAIR-POLLUTANT-RENDER
       *> PURPOSE: Read data from the pollutant provider and render it
       *>          to a string in the format of an RSS feed.
       *> ===============================================================
        IDENTIFICATION DIVISION.
 
-       PROGRAM-ID. POLLUTANT-RENDER.
+       PROGRAM-ID. PREVAIR-POLLUTANT-RENDER.
 
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
@@ -31,7 +31,7 @@
        01 IN-LATITUDE-DEGREES           PIC S9(3)V9(8).
        01 IN-LONGITUDE-DEGREES          PIC S9(3)V9(8).
        01  IN-DATE-STR                  PIC X(8).
-       COPY pollutant-data IN "pollutant/service".
+       COPY pollutant-data IN "pollutant/service/prevair".
        01 OUT-POLLUTANT-RSS             PIC X(10000) VALUE SPACES.
 
        PROCEDURE DIVISION USING
@@ -58,7 +58,7 @@
 
                *> Get display values for pollutant name, average,
                *> and index
-               CALL "POLLUTANT-DISPLAY-NAME" USING
+               CALL "PREVAIR-POLLUTANT-DISPLAY-NAME" USING
                    POLLUTANT-NAMES(IDX-POLLUTANT-NAME)
                    LS-POLLUTANT-NAME-DISPLAY
                MOVE POLLUTANT-AVERAGES(IDX-POLLUTANT-NAME)
@@ -99,7 +99,7 @@
            END-STRING
 
            *> Build the data url
-           CALL "CREATE-DATA-URL" USING
+           CALL "CREATE-PREVAIR-DATA-URL" USING
                BY REFERENCE IN-LATITUDE-DEGREES
                BY REFERENCE IN-LONGITUDE-DEGREES
                BY REFERENCE LS-DATA-URL
@@ -118,15 +118,15 @@
            END-CALL
            GOBACK.
 
-       END PROGRAM POLLUTANT-RENDER.
+       END PROGRAM PREVAIR-POLLUTANT-RENDER.
 
       *> ===============================================================
-      *> PROGRAM: CREATE-DATA-URL
+      *> PROGRAM: CREATE-PREVAIR-DATA-URL
       *> PURPOSE: Construct a URL for the pollutant data based on the
       *>          latitude and longitude.  
       *> ===============================================================
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. CREATE-DATA-URL.
+       PROGRAM-ID. CREATE-PREVAIR-DATA-URL.
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
        01 LS-LATITUDE-DISPLAY      PIC -ZZ9.999999.
@@ -173,14 +173,14 @@
            END-STRING
 
            GOBACK.
-       END PROGRAM CREATE-DATA-URL.
+       END PROGRAM CREATE-PREVAIR-DATA-URL.
 
       *> ===============================================================
-      *> PROGRAM: POLLUTANT-DISPLAY-NAME
+      *> PROGRAM: PREVAIR-POLLUTANT-DISPLAY-NAME
       *> PURPOSE: Return the display name of the pollutant from the name
       *>          of the pollen.
       *> ===============================================================
-       PROGRAM-ID. POLLUTANT-DISPLAY-NAME.
+       PROGRAM-ID. PREVAIR-POLLUTANT-DISPLAY-NAME.
 
        DATA DIVISION.
        LINKAGE SECTION.
@@ -208,4 +208,4 @@
 
            GOBACK.
 
-       END PROGRAM POLLUTANT-DISPLAY-NAME.
+       END PROGRAM PREVAIR-POLLUTANT-DISPLAY-NAME.

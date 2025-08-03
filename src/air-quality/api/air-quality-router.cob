@@ -80,7 +80,7 @@
                            BY REFERENCE OUT-BODY
                            RETURNING RETURN-CODE
                    WHEN "/pollutant-rss/prevair"
-                       CALL "POLLUTANT-SERVICE" USING
+                       CALL "PREVAIR-POLLUTANT-SERVICE" USING
                            BY REFERENCE IN-URL
                            BY REFERENCE LS-LATITUDE-DEGREES
                            BY REFERENCE LS-LONGITUDE-DEGREES
