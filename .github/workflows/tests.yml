@@ -22,7 +22,7 @@ jobs:
           run: mkdir -p reports
 
         - name: Run tests
-          run: bats test/scenarios/* --formatter junit > reports/junit.xml
+          run: bats test/scenarios --recursive --formatter junit > reports/junit.xml
 
         - name: Publish Test Report
           uses: mikepenz/action-junit-report@v4
