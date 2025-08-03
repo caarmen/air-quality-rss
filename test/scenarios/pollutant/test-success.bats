@@ -14,7 +14,7 @@ load "../../support/test-actions.bash"
     launch_remote_server "pollutant/ok"
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss?latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollutant-rss/prevair?latitude=48.8439104&longitude=2.3570831"
 
     # THEN the local pollen server should return a valid RSS feed
     [ "${http_status}" -eq 200 ]
@@ -34,7 +34,7 @@ load "../../support/test-actions.bash"
     launch_remote_server "pollutant/some-invalid-data"
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss?latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollutant-rss/prevair?latitude=48.8439104&longitude=2.3570831"
 
     # THEN the local pollutant server should return a valid RSS feed
     # AND the RSS feed should contain only the valid data
@@ -55,7 +55,7 @@ load "../../support/test-actions.bash"
     launch_remote_server "pollutant/all-invalid-data"
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss?latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollutant-rss/prevair?latitude=48.8439104&longitude=2.3570831"
 
     # THEN the local pollutant server should return a valid RSS feed
     # AND the RSS feed should contain no entry
@@ -76,7 +76,7 @@ load "../../support/test-actions.bash"
     launch_remote_server "pollutant/all-missing-data"
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss?latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollutant-rss/prevair?latitude=48.8439104&longitude=2.3570831"
 
     # THEN the local pollutant server should return a valid RSS feed
     # AND the RSS feed should contain no entry
@@ -97,7 +97,7 @@ load "../../support/test-actions.bash"
     launch_local_server
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss?latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollutant-rss/prevair?latitude=48.8439104&longitude=2.3570831"
 
     # THEN the local pollutant server should return a valid RSS feed
     [ "$http_status" -eq 200 ]

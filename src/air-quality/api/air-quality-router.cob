@@ -38,7 +38,7 @@
 
            IF FUNCTION TRIM(IN-HTTP-METHOD) = "GET"
                AND (FUNCTION TRIM(IN-URL) = "/pollen-rss"
-               OR FUNCTION TRIM(IN-URL) = "/pollutant-rss")
+               OR FUNCTION TRIM(IN-URL) = "/pollutant-rss/prevair")
            THEN
                MOVE 200 TO OUT-STATUS-CODE
 
@@ -79,7 +79,7 @@
                            BY REFERENCE LS-LONGITUDE-DEGREES
                            BY REFERENCE OUT-BODY
                            RETURNING RETURN-CODE
-                   WHEN "/pollutant-rss"
+                   WHEN "/pollutant-rss/prevair"
                        CALL "POLLUTANT-SERVICE" USING
                            BY REFERENCE IN-URL
                            BY REFERENCE LS-LATITUDE-DEGREES

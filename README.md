@@ -35,12 +35,12 @@ Query params:
 Example: localhost:8888/pollen-rss?latitude=45.758&longitude=4.7
 
 #### Pollutant RSS feed
-`/pollutant-rss`: returns an RSS feed with pollutant data.
+`/pollutant-rss/prevair`: returns an RSS feed with pollutant data.
 Query params:
 * `latitude`: latitude of the location to fetch pollutant info for.
 * `longitude`: latitude of the location to fetch pollutant info for.
 
-Example: localhost:8888/pollutant-rss?latitude=45.758&longitude=4.7
+Example: localhost:8888/pollutant-rss/prevair?latitude=45.758&longitude=4.7
 
 # License
 This project is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.

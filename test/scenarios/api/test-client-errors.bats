@@ -23,7 +23,7 @@ load "../../support/test-actions.bash"
     # THEN the local pollutant server should return the expected error.
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss?latitude=48.8439104"
+    call_local_server "/pollutant-rss/prevair?latitude=48.8439104"
 
     # THEN the local pollutant server should return the expected error.
     [ "$http_status" -eq 400 ]
