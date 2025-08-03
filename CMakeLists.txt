@@ -46,9 +46,19 @@ function(compile_cobol OUTPUT_VAR COB_FILE)
     if(ARGC GREATER 2)
         set(COBOL_FLAGS ${ARGV2})
     endif()
+
+    # Compute relative path from source dir to COBOL file
+    file(RELATIVE_PATH COB_REL_PATH ${CMAKE_SOURCE_DIR}/src ${COB_FILE})
+
+    get_filename_component(OBJ_REL_DIR ${COB_REL_PATH} DIRECTORY)
     get_filename_component(FNAME_WE ${COB_FILE} NAME_WE)
-    string(REPLACE "/" "_" OBJ_NAME ${FNAME_WE})
-    set(OBJ_PATH "${CMAKE_BINARY_DIR}/${OBJ_NAME}.o")
+    # Set output directory to mirror source structure under build/
+    set(OBJ_DIR "${CMAKE_BINARY_DIR}/air-quality/${OBJ_REL_DIR}")
+    file(MAKE_DIRECTORY ${OBJ_DIR})  # ensure directory exists
+
+    # Set the full path of the object file
+    set(OBJ_PATH "${OBJ_DIR}/${FNAME_WE}.o")
+
     add_custom_command(
         OUTPUT ${OBJ_PATH}
         COMMAND COB_COPY_DIR=${COB_COPY_DIR} cobc -c ${COBOL_FLAGS} ${COB_FILE} -o ${OBJ_PATH}
