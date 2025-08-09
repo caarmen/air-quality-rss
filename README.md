@@ -26,31 +26,7 @@ Run the project with `build/bin/air-quality-rss`.
 ### Http requests
 The server will be available at `http://localhost:8888/`.
 
-#### Pollen RSS feed
-`/pollen-rss`: returns an RSS feed with pollen data.
-Query params:
-* `latitude`: latitude of the location to fetch pollen info for.
-* `longitude`: latitude of the location to fetch pollen info for.
-
-Example: localhost:8888/pollen-rss?latitude=45.758&longitude=4.7
-
-#### Pollutant RSS feed
-##### Prev'air data source
-`/pollutant-rss/prevair`: returns an RSS feed with pollutant data.
-Query params:
-* `latitude`: latitude of the location to fetch pollutant info for.
-* `longitude`: latitude of the location to fetch pollutant info for.
-
-Example: localhost:8888/pollutant-rss/prevair?latitude=45.758&longitude=4.7
-
-##### Atmo-france data source
-`/pollutant-rss/atmo-france`: returns an RSS feed with pollutant data.
-Query params:
-* `code_zone`: INSEE code commune (**not postal code**)
-
-Example for Paris: localhost:8888/pollutant-rss/atmo-france?code_zone=75056
-
-☝️ Find the code commune for a city on the INSEE website: https://www.insee.fr/fr/recherche/recherche-geographique
+See the [api documentation](docs/api.html).
 
 # License
 This project is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.

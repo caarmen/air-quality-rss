@@ -1,0 +1,303 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Air Quality Parser API",
+    "description": "API for retrieving air quality data including pollen and pollutant information from various sources",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Air Quality API Support"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.airquality.example.com",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/pollen-rss": {
+      "get": {
+        "summary": "Get pollen data in RSS format",
+        "description": "Retrieves pollen information for a specific geographic location",
+        "operationId": "getPollenRss",
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "required": true,
+            "description": "Latitude coordinate (decimal degrees)",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "minimum": -90.0,
+              "maximum": 90.0,
+              "example": 48.853910
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "required": true,
+            "description": "Longitude coordinate (decimal degrees)",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "minimum": -180.0,
+              "maximum": 180.0,
+              "example": 2.367083
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with pollen RSS data",
+            "content": {
+              "application/rss+xml": {
+                "schema": {
+                  "type": "string",
+                  "description": "RSS XML format containing pollen data"
+                },
+                "example": "<?xml version=\"1.0\" encoding=\"utf-8\"?> \n<feed xmlns=\"http://www.w3.org/2005/Atom\" \n xmlns:dc=\"http://purl.org/dc/elements/1.1/\"> \n <updated>2025-08-09T00:00:01.000Z</updated> \n <dc:date>2025-08-09T00:00:01.000Z</dc:date> \n <title>Pollens aujourd'hui</title> \n <subtitle>Pollens aujourd'hui</subtitle> \n <link rel=\"alternate\" \n  href=\"http://localhost:8888/pollen-rss?latitude=48.853910&amp;longitude=2.367083\" /> \n <id>http://localhost:8888/pollen-rss?latitude=48.853910&amp;longitude=2.367083</id> \n <entry> \n  <title>Rapport de pollens</title> \n  <link rel=\"alternate\" \n   href=\"https://data.atmo-france.org/geoserver/ind_pol/ows?REQUEST=GetFeatureInfo&amp;SERVICE=WMS&amp;SRS=EPSG%3A3857&amp;STYLES=&amp;VERSION=1.3&amp;FILTER=%3CPropertyIsEqualTo%20matchCase%3D%22true%22%3E%3CPropertyName%3Edate_ech%3C%2FPropertyName%3E%3CLiteral%3E2025-08-09%3C%2FLiteral%3E%3C%2FPropertyIsEqualTo%3E&amp;SORTBY=date_dif%20D&amp;LAYERS=ind_pol%3Aind_national_pol&amp;QUERY_LAYERS=ind_pol%3Aind_national_pol&amp;INFO_FORMAT=application%2Fjson&amp;X=535&amp;Y=284&amp;BBOX=+0243502.47392431%2C+6240109.20716125%2C+0283502.47392431%2C+6260109.20716125&amp;HEIGHT=500&amp;WIDTH=1000\"/> \n  <id>2025-08-09,ARTEMISI GRAMINEE,aul1,boul1,oliv1,gram2,arm2,ambr1</id> \n  <content type=\"text/plain\"> \nPollen responsable: ARTEMISI GRAMINEE \nAulne: 1 \nBouleau: 1 \nOlivier: 1 \nGraminées: 2 \nArmoise: 2 \nAmbroise: 1 \n  </content> \n  <author><name>Atmo France</name></author> \n  <dc:creator>Atmo France</dc:creator> \n  <published>2025-08-09T00:00:01.000Z</published> \n  <updated>2025-08-09T00:00:01.000Z</updated> \n  <dc:date>2025-08-09T00:00:01.000Z</dc:date> \n </entry> \n</feed>"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Missing or invalid query parameters",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "missing_latitude": {
+                    "summary": "Missing latitude parameter",
+                    "value": "Bad Request: missing latitude query param"
+                  },
+                  "missing_longitude": {
+                    "summary": "Missing longitude parameter", 
+                    "value": "Bad Request: missing longitude query param"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Internal Server Error: /pollen-rss failed"
+              }
+            }
+          }
+        },
+        "tags": ["Pollen Data"]
+      }
+    },
+    "/pollutant-rss/prevair": {
+      "get": {
+        "summary": "Get pollutant data from PREV'AIR in RSS format",
+        "description": "Retrieves pollutant information from the PREV'AIR service for a specific geographic location",
+        "operationId": "getPrevairPollutantRss",
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "required": true,
+            "description": "Latitude coordinate (decimal degrees)",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "minimum": -90.0,
+              "maximum": 90.0,
+              "example": 48.856614
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "required": true,
+            "description": "Longitude coordinate (decimal degrees)",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "minimum": -180.0,
+              "maximum": 180.0,
+              "example": 2.352222
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with PREV'AIR pollutant RSS data",
+            "content": {
+              "application/rss+xml": {
+                "schema": {
+                  "type": "string",
+                  "description": "RSS XML format containing pollutant data from PREV'AIR"
+                },
+                "example": "<?xml version=\"1.0\" encoding=\"utf-8\"?> \n<feed xmlns=\"http://www.w3.org/2005/Atom\" \n xmlns:dc=\"http://purl.org/dc/elements/1.1/\"> \n <updated>2025-08-05T00:00:01.000Z</updated> \n <dc:date>2025-08-05T00:00:01.000Z</dc:date> \n <title>Polluants aujourd'hui</title> \n <subtitle>Polluants aujourd'hui</subtitle> \n <link rel=\"alternate\" \n  href=\"http://localhost:8888/pollutant-rss/prevair?latitude=48.853910&amp;longitude=2.367083\" /> \n <id>http://localhost:8888/pollutant-rss/prevair?latitude=48.853910&amp;longitude=2.367083</id> \n <entry> \n  <title>Rapport de polluants</title> \n  <link rel=\"alternate\" \n   href=\"https://www.atmo-france.org/indiceatmo?bbox=2.357083,48.863910,2.377083,48.843910\"/> \n  <id>20250805,NO21,O32,PM101,PM2.51</id> \n  <content type=\"text/plain\"> \nNO2: 4.1 µg/m³ (1) \nO3: 64.5 µg/m³ (2) \nPM10: 8.0 µg/m³ (1) \nPM2.5: 6.9 µg/m³ (1) \n  </content> \n  <author><name>PREV'AIR</name></author> \n  <dc:creator>PREV'AIR</dc:creator> \n  <published>2025-08-05T00:00:01.000Z</published> \n  <updated>2025-08-05T00:00:01.000Z</updated> \n  <dc:date>2025-08-05T00:00:01.000Z</dc:date> \n </entry> \n</feed>"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Missing or invalid query parameters",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "missing_latitude": {
+                    "summary": "Missing latitude parameter",
+                    "value": "Bad Request: missing latitude query param"
+                  },
+                  "missing_longitude": {
+                    "summary": "Missing longitude parameter",
+                    "value": "Bad Request: missing longitude query param"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Internal Server Error: /pollutant-rss/prevair failed"
+              }
+            }
+          }
+        },
+        "tags": ["Pollutant Data"]
+      }
+    },
+    "/pollutant-rss/atmo-france": {
+      "get": {
+        "summary": "Get pollutant data from Atmo France in RSS format",
+        "description": "Retrieves pollutant information from the Atmo France service using a specific zone code",
+        "operationId": "getAtmoFrancePollutantRss",
+        "parameters": [
+          {
+            "name": "code_zone",
+            "in": "query",
+            "required": true,
+            "description": "Zone code identifier for Atmo France regions\n\n☝️ Find the code commune for a city on the INSEE website: https://www.insee.fr/fr/recherche/recherche-geographique",
+            "schema": {
+              "type": "string",
+              "maxLength": 5,
+              "pattern": "^[A-Z0-9]+$",
+              "example": "FR001"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with Atmo France pollutant RSS data",
+            "content": {
+              "application/rss+xml": {
+                "schema": {
+                  "type": "string",
+                  "description": "RSS XML format containing pollutant data from Atmo France"
+                },
+                "example": "<?xml version=\"1.0\" encoding=\"utf-8\"?> \n<feed xmlns=\"http://www.w3.org/2005/Atom\" \n xmlns:dc=\"http://purl.org/dc/elements/1.1/\"> \n <updated>2025-08-04T00:00:01.000Z</updated> \n <dc:date>2025-08-04T00:00:01.000Z</dc:date> \n <title>Polluants aujourd'hui</title> \n <subtitle>Polluants aujourd'hui</subtitle> \n <link rel=\"alternate\" \n  href=\"http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056\" /> \n <id>http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056</id> \n <entry> \n  <title>Rapport de polluants</title> \n  <link rel=\"alternate\" \n   href=\"https://www.atmo-france.org/indiceatmo\"/> \n  <id>2025-08-04,NO21,O32,PM101,PM2.51,SO21</id> \n  <content type=\"text/plain\"> \nNO2: 1 \nO3: 2 \nPM10: 1 \nPM2.5: 1 \nSO2: 1 \n  </content> \n  <author><name>Atmo France</name></author> \n  <dc:creator>Atmo France</dc:creator> \n  <published>2025-08-04T00:00:01.000Z</published> \n  <updated>2025-08-04T00:00:01.000Z</updated> \n  <dc:date>2025-08-04T00:00:01.000Z</dc:date> \n </entry> \n</feed>"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Missing or invalid zone code parameter",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Bad Request: missing code_zone query param"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Internal Server Error: /pollutant-rss/atmo-france failed"
+              }
+            }
+          }
+        },
+        "tags": ["Pollutant Data"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message describing what went wrong"
+          }
+        },
+        "required": ["message"]
+      }
+    },
+    "parameters": {
+      "Latitude": {
+        "name": "latitude",
+        "in": "query",
+        "required": true,
+        "description": "Latitude coordinate in decimal degrees",
+        "schema": {
+          "type": "number",
+          "format": "double",
+          "minimum": -90.0,
+          "maximum": 90.0
+        }
+      },
+      "Longitude": {
+        "name": "longitude", 
+        "in": "query",
+        "required": true,
+        "description": "Longitude coordinate in decimal degrees",
+        "schema": {
+          "type": "number",
+          "format": "double",
+          "minimum": -180.0,
+          "maximum": 180.0
+        }
+      },
+      "CodeZone": {
+        "name": "code_zone",
+        "in": "query", 
+        "required": true,
+        "description": "Zone code for Atmo France regions",
+        "schema": {
+          "type": "string",
+          "maxLength": 5
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Pollen Data",
+      "description": "Operations related to pollen information"
+    },
+    {
+      "name": "Pollutant Data", 
+      "description": "Operations related to air pollutant information"
+    }
+  ]
+}
