@@ -2,10 +2,10 @@
 ! Module to provide pollutant data services, including downloading,
 ! parsing, and calculating pollutant averages.
 !-----------------------------------------------------------------------
-module pollutant_provider
+module prevair_pollutant_provider
    implicit none
 
-   type pollutant_pollutant_data
+   type prevair_pollutant_pollutant_data
       character(len=4) :: pollutant_name
       real :: average_value
       integer :: index
@@ -29,7 +29,7 @@ contains
    !   out :: pollutant_names    - Array of pollutant names
    !   out :: pollutant_averages - Array of pollutant averages
    !-----------------------------------------------------------------------
-   subroutine get_pollutant_pollutant_data_c( &
+   subroutine get_prevair_pollutant_data_c( &
       date_str, &
       target_lat, &
       target_lon, &
@@ -39,9 +39,10 @@ contains
       pollutant_averages, &
       pollutant_indices &
       ) &
-      bind(C, name="get_pollutant_pollutant_data")
+      bind(C, name="get_prevair_pollutant_data")
       use iso_c_binding, only: c_char, c_float, c_int, c_null_char
       use stdlib_strings, only: to_c_char
+      use c_string
       implicit none
       character(kind=c_char), dimension(8), intent(in) :: date_str
       real(c_float), intent(in) :: target_lat, target_lon
@@ -54,13 +55,11 @@ contains
       character(len=8) :: date_str_f90
       integer :: i
 
-      type(pollutant_pollutant_data), dimension(max_pollutants):: data
+      type(prevair_pollutant_pollutant_data), dimension(max_pollutants):: data
       ! convert C string to Fortran string
-      do i = 1, 8
-         date_str_f90(i:i) = trim(adjustl(date_str(i)))
-      end do
+      call to_fortran_string(date_str, 8, date_str_f90)
 
-      call get_pollutant_pollutant_data( &
+      call get_prevair_pollutant_data( &
          date_str_f90, &
          target_lat, &
          target_lon, &
@@ -85,12 +84,12 @@ contains
    !   in  :: target_lon         - Target longitude
    !   in  :: max_pollutants     - Maximum number of pollutants to retrieve
    !   out :: pollutant_count    - Number of pollutants found
-   !   out :: pollutant_data     - Array of pollutant_pollutant_data
+   !   out :: pollutant_data     - Array of prevair_pollutant_pollutant_data
    ! Returns:
    !   pollutant_data            - Array of pollutant averages for the specified
    !                               date and coordinates.
    !-----------------------------------------------------------------------
-   subroutine get_pollutant_pollutant_data( &
+   subroutine get_prevair_pollutant_data( &
       date_str, &
       target_lat, &
       target_lon, &
@@ -109,7 +108,7 @@ contains
       real, intent(in) :: target_lat, target_lon
       integer, intent(in) :: max_pollutants
       integer, intent(out) :: pollutant_count
-      type(pollutant_pollutant_data), intent(out) ::  pollutant_data(*)
+      type(prevair_pollutant_pollutant_data), intent(out) ::  pollutant_data(*)
 
       integer :: i, resources_count
       type(pollutant_resource), allocatable:: resources(:)
@@ -163,6 +162,6 @@ contains
                                    pollutant_data(pollutant_count)%average_value &
                                    )
       end do
-   end subroutine get_pollutant_pollutant_data
+   end subroutine get_prevair_pollutant_data
 
-end module pollutant_provider
+end module prevair_pollutant_provider

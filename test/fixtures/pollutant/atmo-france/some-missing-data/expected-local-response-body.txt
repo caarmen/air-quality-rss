@@ -6,18 +6,19 @@
  <title>Polluants aujourd'hui</title>
  <subtitle>Polluants aujourd'hui</subtitle>
  <link rel="alternate" 
-  href="http://localhost:8888/pollutant-rss?latitude=48.843910&amp;longitude=2.357083" />
- <id>http://localhost:8888/pollutant-rss?latitude=48.843910&amp;longitude=2.357083</id>
+  href="http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056" />
+ <id>http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056</id>
  <entry>
   <title>Rapport de polluants</title>
   <link rel="alternate" 
-   href="https://www.atmo-france.org/indiceatmo?bbox=2.347083,48.853910,2.367083,48.833910"/>
-  <id>__TODAY_SHORT__,O32</id>
+   href="https://explore.data.gouv.fr/fr/datasets/6149925a2ff0ab6cebdd6fe8/?code_zone__exact=75056#/resources/d2b9e8e6-8b0b-4bb6-9851-b4fa2efc8201"/>
+  <id>__TODAY__,NO22,PM2.51</id>
   <content type="text/plain">
-O3: 68.0 µg/m³ (2)
+NO2: 2
+PM2.5: 1
   </content>
-  <author><name>PREV'AIR</name></author>
-  <dc:creator>PREV'AIR</dc:creator>
+  <author><name>Atmo France</name></author>
+  <dc:creator>Atmo France</dc:creator>
   <published>__TODAY__T00:00:01.000Z</published>
   <updated>__TODAY__T00:00:01.000Z</updated>
   <dc:date>__TODAY__T00:00:01.000Z</dc:date>

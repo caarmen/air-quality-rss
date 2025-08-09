@@ -50,14 +50,19 @@ add_custom_target(copy_json_files ALL
 
 # Fortran sources for the pollutant provider.
 set(FORTRAN_LIBRARY_SOURCES
-    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/pollutant-calculator.f90
-    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/pollutant-netcdf-data.f90
-    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/pollutant-netcdf-parser.f90
-    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/pollutant-resource-parser.f90
-    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/pollutant-provider.f90
+    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/atmo-france/pollutant-data.f90
+    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/atmo-france/pollutant-fetcher.f90
+    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/atmo-france/pollutant-parser.f90
+    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/atmo-france/pollutant-provider.f90
+    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/prevair/pollutant-calculator.f90
+    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/prevair/pollutant-netcdf-data.f90
+    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/prevair/pollutant-netcdf-parser.f90
+    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/prevair/pollutant-resource-parser.f90
+    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/prevair/pollutant-provider.f90
     ${CMAKE_SOURCE_DIR}/src/support/f90/datetime.f90
     ${CMAKE_SOURCE_DIR}/src/support/f90/file-downloader.f90
     ${CMAKE_SOURCE_DIR}/src/support/f90/geo.f90
+    ${CMAKE_SOURCE_DIR}/src/support/f90/c-string.f90
 )
 
 # Build the Fortran sources into a static library.

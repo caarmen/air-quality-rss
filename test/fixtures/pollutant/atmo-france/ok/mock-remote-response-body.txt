@@ -1,0 +1,9 @@
+[
+  {
+    "code_no2": 2,
+    "code_o3": 2,
+    "code_pm10": 1,
+    "code_pm25": 1,
+    "code_so2": 1
+  }
+]

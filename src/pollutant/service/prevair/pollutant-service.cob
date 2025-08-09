@@ -1,12 +1,12 @@
       *> ===============================================================
-      *> PROGRAM: POLLUTANT-SERVICE
+      *> PROGRAM: PREVAIR-POLLUTANT-SERVICE
       *> PURPOSE: Orchestrates the pollutant data fetching, parsing, and
       *>          rendering process.
       *>          This program is called by the air-quality router.
       *> ===============================================================
 
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. POLLUTANT-SERVICE.
+       PROGRAM-ID. PREVAIR-POLLUTANT-SERVICE.
 
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
@@ -15,7 +15,7 @@
            05  LS-CDT-MONTH                PIC 9(2). *> 01-12
            05  LS-CDT-DAY                  PIC 9(2). *> 01-31
        01  LS-DATE-STR                     PIC X(8).
-       COPY "pollutant-data" IN "pollutant/service".
+       COPY "pollutant-data" IN "pollutant/service/prevair".
 
        LINKAGE SECTION.
        01 IN-URL                   PIC X(100).
@@ -36,7 +36,7 @@
                LS-CDT-YEAR LS-CDT-MONTH LS-CDT-DAY
                INTO LS-DATE-STR
            END-STRING
-           CALL "get_pollutant_pollutant_data" USING
+           CALL "get_prevair_pollutant_data" USING
                LS-DATE-STR
                IN-LATITUDE-DEGREES
                IN-LONGITUDE-DEGREES
@@ -46,7 +46,7 @@
                POLLUTANT-AVERAGES-GRP
                POLLUTANT-INDICES-GRP
 
-           CALL "POLLUTANT-RENDER" USING
+           CALL "PREVAIR-POLLUTANT-RENDER" USING
                LS-DATE-STR
                IN-URL
                IN-LATITUDE-DEGREES
@@ -57,4 +57,4 @@
            MOVE 0 TO RETURN-CODE
            GOBACK.
 
-       END PROGRAM POLLUTANT-SERVICE.
+       END PROGRAM PREVAIR-POLLUTANT-SERVICE.

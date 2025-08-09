@@ -1,9 +1,9 @@
 #!/usr/bin/env bats
 # shellcheck shell=bash
 
-load "../../support/test-actions.bash"
+load "../../../support/test-actions.bash"
 
-@test "Test nominal pollutant data" {
+@test "Test atmo france nominal pollutant data" {
     # GIVEN a remote pollutant server running which returns valid data
     # AND a local pollutant server waiting for a request
     # WHEN a request is made to the local pollutant server
@@ -11,19 +11,19 @@ load "../../support/test-actions.bash"
 
     # GIVEN a remote pollutant server running which returns valid data
     # AND a local pollutant server waiting for a request
-    launch_remote_server "pollutant/ok"
+    launch_remote_server "pollutant/atmo-france/ok"
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss?latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollutant-rss/atmo-france?code_zone=75056"
 
     # THEN the local pollen server should return a valid RSS feed
     [ "${http_status}" -eq 200 ]
-    run compare_response "pollutant/ok"
+    run compare_response "pollutant/atmo-france/ok"
     [ "$status" -eq 0 ]
 }
 
-@test "Test some invalid pollutant data" {
-    # GIVEN a remote pollutant server running which returns some valid data
+@test "Test atmo france some missing pollutant data" {
+    # GIVEN a remote pollutant server running which returns some missing data
     # AND a local pollutant server waiting for a request
     # WHEN a request is made to the local pollutant server
     # THEN the local pollutant server should return a valid RSS feed
@@ -31,40 +31,19 @@ load "../../support/test-actions.bash"
 
     # GIVEN a remote pollutant server running which returns some valid data
     # AND a local pollutant server waiting for a request
-    launch_remote_server "pollutant/some-invalid-data"
+    launch_remote_server "pollutant/atmo-france/some-missing-data"
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss?latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollutant-rss/atmo-france?code_zone=75056"
 
     # THEN the local pollutant server should return a valid RSS feed
     # AND the RSS feed should contain only the valid data
     [ "${http_status}" -eq 200 ]
-    run compare_response "pollutant/some-invalid-data"
+    run compare_response "pollutant/atmo-france/some-missing-data"
     [ "$status" -eq 0 ]
 }
 
-@test "Test all invalid pollutant data" {
-    # GIVEN a remote pollutant server running which returns all invalid data
-    # AND a local pollutant server waiting for a request
-    # WHEN a request is made to the local pollutant server
-    # THEN the local pollutant server should return a valid RSS feed
-    # AND the RSS feed should contain no entry
-
-    # GIVEN a remote pollutant server running which returns all invalid data
-    # AND a local pollutant server waiting for a request
-    launch_remote_server "pollutant/all-invalid-data"
-
-    # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss?latitude=48.8439104&longitude=2.3570831"
-
-    # THEN the local pollutant server should return a valid RSS feed
-    # AND the RSS feed should contain no entry
-    [ "${http_status}" -eq 200 ]
-    run compare_response "pollutant/all-invalid-data"
-    [ "$status" -eq 0 ]
-}
-
-@test "Test all missing pollutant data" {
+@test "Test atmo france all missing pollutant data" {
     # GIVEN a remote pollutant server running which returns all missing data
     # AND a local pollutant server waiting for a request
     # WHEN a request is made to the local pollutant server
@@ -73,19 +52,19 @@ load "../../support/test-actions.bash"
 
     # GIVEN a remote pollutant server running which returns all missing data
     # AND a local pollutant server waiting for a request
-    launch_remote_server "pollutant/all-missing-data"
+    launch_remote_server "pollutant/atmo-france/all-missing-data"
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss?latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollutant-rss/atmo-france?code_zone=75056"
 
     # THEN the local pollutant server should return a valid RSS feed
     # AND the RSS feed should contain no entry
     [ "${http_status}" -eq 200 ]
-    run compare_response "pollutant/all-missing-data"
+    run compare_response "pollutant/atmo-france/all-missing-data"
     [ "$status" -eq 0 ]
 }
 
-@test "Test real server pollutant data" {
+@test "Test real atmo server pollutant data" {
     # GIVEN a remote pollutant server running which returns valid data
     # AND a local pollutant server waiting for a request
     # WHEN a request is made to the local pollutant server
@@ -97,7 +76,7 @@ load "../../support/test-actions.bash"
     launch_local_server
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss?latitude=48.8439104&longitude=2.3570831"
+    call_local_server "/pollutant-rss/atmo-france?code_zone=75056"
 
     # THEN the local pollutant server should return a valid RSS feed
     [ "$http_status" -eq 200 ]

@@ -5,16 +5,16 @@
 ! pollutant values.
 !
 ! Usage:
-!   ./example_pollutant_f90 <latitude> <longitude>
+!   ./example_pollutant_prevair_f90 <latitude> <longitude>
 !-----------------------------------------------------------------------
 program main
-   use pollutant_provider
+   use prevair_pollutant_provider
    use datetime
    implicit none
 
    character(len=10) :: target_lat_str, target_lon_str
    real :: target_lat, target_lon
-   type(pollutant_pollutant_data), dimension(10):: data
+   type(prevair_pollutant_pollutant_data), dimension(10):: data
    integer :: data_count
    integer :: i
    character(len=8) :: date_str
@@ -26,7 +26,7 @@ program main
 
    date_str = get_today_str()
 
-   call get_pollutant_pollutant_data( &
+   call get_prevair_pollutant_data( &
       date_str, &
       target_lat, &
       target_lon, &

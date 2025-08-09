@@ -26,21 +26,7 @@ Run the project with `build/bin/air-quality-rss`.
 ### Http requests
 The server will be available at `http://localhost:8888/`.
 
-#### Pollen RSS feed
-`/pollen-rss`: returns an RSS feed with pollen data.
-Query params:
-* `latitude`: latitude of the location to fetch pollen info for.
-* `longitude`: latitude of the location to fetch pollen info for.
-
-Example: localhost:8888/pollen-rss?latitude=45.758&longitude=4.7
-
-#### Pollutant RSS feed
-`/pollutant-rss`: returns an RSS feed with pollutant data.
-Query params:
-* `latitude`: latitude of the location to fetch pollutant info for.
-* `longitude`: latitude of the location to fetch pollutant info for.
-
-Example: localhost:8888/pollutant-rss?latitude=45.758&longitude=4.7
+See the [api documentation](docs/api.html).
 
 # License
 This project is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.
@@ -55,7 +41,7 @@ The project has the following dependencies:
 * [json-fortran](https://github.com/jacobwilliams/json-fortran) - BSD 3-Clause License.
 * [netcdf-fortran](https://github.com/Unidata/netcdf-fortran) - Apache License 2.0.
 * [netcdf-c](https://github.com/Unidata/netcdf-c) - BSD 3-Clause License.
-* Pollen source: [Atmo France](https://www.atmo-france.org/article/atmo-data-un-acces-unique-aux-donnees-produites-par-les-aasqa) and AASQA (Associations 
+* Pollen and pollutant source: [Atmo France](https://www.atmo-france.org/article/atmo-data-un-acces-unique-aux-donnees-produites-par-les-aasqa) and AASQA (Associations
 agréées de surveillance de la qualité de l’air).
 * Pollutant source: [PREV'AIR](https://www.prevair.org/): Données issues de la plateforme nationale de prévision de la qualité de l'air www.prevair.org
 

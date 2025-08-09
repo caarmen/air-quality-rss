@@ -15,8 +15,10 @@
        LOCAL-STORAGE SECTION.
            01  LS-LATITUDE-DEGREES        PIC S9(3)V9(8).
            01  LS-LONGITUDE-DEGREES       PIC S9(3)V9(8).
+           01  LS-CODE-ZONE               PIC X(5).
            01  LS-QUERY-PARAM-LATITUDE    PIC X(16) VALUE "latitude".
            01  LS-QUERY-PARAM-LONGITUDE   PIC X(16) VALUE "longitude".
+           01  LS-QUERY-PARAM-CODE-ZONE   PIC X(16) VALUE "code_zone".
 
        LINKAGE SECTION.
            01  IN-CONNECTION-PTR          USAGE POINTER.
@@ -36,10 +38,10 @@
            DISPLAY "Incoming " IN-HTTP-METHOD " request for "
                IN-URL ".".
 
-           IF FUNCTION TRIM(IN-HTTP-METHOD) = "GET"
-               AND (FUNCTION TRIM(IN-URL) = "/pollen-rss"
-               OR FUNCTION TRIM(IN-URL) = "/pollutant-rss")
-           THEN
+           EVALUATE FUNCTION TRIM(IN-HTTP-METHOD)
+               ALSO FUNCTION TRIM(IN-URL)
+           WHEN "GET" ALSO "/pollen-rss"
+           WHEN "GET" ALSO "/pollutant-rss/prevair"
                MOVE 200 TO OUT-STATUS-CODE
 
                *> Parse the latitude query parameter
@@ -79,8 +81,8 @@
                            BY REFERENCE LS-LONGITUDE-DEGREES
                            BY REFERENCE OUT-BODY
                            RETURNING RETURN-CODE
-                   WHEN "/pollutant-rss"
-                       CALL "POLLUTANT-SERVICE" USING
+                   WHEN "/pollutant-rss/prevair"
+                       CALL "PREVAIR-POLLUTANT-SERVICE" USING
                            BY REFERENCE IN-URL
                            BY REFERENCE LS-LATITUDE-DEGREES
                            BY REFERENCE LS-LONGITUDE-DEGREES
@@ -94,11 +96,37 @@
                        FUNCTION TRIM(IN-URL) " failed" INTO OUT-BODY
                    END-STRING
                END-IF
+           WHEN "GET" ALSO "/pollutant-rss/atmo-france"
+               MOVE 200 TO OUT-STATUS-CODE
+               CALL "PARSE-QUERY-PARAM" USING
+                   BY VALUE     IN-CONNECTION-PTR
+                   BY REFERENCE LS-QUERY-PARAM-CODE-ZONE
+                   BY REFERENCE LS-CODE-ZONE
+                   RETURNING RETURN-CODE
+               IF RETURN-CODE NOT = 0
+               THEN
+                   MOVE 400 TO OUT-STATUS-CODE
+                   MOVE "Bad Request: missing code_zone query param"
+                       TO OUT-BODY
+                   GOBACK
+               END-IF
+               CALL "ATMO-FRANCE-POLLUTANT-SERVICE" USING
+                   BY REFERENCE IN-URL
+                   BY REFERENCE LS-CODE-ZONE
+                   BY REFERENCE OUT-BODY
+                   RETURNING RETURN-CODE
+               IF RETURN-CODE NOT = 0
+               THEN
+                   MOVE 500 TO OUT-STATUS-CODE
+                   STRING "Internal Server Error: "
+                       FUNCTION TRIM(IN-URL) " failed" INTO OUT-BODY
+                   END-STRING
+               END-IF
 
-           ELSE
+           WHEN OTHER
                MOVE 404 TO OUT-STATUS-CODE
                MOVE "Not Found" TO OUT-BODY
-           END-IF.
+           END-EVALUATE.
 
            GOBACK.
        END PROGRAM AIR-QUALITY-ROUTER.

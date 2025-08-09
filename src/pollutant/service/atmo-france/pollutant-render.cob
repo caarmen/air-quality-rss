@@ -1,21 +1,18 @@
 
       *> ===============================================================
-      *> PROGRAM: POLLUTANT-RENDER
+      *> PROGRAM: ATMO-FRANCE-POLLUTANT-RENDER
       *> PURPOSE: Read data from the pollutant provider and render it
       *>          to a string in the format of an RSS feed.
       *> ===============================================================
        IDENTIFICATION DIVISION.
 
-       PROGRAM-ID. POLLUTANT-RENDER.
+       PROGRAM-ID. ATMO-FRANCE-POLLUTANT-RENDER.
 
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
        01 LS-POLLUTANT-NAME-DISPLAY     PIC X(16).
        01 LS-POLLUTANT-INDEX-DISPLAY    PIC 9(1).
-       01 LS-POLLUTANT-AVERAGE-DISPLAY  PIC ZZ9.9.
-       01 LS-LATITUDE-DISPLAY           PIC -ZZ9.999999.
-       01 LS-LONGITUDE-DISPLAY          PIC -ZZ9.999999.
-       01 LS-AUTHOR                     PIC X(100) VALUE "PREV'AIR".
+       01 LS-AUTHOR                     PIC X(100) VALUE "Atmo France".
        01 LS-FEED-TITLE                 PIC X(100)
                                         VALUE "Polluants aujourd'hui".
        01 LS-ENTRY-TITLE                PIC X(100)
@@ -28,17 +25,15 @@
 
        LINKAGE SECTION.
        01 IN-URL                        PIC X(100).
-       01 IN-LATITUDE-DEGREES           PIC S9(3)V9(8).
-       01 IN-LONGITUDE-DEGREES          PIC S9(3)V9(8).
-       01  IN-DATE-STR                  PIC X(8).
-       COPY pollutant-data IN "pollutant/service".
+       01 IN-CODE-ZONE                  PIC X(5).
+       01 IN-DATE-STR                   PIC X(10).
+       COPY pollutant-data IN "pollutant/service/atmo-france".
        01 OUT-POLLUTANT-RSS             PIC X(10000) VALUE SPACES.
 
        PROCEDURE DIVISION USING
            IN-DATE-STR
            IN-URL
-           IN-LATITUDE-DEGREES
-           IN-LONGITUDE-DEGREES
+           IN-CODE-ZONE
            POLLUTANT-GRP
            OUT-POLLUTANT-RSS.
 
@@ -46,23 +41,24 @@
            MOVE IN-DATE-STR TO LS-POLLUTANT-REPORT-ID
 
            STRING
-               IN-DATE-STR(1:4) "-"
-               IN-DATE-STR(5:2) "-"
-               IN-DATE-STR(7:2) "T00:00:00Z"
+               IN-DATE-STR(1:10) "T00:00:00Z"
                INTO LS-POLLUTANT-UPDATED-AT
            END-STRING
 
-
+           STRING
+               "https://explore.data.gouv.fr/fr/datasets/"
+               "6149925a2ff0ab6cebdd6fe8/?code_zone__exact="
+               IN-CODE-ZONE
+               "#/resources/d2b9e8e6-8b0b-4bb6-9851-b4fa2efc8201"
+               INTO LS-DATA-URL
+           END-STRING
            PERFORM VARYING IDX-POLLUTANT-NAME FROM 1 BY 1
                UNTIL IDX-POLLUTANT-NAME > POLLUTANT-COUNT
 
-               *> Get display values for pollutant name, average,
-               *> and index
-               CALL "POLLUTANT-DISPLAY-NAME" USING
+               *> Get display values for pollutant name and index.
+               CALL "ATMO-FRANCE-POLLUTANT-DISP-NAME" USING
                    POLLUTANT-NAMES(IDX-POLLUTANT-NAME)
                    LS-POLLUTANT-NAME-DISPLAY
-               MOVE POLLUTANT-AVERAGES(IDX-POLLUTANT-NAME)
-                   TO LS-POLLUTANT-AVERAGE-DISPLAY
                MOVE POLLUTANT-INDICES(IDX-POLLUTANT-NAME)
                    TO LS-POLLUTANT-INDEX-DISPLAY
 
@@ -78,10 +74,8 @@
                STRING
                    FUNCTION TRIM(LS-POLLUTANT-OUTPUT)
                    FUNCTION TRIM(LS-POLLUTANT-NAME-DISPLAY)
-                   ": " FUNCTION TRIM(LS-POLLUTANT-AVERAGE-DISPLAY)
-                   " µg/m³ ("
-                   FUNCTION TRIM(LS-POLLUTANT-INDEX-DISPLAY)
-                   ")" X"0A"
+                   ": "
+                   FUNCTION TRIM(LS-POLLUTANT-INDEX-DISPLAY) X"0A"
                    INTO LS-POLLUTANT-OUTPUT
                END-STRING
 
@@ -89,20 +83,11 @@
 
            *> Build the RSS feed url
            ACCEPT LS-FEED-URL FROM ENVIRONMENT "BASE_FEED_URL"
-           MOVE IN-LATITUDE-DEGREES TO LS-LATITUDE-DISPLAY
-           MOVE IN-LONGITUDE-DEGREES TO LS-LONGITUDE-DISPLAY
            STRING FUNCTION TRIM(LS-FEED-URL)
                FUNCTION TRIM(IN-URL)
-               "?latitude=" LS-LATITUDE-DISPLAY
-               "&longitude=" LS-LONGITUDE-DISPLAY
+               "?code_zone=" IN-CODE-ZONE
                INTO LS-FEED-URL
            END-STRING
-
-           *> Build the data url
-           CALL "CREATE-DATA-URL" USING
-               BY REFERENCE IN-LATITUDE-DEGREES
-               BY REFERENCE IN-LONGITUDE-DEGREES
-               BY REFERENCE LS-DATA-URL
 
            *> Render the RSS feed
            CALL "RENDER-RSS" USING
@@ -118,69 +103,14 @@
            END-CALL
            GOBACK.
 
-       END PROGRAM POLLUTANT-RENDER.
+       END PROGRAM ATMO-FRANCE-POLLUTANT-RENDER.
 
       *> ===============================================================
-      *> PROGRAM: CREATE-DATA-URL
-      *> PURPOSE: Construct a URL for the pollutant data based on the
-      *>          latitude and longitude.  
-      *> ===============================================================
-       IDENTIFICATION DIVISION.
-       PROGRAM-ID. CREATE-DATA-URL.
-       DATA DIVISION.
-       LOCAL-STORAGE SECTION.
-       01 LS-LATITUDE-DISPLAY      PIC -ZZ9.999999.
-       01 LS-LONGITUDE-DISPLAY     PIC -ZZ9.999999.
-       01 LS-MIN-LATITUDE-DEGREES  PIC S9(3)V9(8).
-       01 LS-MAX-LATITUDE-DEGREES  PIC S9(3)V9(8).
-       01 LS-MIN-LONGITUDE-DEGREES PIC S9(3)V9(8).
-       01 LS-MAX-LONGITUDE-DEGREES PIC S9(3)V9(8).
-
-       LINKAGE SECTION.
-       01 IN-LATITUDE-DEGREES      PIC S9(3)V9(8).
-       01 IN-LONGITUDE-DEGREES     PIC S9(3)V9(8).
-       01 OUT-DATA-URL             PIC X(1000) VALUE SPACES.
-
-       PROCEDURE DIVISION USING
-           IN-LATITUDE-DEGREES
-           IN-LONGITUDE-DEGREES
-           OUT-DATA-URL.
-
-
-           SET OUT-DATA-URL TO
-               "https://www.atmo-france.org/indiceatmo?bbox="
-
-           COMPUTE LS-MIN-LATITUDE-DEGREES = IN-LATITUDE-DEGREES - 0.01
-           COMPUTE LS-MAX-LATITUDE-DEGREES = IN-LATITUDE-DEGREES + 0.01
-           COMPUTE LS-MIN-LONGITUDE-DEGREES = IN-LONGITUDE-DEGREES
-               - 0.01
-           COMPUTE LS-MAX-LONGITUDE-DEGREES = IN-LONGITUDE-DEGREES
-               + 0.01
-
-           MOVE LS-MAX-LATITUDE-DEGREES TO LS-LATITUDE-DISPLAY
-           MOVE LS-MIN-LONGITUDE-DEGREES TO LS-LONGITUDE-DISPLAY
-
-           STRING FUNCTION TRIM(OUT-DATA-URL)
-               LS-LONGITUDE-DISPLAY "," LS-LATITUDE-DISPLAY
-               INTO OUT-DATA-URL
-           END-STRING
-
-           MOVE LS-MIN-LATITUDE-DEGREES TO LS-LATITUDE-DISPLAY
-           MOVE LS-MAX-LONGITUDE-DEGREES TO LS-LONGITUDE-DISPLAY
-           STRING FUNCTION TRIM(OUT-DATA-URL)
-               "," LS-LONGITUDE-DISPLAY "," LS-LATITUDE-DISPLAY
-               INTO OUT-DATA-URL
-           END-STRING
-
-           GOBACK.
-       END PROGRAM CREATE-DATA-URL.
-
-      *> ===============================================================
-      *> PROGRAM: POLLUTANT-DISPLAY-NAME
+      *> PROGRAM: ATMO-FRANCE-POLLUTANT-DISP-NAME
       *> PURPOSE: Return the display name of the pollutant from the name
       *>          of the pollen.
       *> ===============================================================
-       PROGRAM-ID. POLLUTANT-DISPLAY-NAME.
+       PROGRAM-ID. ATMO-FRANCE-POLLUTANT-DISP-NAME.
 
        DATA DIVISION.
        LINKAGE SECTION.
@@ -196,16 +126,18 @@
                REPLACING ALL X"00" BY SPACE
 
            EVALUATE FUNCTION TRIM(OUT-POLLUTANT-DISPLAY-NAME)
-               WHEN "NO2"
+               WHEN "no2"
                    MOVE "NO2" TO OUT-POLLUTANT-DISPLAY-NAME
-               WHEN "O3"
+               WHEN "o3"
                    MOVE "O3" TO OUT-POLLUTANT-DISPLAY-NAME
-               WHEN "PM10"
+               WHEN "pm10"
                    MOVE "PM10" TO OUT-POLLUTANT-DISPLAY-NAME
-               WHEN "PM25"
+               WHEN "pm25"
                    MOVE "PM2.5" TO OUT-POLLUTANT-DISPLAY-NAME
+               WHEN "so2"
+                   MOVE "SO2" TO OUT-POLLUTANT-DISPLAY-NAME
            END-EVALUATE
 
            GOBACK.
 
-       END PROGRAM POLLUTANT-DISPLAY-NAME.
+       END PROGRAM ATMO-FRANCE-POLLUTANT-DISP-NAME.

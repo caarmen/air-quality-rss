@@ -1,0 +1,12 @@
+       01  POLLUTANT-GRP.
+           05  POLLUTANT-COUNT            PIC 9(2) VALUE 0 COMP.
+
+           05  POLLUTANT-NAMES-GRP.
+               10  POLLUTANT-NAMES        OCCURS 10 TIMES
+                   INDEXED BY IDX-POLLUTANT-NAME
+                   PIC X(5) VALUE SPACES.
+
+           05  POLLUTANT-INDICES-GRP.
+               10  POLLUTANT-INDICES      OCCURS 10 TIMES
+                   INDEXED BY IDX-POLLUTANT-INDEX PIC 9(9)
+                       VALUE 0 COMP-5.
