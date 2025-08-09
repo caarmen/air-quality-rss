@@ -65,7 +65,6 @@ load "../../../support/test-actions.bash"
 }
 
 @test "Test real atmo tabular server pollutant data" {
-    skip "Data source currently down: https://www.data.gouv.fr/datasets/indice-de-la-qualite-de-lair-quotidien-par-commune-indice-atmo/#/discussions/68975f646683faf4c10d257f"
     # GIVEN a remote pollutant server running which returns valid data
     # AND a local pollutant server waiting for a request
     # WHEN a request is made to the local pollutant server
