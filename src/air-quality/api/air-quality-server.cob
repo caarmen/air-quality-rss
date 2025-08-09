@@ -48,8 +48,11 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  C-MHD-HTTP-OK              CONSTANT AS 200.
-           01  C-MHD-RESPMEM-PERSISTENT   CONSTANT AS 0.
+           01  C-MHD-HTTP-OK             CONSTANT AS 200.
+           01  C-MHD-RESPMEM-PERSISTENT  CONSTANT AS 0.
+
+           01  C-CONTENT-TYPE-TEXT-PLAIN CONSTANT "text/plain".
+           01  C-CONTENT-TYPE-RSS        CONSTANT "application/rss+xml".
 
            01  LS-RESPONSE.
                05  LS-STATUS-CODE         PIC 999.
@@ -60,6 +63,7 @@
 
            01  LS-HTTP-METHOD             PIC X(8).
            01  LS-URL                     PIC X(100).
+           01  LS-CONTENT-TYPE            PIC X(20).
 
        LINKAGE SECTION.
            01  UNUSED-CLS-PTR              USAGE POINTER.
@@ -102,10 +106,18 @@
                BY VALUE    C-MHD-RESPMEM-PERSISTENT
                RETURNING   LS-RESPONSE-PTR
            END-CALL
+
+           EVALUATE LS-STATUS-CODE
+               WHEN GREATER THAN OR EQUAL TO 200 AND LESS THAN 300
+                   MOVE C-CONTENT-TYPE-RSS TO LS-CONTENT-TYPE
+               WHEN OTHER
+                   MOVE C-CONTENT-TYPE-TEXT-PLAIN TO LS-CONTENT-TYPE
+           END-EVALUATE
+
            CALL "MHD_add_response_header" USING
                BY VALUE    LS-RESPONSE-PTR
                BY VALUE    "Content-Type"
-               BY VALUE    "application/xml"
+               BY VALUE    LS-CONTENT-TYPE
            END-CALL
 
            CALL "MHD_queue_response" USING
