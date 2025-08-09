@@ -11,7 +11,7 @@
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
        01 LS-POLLUTANT-NAME-DISPLAY     PIC X(16).
-       01 LS-POLLUTANT-INDEX-DISPLAY    PIC 9(1).
+       01 LS-POLLUTANT-INDEX-DISPLAY    PIC X(11).
        01 LS-AUTHOR                     PIC X(100) VALUE "Atmo France".
        01 LS-FEED-TITLE                 PIC X(100)
                                         VALUE "Polluants aujourd'hui".
@@ -59,8 +59,9 @@
                CALL "ATMO-FRANCE-POLLUTANT-DISP-NAME" USING
                    POLLUTANT-NAMES(IDX-POLLUTANT-NAME)
                    LS-POLLUTANT-NAME-DISPLAY
-               MOVE POLLUTANT-INDICES(IDX-POLLUTANT-NAME)
-                   TO LS-POLLUTANT-INDEX-DISPLAY
+               CALL "POLLUTANT-INDEX-DISPLAY" USING
+                   POLLUTANT-INDICES(IDX-POLLUTANT-NAME)
+                   LS-POLLUTANT-INDEX-DISPLAY
 
                *> Add the pollutant name and index to the report id.
                STRING

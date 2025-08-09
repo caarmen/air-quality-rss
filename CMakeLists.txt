@@ -28,6 +28,7 @@ set(COB_OTHER
     ${CMAKE_SOURCE_DIR}/src/pollutant/service/atmo-france/pollutant-render.cob
     ${CMAKE_SOURCE_DIR}/src/pollutant/service/prevair/pollutant-service.cob
     ${CMAKE_SOURCE_DIR}/src/pollutant/service/prevair/pollutant-render.cob
+    ${CMAKE_SOURCE_DIR}/src/pollutant/service/pollutant-index-emoji.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/c-interop/c-string.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/geo/coordinates.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/http/curl-write-callback.cob
