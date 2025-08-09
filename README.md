@@ -23,10 +23,10 @@ Set the following environment variables:
 
 Run the project with `build/bin/air-quality-rss`.
 
-### Http requests
 The server will be available at `http://localhost:8888/`.
 
-See the [api documentation](docs/api.html).
+## Http requests
+See the [api documentation](https://caarmen.github.io/air-quality-rss/api.html).
 
 # License
 This project is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for details.
