@@ -25,7 +25,20 @@ program main
 
    date_str = get_hyphenated_today_str()
 
-   call get_atmo_france_pollutant_data( &
+   print *, "Fetching pollutant data with tabular api:"
+   call get_atmo_france_pollutant_data_tabular( &
+      date_str, &
+      code_zone, &
+      data, &
+      data_count &
+      )
+
+   do i = 1, data_count
+      print *, data(i)%pollutant_name, ": ", data(i)%index
+   end do
+
+   print *, "Fetching pollutant data with admin api:"
+   call get_atmo_france_pollutant_data_admin( &
       date_str, &
       code_zone, &
       data, &

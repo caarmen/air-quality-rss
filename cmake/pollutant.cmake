@@ -53,6 +53,8 @@ set(FORTRAN_LIBRARY_SOURCES
     ${CMAKE_SOURCE_DIR}/src/pollutant/provider/atmo-france/pollutant-data.f90
     ${CMAKE_SOURCE_DIR}/src/pollutant/provider/atmo-france/pollutant-parser.f90
     ${CMAKE_SOURCE_DIR}/src/pollutant/provider/atmo-france/pollutant-provider.f90
+    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/atmo-france/admin/pollutant-parser.f90
+    ${CMAKE_SOURCE_DIR}/src/pollutant/provider/atmo-france/admin/pollutant-fetcher.f90
     ${CMAKE_SOURCE_DIR}/src/pollutant/provider/atmo-france/tabular/pollutant-fetcher.f90
     ${CMAKE_SOURCE_DIR}/src/pollutant/provider/atmo-france/tabular/pollutant-parser.f90
     ${CMAKE_SOURCE_DIR}/src/pollutant/provider/prevair/pollutant-calculator.f90
