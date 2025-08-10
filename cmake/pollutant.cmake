@@ -59,6 +59,7 @@ set(FORTRAN_LIBRARY_SOURCES
     ${CMAKE_SOURCE_DIR}/src/pollutant/provider/prevair/pollutant-netcdf-parser.f90
     ${CMAKE_SOURCE_DIR}/src/pollutant/provider/prevair/pollutant-resource-parser.f90
     ${CMAKE_SOURCE_DIR}/src/pollutant/provider/prevair/pollutant-provider.f90
+    ${CMAKE_SOURCE_DIR}/src/support/f90/atmo-france/token.f90
     ${CMAKE_SOURCE_DIR}/src/support/f90/datetime.f90
     ${CMAKE_SOURCE_DIR}/src/support/f90/file-downloader.f90
     ${CMAKE_SOURCE_DIR}/src/support/f90/geo.f90
