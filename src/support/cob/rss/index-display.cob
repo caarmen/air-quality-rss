@@ -1,13 +1,14 @@
       *> ===============================================================
-      *> PROGRAM: POLLUTANT-INDEX-DISPLAY
+      *> PROGRAM: INDEX-DISPLAY
       *> PURPOSE: Chooses an emoji, suitable for xml encoding,
       *>          of a square whose color corresponds to the given
       *>          air quality index.
       *>          Returns the index and emoji separated by a space.
       *> ===============================================================
-       PROGRAM-ID. POLLUTANT-INDEX-DISPLAY.
+       PROGRAM-ID. INDEX-DISPLAY.
        DATA DIVISION.
        WORKING-STORAGE SECTION.
+       01  C-WHITE-CIRCLE                    CONSTANT "&#x26aa;".
        01  C-BLUE-CIRCLE                     CONSTANT "&#x1f535;".
        01  C-GREEN-CIRCLE                    CONSTANT "&#x1f7e2;".
        01  C-YELLOW-CIRCLE                   CONSTANT "&#x1f7e1;".
@@ -40,6 +41,8 @@
                    MOVE C-RED-CIRCLE TO LS-EMOJI
                WHEN 6
                    MOVE C-PURPLE-CIRCLE TO LS-EMOJI
+               WHEN OTHER
+                   MOVE C-WHITE-CIRCLE TO LS-EMOJI
            END-EVALUATE
 
            STRING
@@ -47,4 +50,4 @@
                INTO OUT-INDEX-DISPLAY
            END-STRING
            .
-       END PROGRAM POLLUTANT-INDEX-DISPLAY.
+       END PROGRAM INDEX-DISPLAY.
