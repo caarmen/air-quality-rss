@@ -28,7 +28,6 @@ set(COB_OTHER
     ${CMAKE_SOURCE_DIR}/src/pollutant/service/atmo-france/pollutant-render.cob
     ${CMAKE_SOURCE_DIR}/src/pollutant/service/prevair/pollutant-service.cob
     ${CMAKE_SOURCE_DIR}/src/pollutant/service/prevair/pollutant-render.cob
-    ${CMAKE_SOURCE_DIR}/src/pollutant/service/pollutant-index-emoji.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/c-interop/c-string.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/geo/coordinates.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/http/curl-write-callback.cob
@@ -36,6 +35,7 @@ set(COB_OTHER
     ${CMAKE_SOURCE_DIR}/src/support/cob/http/query-param-parser.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/json/json-parser.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/rss/render-rss.cob
+    ${CMAKE_SOURCE_DIR}/src/support/cob/rss/index-display.cob
     ${CMAKE_SOURCE_DIR}/src/support/cob/xml/encode.cob
 ) # No -x
 

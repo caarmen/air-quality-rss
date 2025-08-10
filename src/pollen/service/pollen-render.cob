@@ -20,6 +20,7 @@
        01 LS-ENTRY-TITLE              PIC X(100)
                                       VALUE "Rapport de pollens".
        01 LS-POLLEN-DISPLAY-NAME      PIC X(16).
+       01 LS-POLLEN-INDEX-EMOJI       PIC X(9).
        01 LS-POLLEN-OUTPUT            PIC X(10000) VALUE SPACES.
        *> LS-POLLEN-REPORT-ID: string which is unique for each
        *> combination of pollen data fields: date_maj (day component
@@ -75,11 +76,16 @@
                    BY REFERENCE POLLEN-CODE-NAME(POLLEN-CODE-INDEX)
                    BY REFERENCE LS-POLLEN-DISPLAY-NAME
                END-CALL
+               CALL "INDEX-EMOJI" USING
+                   POLLEN-CODE-VALUE(POLLEN-CODE-INDEX)
+                   LS-POLLEN-INDEX-EMOJI
                STRING
                    FUNCTION TRIM(LS-POLLEN-OUTPUT)
                    FUNCTION TRIM(LS-POLLEN-DISPLAY-NAME)
                    ": "
-                   POLLEN-CODE-VALUE(POLLEN-CODE-INDEX) X"0A"
+                   POLLEN-CODE-VALUE(POLLEN-CODE-INDEX)
+                   " "
+                   LS-POLLEN-INDEX-EMOJI X"0A"
                    INTO LS-POLLEN-OUTPUT
                END-STRING
                *> Add the pollen name and code to the pollen
