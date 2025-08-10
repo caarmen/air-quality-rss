@@ -132,8 +132,8 @@ contains
       call get_environment_variable("POLLUTANT_METADATA_URL", metadata_url)
       if (metadata_url == "") then
          metadata_url = "https://www.data.gouv.fr/api/2/datasets/67f79b112ceb5b1df4c25a8b"// &
-            "/resources/?&q="//date_str//".moyj0"
-      endif
+                        "/resources/?&q="//date_str//".moyj0"
+      end if
 
       call parse_resources( &
          trim(metadata_url), &
@@ -150,7 +150,7 @@ contains
          call download_file(resources(i)%url, resources(i)%title)
 
          data = parse_file(resources(i)%title)
-         if (.not.allocated(data%pollutant_values)) then
+         if (.not. allocated(data%pollutant_values)) then
             print *, "No pollutant values found in file: ", resources(i)%title
             cycle
          end if
@@ -158,9 +158,9 @@ contains
          pollutant_data(pollutant_count)%pollutant_name = data%pollutant_name(1:index(data%pollutant_name, "_") - 1)
          pollutant_data(pollutant_count)%average_value = calculate_average(data, target_lat, target_lon)
          pollutant_data(pollutant_count)%index = calculate_index( &
-                                   pollutant_data(pollutant_count)%pollutant_name, &
-                                   pollutant_data(pollutant_count)%average_value &
-                                   )
+                                                 pollutant_data(pollutant_count)%pollutant_name, &
+                                                 pollutant_data(pollutant_count)%average_value &
+                                                 )
       end do
    end subroutine get_prevair_pollutant_data
 
