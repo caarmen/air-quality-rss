@@ -15,16 +15,16 @@
   <id>2025-04-26,GRAMINEE,aul1,boul1,oliv1,gram2,arm1,ambr1,pol11,pol21,pol31,pol41</id>
   <content type="text/plain">
 Pollen responsable: GRAMINEE
-Aulne: 1
-Bouleau: 1
-Olivier: 1
-Graminées: 2
-Armoise: 1
-Ambroise: 1
-pol1: 1
-pol2: 1
-pol3: 1
-pol4: 1
+Aulne: 1 &#x1f535;
+Bouleau: 1 &#x1f535;
+Olivier: 1 &#x1f535;
+Graminées: 2 &#x1f7e2;
+Armoise: 1 &#x1f535;
+Ambroise: 1 &#x1f535;
+pol1: 1 &#x1f535;
+pol2: 1 &#x1f535;
+pol3: 1 &#x1f535;
+pol4: 1 &#x1f535;
   </content>
   <author><name>Atmo France</name></author>
   <dc:creator>Atmo France</dc:creator>
