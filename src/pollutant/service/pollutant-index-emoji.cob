@@ -8,12 +8,12 @@
        PROGRAM-ID. POLLUTANT-INDEX-DISPLAY.
        DATA DIVISION.
        WORKING-STORAGE SECTION.
-       01  C-BLUE-SQUARE                     CONSTANT "&#x1f7e6;".
-       01  C-GREEN-SQUARE                    CONSTANT "&#x1f7e9;".
-       01  C-YELLOW-SQUARE                   CONSTANT "&#x1f7e8;".
-       01  C-ORANGE-SQUARE                   CONSTANT "&#x1f7e7;".
-       01  C-RED-SQUARE                      CONSTANT "&#x1f7e5;".
-       01  C-PURPLE-SQUARE                   CONSTANT "&#x1f7eA;".
+       01  C-BLUE-CIRCLE                     CONSTANT "&#x1f535;".
+       01  C-GREEN-CIRCLE                    CONSTANT "&#x1f7e2;".
+       01  C-YELLOW-CIRCLE                   CONSTANT "&#x1f7e1;".
+       01  C-ORANGE-CIRCLE                   CONSTANT "&#x1f7e0;".
+       01  C-RED-CIRCLE                      CONSTANT "&#x1f534;".
+       01  C-PURPLE-CIRCLE                   CONSTANT "&#x1f7e3;".
 
        LOCAL-STORAGE SECTION.
        01  LS-INDEX-NUMBER-DISP              PIC 9(1).
@@ -29,17 +29,17 @@
            MOVE IN-INDEX-NUMERIC TO LS-INDEX-NUMBER-DISP
            EVALUATE IN-INDEX-NUMERIC
                WHEN 1
-                   MOVE C-BLUE-SQUARE TO LS-EMOJI
+                   MOVE C-BLUE-CIRCLE TO LS-EMOJI
                WHEN 2
-                   MOVE C-GREEN-SQUARE TO LS-EMOJI
+                   MOVE C-GREEN-CIRCLE TO LS-EMOJI
                WHEN 3
-                   MOVE C-YELLOW-SQUARE TO LS-EMOJI
+                   MOVE C-YELLOW-CIRCLE TO LS-EMOJI
                WHEN 4
-                   MOVE C-ORANGE-SQUARE TO LS-EMOJI
+                   MOVE C-ORANGE-CIRCLE TO LS-EMOJI
                WHEN 5
-                   MOVE C-RED-SQUARE TO LS-EMOJI
+                   MOVE C-RED-CIRCLE TO LS-EMOJI
                WHEN 6
-                   MOVE C-PURPLE-SQUARE TO LS-EMOJI
+                   MOVE C-PURPLE-CIRCLE TO LS-EMOJI
            END-EVALUATE
 
            STRING
