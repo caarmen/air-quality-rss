@@ -2,7 +2,7 @@
 !-----------------------------------------------------------------------
 ! Module to retrieve atmo france pollutant data.
 !-----------------------------------------------------------------------
-module atmo_france_pollutant_fetcher
+module atmo_france_pollutant_fetcher_tabular
 
 contains
 
@@ -21,7 +21,7 @@ contains
    !   out :: pollutant_data_json_str  - The pollutant data as a raw
    !                                     string.
    !-----------------------------------------------------------------------
-   function fetch_pollutant_data( &
+   function fetch_pollutant_data_tabular( &
       date_str, &
       code_zone, &
       pollutant_names &
@@ -47,7 +47,7 @@ contains
       response = request(trim(data_url))
       pollutant_data_json_str = response%content
 
-   end function fetch_pollutant_data
+   end function fetch_pollutant_data_tabular
 
    !-----------------------------------------------------------------------
    ! Function to build the atmo france url.
@@ -90,4 +90,4 @@ contains
       end if
    end function build_url
 
-end module atmo_france_pollutant_fetcher
+end module atmo_france_pollutant_fetcher_tabular

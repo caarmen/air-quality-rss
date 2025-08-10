@@ -79,8 +79,8 @@ contains
       data_count &
       )
       use atmo_france_pollutant_data, only: pollutant_data
-      use atmo_france_pollutant_parser
-      use atmo_france_pollutant_fetcher
+      use atmo_france_pollutant_parser_tabular
+      use atmo_france_pollutant_fetcher_tabular
       implicit none
 
       character(len=4), dimension(5), parameter :: POLLUTANT_NAMES = [ &
@@ -93,13 +93,13 @@ contains
 
       character(len=500) :: pollutant_data_json_str
 
-      pollutant_data_json_str = fetch_pollutant_data( &
+      pollutant_data_json_str = fetch_pollutant_data_tabular( &
                                 date_str, &
                                 code_zone, &
                                 POLLUTANT_NAMES &
                                 )
 
-      call parse_pollutant_data( &
+      call parse_pollutant_data_tabular( &
          pollutant_data_json_str, &
          POLLUTANT_NAMES, &
          data, &
