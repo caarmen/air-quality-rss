@@ -12,10 +12,10 @@
   <title>Rapport de polluants</title>
   <link rel="alternate" 
    href="https://explore.data.gouv.fr/fr/datasets/6149925a2ff0ab6cebdd6fe8/?code_zone__exact=75056#/resources/d2b9e8e6-8b0b-4bb6-9851-b4fa2efc8201"/>
-  <id>__TODAY__,NO22 &#x1f7e9;,PM2.51 &#x1f7e6;</id>
+  <id>__TODAY__,NO22 &#x1f7e2;,PM2.51 &#x1f535;</id>
   <content type="text/plain">
-NO2: 2 &#x1f7e9;
-PM2.5: 1 &#x1f7e6;
+NO2: 2 &#x1f7e2;
+PM2.5: 1 &#x1f535;
   </content>
   <author><name>Atmo France</name></author>
   <dc:creator>Atmo France</dc:creator>
