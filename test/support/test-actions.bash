@@ -29,6 +29,7 @@ function launch_local_server() {
     docker_container_id=$(docker run --rm -p 8888:8888 \
         -v /etc/localtime:/etc/localtime:ro \
         -v /tmp/prevair:/tmp/prevair:ro \
+        -v $(pwd)/.env.sh.template:/app/.env.sh:ro \
         -e POLLEN_BASE_URL="${pollen_base_url}" \
         -e POLLUTANT_METADATA_URL="${pollutant_metadata_url}" \
         -e BASE_FEED_URL="http://localhost:8888" \
