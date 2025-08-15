@@ -135,7 +135,7 @@ contains
       type(pollutant_data), intent(out) ::  data(*)
       integer, intent(out) :: data_count
 
-      character(len=500) :: pollutant_data_json_str
+      character(len=:), allocatable :: pollutant_data_json_str
       character(len=:), allocatable :: token
 
       call get_token(token)

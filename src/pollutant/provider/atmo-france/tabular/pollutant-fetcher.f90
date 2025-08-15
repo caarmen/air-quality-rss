@@ -31,7 +31,7 @@ contains
       character(len=*), intent(in) :: date_str
       character(len=*), intent(in) :: code_zone
       character(len=*), intent(in) :: pollutant_names(:)
-      character(len=400) :: pollutant_data_json_str
+      character(len=:), allocatable :: pollutant_data_json_str
 
       character(len=200) :: data_url
       type(response_type) :: response
