@@ -14,7 +14,7 @@ load "../../../support/test-actions.bash"
     launch_remote_server "pollutant/atmo-france/ok"
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss/atmo-france?code_zone=75056"
+    call_local_server "/pollutant-rss/atmo-france/tabular?code_zone=75056"
 
     # THEN the local pollen server should return a valid RSS feed
     [ "${http_status}" -eq 200 ]
@@ -34,7 +34,7 @@ load "../../../support/test-actions.bash"
     launch_remote_server "pollutant/atmo-france/some-missing-data"
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss/atmo-france?code_zone=75056"
+    call_local_server "/pollutant-rss/atmo-france/tabular?code_zone=75056"
 
     # THEN the local pollutant server should return a valid RSS feed
     # AND the RSS feed should contain only the valid data
@@ -55,7 +55,7 @@ load "../../../support/test-actions.bash"
     launch_remote_server "pollutant/atmo-france/all-missing-data"
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss/atmo-france?code_zone=75056"
+    call_local_server "/pollutant-rss/atmo-france/tabular?code_zone=75056"
 
     # THEN the local pollutant server should return a valid RSS feed
     # AND the RSS feed should contain no entry
@@ -77,7 +77,7 @@ load "../../../support/test-actions.bash"
     launch_local_server
 
     # WHEN a request is made to the local pollutant server
-    call_local_server "/pollutant-rss/atmo-france?code_zone=75056"
+    call_local_server "/pollutant-rss/atmo-france/tabular?code_zone=75056"
 
     # THEN the local pollutant server should return a valid RSS feed
     [ "$http_status" -eq 200 ]

@@ -181,11 +181,11 @@
         "tags": ["Pollutant Data"]
       }
     },
-    "/pollutant-rss/atmo-france": {
+    "/pollutant-rss/atmo-france/tabular": {
       "get": {
-        "summary": "Get pollutant data from Atmo France in RSS format",
-        "description": "Retrieves pollutant information from the Atmo France service using a specific zone code",
-        "operationId": "getAtmoFrancePollutantRss",
+        "summary": "Get pollutant data from Atmo France in RSS format (tabular source)",
+        "description": "Retrieves pollutant information from the Atmo France service using a specific zone code\n\nData is from the tabular api: https://explore.data.gouv.fr/fr/datasets/6149925a2ff0ab6cebdd6fe8/#/resources/d2b9e8e6-8b0b-4bb6-9851-b4fa2efc8201",
+        "operationId": "getAtmoFrancePollutantRssTabular",
         "parameters": [
           {
             "name": "code_zone",
@@ -210,6 +210,64 @@
                   "description": "RSS XML format containing pollutant data from Atmo France"
                 },
                 "example": "<?xml version=\"1.0\" encoding=\"utf-8\"?> \n<feed xmlns=\"http://www.w3.org/2005/Atom\" \n xmlns:dc=\"http://purl.org/dc/elements/1.1/\"> \n <updated>2025-08-04T00:00:01.000Z</updated> \n <dc:date>2025-08-04T00:00:01.000Z</dc:date> \n <title>Polluants aujourd'hui</title> \n <subtitle>Polluants aujourd'hui</subtitle> \n <link rel=\"alternate\" \n  href=\"http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056\" /> \n <id>http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056</id> \n <entry> \n  <title>Rapport de polluants</title> \n  <link rel=\"alternate\" \n   href=\"https://www.atmo-france.org/indiceatmo\"/> \n  <id>2025-08-04,NO21,O32,PM101,PM2.51,SO21</id> \n  <content type=\"text/plain\"> \nNO2: 1 \nO3: 2 \nPM10: 1 \nPM2.5: 1 \nSO2: 1 \n  </content> \n  <author><name>Atmo France</name></author> \n  <dc:creator>Atmo France</dc:creator> \n  <published>2025-08-04T00:00:01.000Z</published> \n  <updated>2025-08-04T00:00:01.000Z</updated> \n  <dc:date>2025-08-04T00:00:01.000Z</dc:date> \n </entry> \n</feed>"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Missing or invalid zone code parameter",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Bad Request: missing code_zone query param"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Internal Server Error: /pollutant-rss/atmo-france failed"
+              }
+            }
+          }
+        },
+        "tags": ["Pollutant Data"]
+      }
+    },
+    "/pollutant-rss/atmo-france/admin": {
+      "get": {
+        "summary": "Get pollutant data from Atmo France in RSS format (admin source)",
+        "description": "Retrieves pollutant information from the Atmo France service using a specific zone code\n\nData is from the admin api: https://admindata.atmo-france.org/api/doc/v2#/Indice%20de%20qualit%C3%A9%20de%20l'air/get_indices_atmo",
+        "operationId": "getAtmoFrancePollutantRssAdmin",
+        "parameters": [
+          {
+            "name": "code_zone",
+            "in": "query",
+            "required": true,
+            "description": "Zone code identifier for Atmo France regions\n\n☝️ Find the code commune for a city on the INSEE website: https://www.insee.fr/fr/recherche/recherche-geographique",
+            "schema": {
+              "type": "string",
+              "maxLength": 5,
+              "pattern": "^[A-Z0-9]+$",
+              "example": "FR001"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with Atmo France pollutant RSS data",
+            "content": {
+              "application/rss+xml": {
+                "schema": {
+                  "type": "string",
+                  "description": "RSS XML format containing pollutant data from Atmo France"
+                },
+                "example": "<?xml version=\"1.0\" encoding=\"utf-8\"?> \n<feed xmlns=\"http://www.w3.org/2005/Atom\" \n xmlns:dc=\"http://purl.org/dc/elements/1.1/\"> \n <updated>2025-08-15T00:00:01.000Z</updated> \n <dc:date>2025-08-15T00:00:01.000Z</dc:date> \n <title>Polluants aujourd'hui</title> \n <subtitle>Polluants aujourd'hui</subtitle> \n <link rel=\"alternate\" \n  href=\"http://localhost:8888/pollutant-rss/atmo-france/admin?code_zone=75056\" /> \n <id>http://localhost:8888/pollutant-rss/atmo-france/admin?code_zone=75056</id> \n <entry> \n  <title>Rapport de polluants</title> \n  <link rel=\"alternate\" \n   href=\"https://explore.data.gouv.fr/fr/datasets/6149925a2ff0ab6cebdd6fe8/?code_zone__exact=75056#/resources/d2b9e8e6-8b0b-4bb6-9851-b4fa2efc8201\"/> \n  <id>2025-08-15,NO22 &#x1f7e2;,O33 &#x1f7e1;,PM101 &#x1f535;,PM2.51 &#x1f535;,SO21 &#x1f535;</id> \n  <content type=\"text/plain\"> \nNO2: 2 &#x1f7e2; \nO3: 3 &#x1f7e1; \nPM10: 1 &#x1f535; \nPM2.5: 1 &#x1f535; \nSO2: 1 &#x1f535; \n  </content> \n  <author><name>Atmo France</name></author> \n  <dc:creator>Atmo France</dc:creator> \n  <published>2025-08-15T00:00:01.000Z</published> \n  <updated>2025-08-15T00:00:01.000Z</updated> \n  <dc:date>2025-08-15T00:00:01.000Z</dc:date> \n </entry> \n</feed>"
               }
             }
           },

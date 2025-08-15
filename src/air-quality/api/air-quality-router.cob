@@ -96,7 +96,8 @@
                        FUNCTION TRIM(IN-URL) " failed" INTO OUT-BODY
                    END-STRING
                END-IF
-           WHEN "GET" ALSO "/pollutant-rss/atmo-france"
+           WHEN "GET" ALSO "/pollutant-rss/atmo-france/tabular"
+           WHEN "GET" ALSO "/pollutant-rss/atmo-france/admin"
                MOVE 200 TO OUT-STATUS-CODE
                CALL "PARSE-QUERY-PARAM" USING
                    BY VALUE     IN-CONNECTION-PTR
@@ -110,11 +111,21 @@
                        TO OUT-BODY
                    GOBACK
                END-IF
-               CALL "ATMO-FRANCE-POLLUTANT-SERVICE" USING
-                   BY REFERENCE IN-URL
-                   BY REFERENCE LS-CODE-ZONE
-                   BY REFERENCE OUT-BODY
-                   RETURNING RETURN-CODE
+               EVALUATE FUNCTION TRIM(IN-URL)
+                   WHEN "/pollutant-rss/atmo-france/tabular"
+                       CALL "AF-POLLUTANT-SVC-TABULAR"
+                           USING
+                           BY REFERENCE IN-URL
+                           BY REFERENCE LS-CODE-ZONE
+                           BY REFERENCE OUT-BODY
+                           RETURNING RETURN-CODE
+                   WHEN "/pollutant-rss/atmo-france/admin"
+                       CALL "AF-POLLUTANT-SVC-ADMIN"
+                           USING
+                           BY REFERENCE IN-URL
+                           BY REFERENCE LS-CODE-ZONE
+                           BY REFERENCE OUT-BODY
+                           RETURNING RETURN-CODE
                IF RETURN-CODE NOT = 0
                THEN
                    MOVE 500 TO OUT-STATUS-CODE
