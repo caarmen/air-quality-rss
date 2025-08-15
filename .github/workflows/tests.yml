@@ -10,6 +10,7 @@ jobs:
       runs-on: ubuntu-latest
       permissions:
         checks: write
+      environment: tests
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
@@ -22,6 +23,9 @@ jobs:
           run: mkdir -p reports
 
         - name: Run tests
+          env:
+            ATMO_FRANCE_USERNAME: ${{secrets.ATMO_FRANCE_USERNAME}}
+            ATMO_FRANCE_PASSWORD: ${{secrets.ATMO_FRANCE_PASSWORD}}
           run: bats test/scenarios --recursive --formatter junit > reports/junit.xml
 
         - name: Publish Test Report

@@ -63,3 +63,29 @@ load "../../../support/test-actions.bash"
     run compare_response "pollutant/atmo-france/admin/all-missing-data"
     [ "$status" -eq 0 ]
 }
+
+@test "Test real atmo admin server pollutant data" {
+    # GIVEN a remote pollutant server running which returns valid data
+    # AND a local pollutant server waiting for a request
+    # WHEN a request is made to the local pollutant server
+    # THEN the local pollutant server should return a valid RSS feed
+
+    # Stop the local pollutant server. We need to restart it configured
+    # to use the real remote server.
+    teardown
+    launch_local_server
+
+    # WHEN a request is made to the local pollutant server
+    call_local_server "/pollutant-rss/atmo-france/admin?code_zone=75056"
+
+    # THEN the local pollutant server should return a valid RSS feed
+    [ "$http_status" -eq 200 ]
+    # Spot check a couple of values in the response:
+    o3_index_count=$(grep -c "O3: " \
+        "${test_log_folder}/actual-local-response-body.txt")
+    [ "${o3_index_count}" -eq 1 ]
+
+    no2_index_count=$(grep -c "NO2: " \
+        "${test_log_folder}/actual-local-response-body.txt")
+    [ "${no2_index_count}" -eq 1 ]
+}

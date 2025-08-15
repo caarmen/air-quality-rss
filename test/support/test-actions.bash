@@ -21,6 +21,9 @@ teardown() {
 function launch_local_server() {
     pollen_base_url=$1
     pollutant_metadata_url=$2
+    # Make a dummy environment shell script.
+    # For tests, we'll pass the environment variables to docker with -e
+    touch /tmp/.env.test.sh
     # Start the local air quality server.
     #
     # The --add-host argument is to make `host.docker.internal` available inside the container.
@@ -29,7 +32,9 @@ function launch_local_server() {
     docker_container_id=$(docker run --rm -p 8888:8888 \
         -v /etc/localtime:/etc/localtime:ro \
         -v /tmp/prevair:/tmp/prevair:ro \
-        -v $(pwd)/.env.sh.template:/app/.env.sh:ro \
+        -v /tmp/.env.test.sh:/app/.env.sh:ro \
+        -e ATMO_FRANCE_USERNAME="${ATMO_FRANCE_USERNAME}" \
+        -e ATMO_FRANCE_PASSWORD="${ATMO_FRANCE_PASSWORD}" \
         -e POLLEN_BASE_URL="${pollen_base_url}" \
         -e POLLUTANT_METADATA_URL="${pollutant_metadata_url}" \
         -e BASE_FEED_URL="http://localhost:8888" \
