@@ -10,7 +10,7 @@
 
        DATA DIVISION.
        LOCAL-STORAGE SECTION.
-       01 LS-POLLUTANT-NAME-DISPLAY     PIC X(16).
+       01 LS-POLLUTANT-NAME-DISPLAY     PIC X(17).
        01 LS-POLLUTANT-INDEX-DISPLAY    PIC X(11).
        01 LS-POLLUTANT-AVERAGE-DISPLAY  PIC ZZ9.9.
        01 LS-LATITUDE-DISPLAY           PIC -ZZ9.999999.
@@ -22,7 +22,7 @@
                                         VALUE "Rapport de polluants".
        01 LS-POLLUTANT-UPDATED-AT       PIC X(24).
        01 LS-POLLUTANT-OUTPUT           PIC X(10000) VALUE SPACES.
-       01 LS-POLLUTANT-REPORT-ID        PIC X(100) VALUE SPACES.
+       01 LS-POLLUTANT-REPORT-ID        PIC X(200) VALUE SPACES.
        01 LS-DATA-URL                   PIC X(1000).
        01 LS-FEED-URL                   PIC X(1000).
 
@@ -186,7 +186,7 @@
        DATA DIVISION.
        LINKAGE SECTION.
        01 IN-POLLUTANT-NAME                   PIC X(4).
-       01 OUT-POLLUTANT-DISPLAY-NAME          PIC X(16).
+       01 OUT-POLLUTANT-DISPLAY-NAME          PIC X(17).
 
        PROCEDURE DIVISION USING
            IN-POLLUTANT-NAME,
@@ -198,13 +198,14 @@
 
            EVALUATE FUNCTION TRIM(OUT-POLLUTANT-DISPLAY-NAME)
                WHEN "NO2"
-                   MOVE "NO2" TO OUT-POLLUTANT-DISPLAY-NAME
+                   MOVE "NO&#8322;" TO OUT-POLLUTANT-DISPLAY-NAME
                WHEN "O3"
-                   MOVE "O3" TO OUT-POLLUTANT-DISPLAY-NAME
+                   MOVE "O&#8323;" TO OUT-POLLUTANT-DISPLAY-NAME
                WHEN "PM10"
-                   MOVE "PM10" TO OUT-POLLUTANT-DISPLAY-NAME
+                   MOVE "PM&#8321;&#8320;" TO OUT-POLLUTANT-DISPLAY-NAME
                WHEN "PM25"
-                   MOVE "PM2.5" TO OUT-POLLUTANT-DISPLAY-NAME
+                   MOVE "PM&#8322;.&#8325;"
+                       TO OUT-POLLUTANT-DISPLAY-NAME
            END-EVALUATE
 
            GOBACK.

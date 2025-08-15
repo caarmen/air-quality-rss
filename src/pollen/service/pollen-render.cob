@@ -25,7 +25,7 @@
        *> LS-POLLEN-REPORT-ID: string which is unique for each
        *> combination of pollen data fields: date_maj (day component
        *> only), responsible pollen, and the code and value of
-       01 LS-POLLEN-REPORT-ID         PIC X(100) VALUE SPACES.
+       01 LS-POLLEN-REPORT-ID         PIC X(200) VALUE SPACES.
        01 LS-FEED-URL                 PIC X(1000).
 
        LINKAGE SECTION.

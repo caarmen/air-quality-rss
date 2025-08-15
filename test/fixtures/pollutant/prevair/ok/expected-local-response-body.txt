@@ -12,9 +12,9 @@
   <title>Rapport de polluants</title>
   <link rel="alternate" 
    href="https://www.atmo-france.org/indiceatmo?bbox=2.347083,48.853910,2.367083,48.833910"/>
-  <id>__TODAY_SHORT__,O32 &#x1f7e2;</id>
+  <id>__TODAY_SHORT__,O&#8323;2 &#x1f7e2;</id>
   <content type="text/plain">
-O3: 68.0 µg/m³ (2 &#x1f7e2;)
+O&#8323;: 68.0 µg/m³ (2 &#x1f7e2;)
   </content>
   <author><name>PREV'AIR</name></author>
   <dc:creator>PREV'AIR</dc:creator>
