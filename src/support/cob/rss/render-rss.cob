@@ -19,7 +19,7 @@
        01 LS-FEED-ENTRY             PIC X(10000) VALUE SPACES.
 
        LINKAGE SECTION.
-       01 IN-ID                     PIC X(100).
+       01 IN-ID                     PIC X(200).
        01 IN-SOURCE-URL             PIC X(1000).
        01 IN-FEED-URL               PIC X(1000).
        01 IN-DATE-MAJ               PIC X(24).

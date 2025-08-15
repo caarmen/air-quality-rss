@@ -81,11 +81,11 @@ load "../../../support/test-actions.bash"
     # THEN the local pollutant server should return a valid RSS feed
     [ "$http_status" -eq 200 ]
     # Spot check a couple of values in the response:
-    o3_index_count=$(grep -c "O3: " \
+    o3_index_count=$(grep -c "O&#8323;: " \
         "${test_log_folder}/actual-local-response-body.txt")
     [ "${o3_index_count}" -eq 1 ]
 
-    no2_index_count=$(grep -c "NO2: " \
+    no2_index_count=$(grep -c "NO&#8322;: " \
         "${test_log_folder}/actual-local-response-body.txt")
     [ "${no2_index_count}" -eq 1 ]
 }
