@@ -9,6 +9,8 @@
        PROGRAM-ID. ATMO-FRANCE-POLLUTANT-SERVICE.
 
        DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  C-API-TABULAR                   CONSTANT 1.
        LOCAL-STORAGE SECTION.
        01  LS-CURRENT-DATE-AND-TIME.
            05  LS-CDT-YEAR                 PIC 9(4).
@@ -38,6 +40,7 @@
            CALL "get_atmo_france_pollutant_data" USING
                LS-DATE-STR
                IN-CODE-ZONE
+               C-API-TABULAR
                POLLUTANT-COUNT
                POLLUTANT-NAMES-GRP
                POLLUTANT-INDICES-GRP

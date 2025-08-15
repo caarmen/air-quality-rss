@@ -7,6 +7,11 @@ module atmo_france_pollutant_provider
                                                 character(len=4) :: "no2", "o3", "pm10", "pm25", "so2" &
                                                                     ]
 
+   enum, bind(C)
+      enumerator:: API_ADMIN = 0
+      enumerator:: API_TABULAR = 1
+   end enum
+
 contains
    !-----------------------------------------------------------------------
    ! C binding for the Fortran subroutine to get pollutant data.
@@ -17,14 +22,19 @@ contains
    !
    !   in  :: date_str           - Date string in the format YYYY-MM-DD
    !   in  :: code_zone          - INSEE code de commune (not postal code).
+   !   in  :: api                - The api to use to retrieve the data.
+   !                               API_ADMIN (0)
+   !                               API_TABULAR (0)
    !
    !   out :: pollutant_count    - Number of pollutants found
    !   out :: pollutant_names    - Array of pollutant names
    !   out :: pollutant_indices  - Array of pollutant indices
    !-----------------------------------------------------------------------
+
    subroutine get_atmo_france_pollutant_data_c( &
       date_str, &
       code_zone, &
+      api, &
       pollutant_count, &
       pollutant_names, &
       pollutant_indices &
@@ -37,6 +47,7 @@ contains
       implicit none
       character(kind=c_char), dimension(10), intent(in) :: date_str
       character(kind=c_char), dimension(5), intent(in) :: code_zone
+      integer(c_int), intent(in) :: api
       integer, parameter:: MAX_POLLUTANT_COUNT = 10
 
       integer(c_int), intent(out) :: pollutant_count
@@ -52,12 +63,21 @@ contains
       call to_fortran_string(date_str, 10, date_str_f90)
       call to_fortran_string(code_zone, 5, code_zone_f90)
 
-      call get_atmo_france_pollutant_data_tabular( &
-         date_str_f90, &
-         code_zone_f90, &
-         data, &
-         pollutant_count &
-         )
+      if (api == API_ADMIN) then
+         call get_atmo_france_pollutant_data_admin( &
+            date_str_f90, &
+            code_zone_f90, &
+            data, &
+            pollutant_count &
+            )
+      else
+         call get_atmo_france_pollutant_data_tabular( &
+            date_str_f90, &
+            code_zone_f90, &
+            data, &
+            pollutant_count &
+            )
+      end if
 
       do i = 1, pollutant_count
          pollutant_names(:, i) = to_c_char(data(i)%pollutant_name)
