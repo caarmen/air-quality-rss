@@ -43,5 +43,5 @@ RUN ./build.sh
 EXPOSE 8888
 
 # Run the binary produced by the build (adjust for your binary path)
-CMD ["./build/bin/air-quality-rss"]
+CMD ["bash", "-c", "source /app/.env.sh && exec ./build/bin/air-quality-rss"]
 

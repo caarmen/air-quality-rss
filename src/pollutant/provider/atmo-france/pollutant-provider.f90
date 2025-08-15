@@ -3,6 +3,14 @@
 ! Module to provide pollutant data from atmo france.
 !-----------------------------------------------------------------------
 module atmo_france_pollutant_provider
+   character(len=4), dimension(5), parameter :: ALL_POLLUTANT_NAMES = [ &
+                                                character(len=4) :: "no2", "o3", "pm10", "pm25", "so2" &
+                                                                    ]
+
+   enum, bind(C)
+      enumerator:: API_ADMIN = 0
+      enumerator:: API_TABULAR = 1
+   end enum
 
 contains
    !-----------------------------------------------------------------------
@@ -14,14 +22,19 @@ contains
    !
    !   in  :: date_str           - Date string in the format YYYY-MM-DD
    !   in  :: code_zone          - INSEE code de commune (not postal code).
+   !   in  :: api                - The api to use to retrieve the data.
+   !                               API_ADMIN (0)
+   !                               API_TABULAR (0)
    !
    !   out :: pollutant_count    - Number of pollutants found
    !   out :: pollutant_names    - Array of pollutant names
    !   out :: pollutant_indices  - Array of pollutant indices
    !-----------------------------------------------------------------------
+
    subroutine get_atmo_france_pollutant_data_c( &
       date_str, &
       code_zone, &
+      api, &
       pollutant_count, &
       pollutant_names, &
       pollutant_indices &
@@ -34,6 +47,7 @@ contains
       implicit none
       character(kind=c_char), dimension(10), intent(in) :: date_str
       character(kind=c_char), dimension(5), intent(in) :: code_zone
+      integer(c_int), intent(in) :: api
       integer, parameter:: MAX_POLLUTANT_COUNT = 10
 
       integer(c_int), intent(out) :: pollutant_count
@@ -49,12 +63,21 @@ contains
       call to_fortran_string(date_str, 10, date_str_f90)
       call to_fortran_string(code_zone, 5, code_zone_f90)
 
-      call get_atmo_france_pollutant_data( &
-         date_str_f90, &
-         code_zone_f90, &
-         data, &
-         pollutant_count &
-         )
+      if (api == API_ADMIN) then
+         call get_atmo_france_pollutant_data_admin( &
+            date_str_f90, &
+            code_zone_f90, &
+            data, &
+            pollutant_count &
+            )
+      else
+         call get_atmo_france_pollutant_data_tabular( &
+            date_str_f90, &
+            code_zone_f90, &
+            data, &
+            pollutant_count &
+            )
+      end if
 
       do i = 1, pollutant_count
          pollutant_names(:, i) = to_c_char(data(i)%pollutant_name)
@@ -64,7 +87,7 @@ contains
 
    !-----------------------------------------------------------------------
    ! Subroutine to get pollutant data for a specific date and
-   ! INSEE zone code.
+   ! INSEE zone code, using the atmo france tabular api.
    !
    ! Arguments:
    !   in  :: date_str           - Date string in the format YYYY-MM-DD
@@ -72,20 +95,17 @@ contains
    !   out :: data               - Array of atmo france pollutant data
    !   out :: count              - The number of pollutants in the result.
    !-----------------------------------------------------------------------
-   subroutine get_atmo_france_pollutant_data( &
+   subroutine get_atmo_france_pollutant_data_tabular( &
       date_str, &
       code_zone, &
       data, &
       data_count &
       )
       use atmo_france_pollutant_data, only: pollutant_data
-      use atmo_france_pollutant_parser
-      use atmo_france_pollutant_fetcher
+      use atmo_france_pollutant_parser_tabular
+      use atmo_france_pollutant_fetcher_tabular
       implicit none
 
-      character(len=4), dimension(5), parameter :: POLLUTANT_NAMES = [ &
-                                                   character(len=4) :: "no2", "o3", "pm10", "pm25", "so2" &
-                                                                       ]
       character(len=10), intent(in) :: date_str
       character(len=5), intent(in) :: code_zone
       type(pollutant_data), intent(out) ::  data(*)
@@ -93,19 +113,66 @@ contains
 
       character(len=500) :: pollutant_data_json_str
 
-      pollutant_data_json_str = fetch_pollutant_data( &
+      pollutant_data_json_str = fetch_pollutant_data_tabular( &
                                 date_str, &
                                 code_zone, &
-                                POLLUTANT_NAMES &
+                                ALL_POLLUTANT_NAMES &
                                 )
 
-      call parse_pollutant_data( &
+      call parse_pollutant_data_tabular( &
          pollutant_data_json_str, &
-         POLLUTANT_NAMES, &
+         ALL_POLLUTANT_NAMES, &
          data, &
          data_count &
          )
 
-   end subroutine get_atmo_france_pollutant_data
+   end subroutine get_atmo_france_pollutant_data_tabular
+
+   !-----------------------------------------------------------------------
+   ! Subroutine to get pollutant data for a specific date and
+   ! INSEE zone code, using the atmo france admin api.
+   !
+   ! Arguments:
+   !   in  :: date_str           - Date string in the format YYYY-MM-DD
+   !   in  :: code_zone          - INSEE code de commune (not postal code).
+   !   out :: data               - Array of atmo france pollutant data
+   !   out :: count              - The number of pollutants in the result.
+   !-----------------------------------------------------------------------
+   subroutine get_atmo_france_pollutant_data_admin( &
+      date_str, &
+      code_zone, &
+      data, &
+      data_count &
+      )
+      use atmo_france_pollutant_data, only: pollutant_data
+      use atmo_france_pollutant_parser_admin
+      use atmo_france_pollutant_fetcher_admin
+      use atmo_france_token
+      implicit none
+
+      character(len=10), intent(in) :: date_str
+      character(len=5), intent(in) :: code_zone
+      type(pollutant_data), intent(out) ::  data(*)
+      integer, intent(out) :: data_count
+
+      character(len=:), allocatable :: pollutant_data_json_str
+      character(len=:), allocatable :: token
+
+      call get_token(token)
+      pollutant_data_json_str = fetch_pollutant_data_admin( &
+                                token, &
+                                date_str, &
+                                code_zone, &
+                                ALL_POLLUTANT_NAMES &
+                                )
+
+      call parse_pollutant_data_admin( &
+         pollutant_data_json_str, &
+         ALL_POLLUTANT_NAMES, &
+         data, &
+         data_count &
+         )
+
+   end subroutine get_atmo_france_pollutant_data_admin
 
 end module atmo_france_pollutant_provider

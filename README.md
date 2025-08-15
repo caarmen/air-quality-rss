@@ -2,6 +2,15 @@
 
 This is a hobby project which provides a webserver that serves pollen and pollutant data from Atmo France and PREV'AIR in a format compatible with RSS feeds.
 
+## Setup
+To use the Atmo France admin api, you'll need a username and password. More information is in the Atmo France [api documentation](https://admindata.atmo-france.org/api/doc/v2).
+
+If you don't have an account, no worries! You can still use fetch pollen data, and pollutant data using either the PREV'AIR or Atmo France tabular api source.
+
+If you do have an account:
+* Copy `.env.sh.template` to `.env.sh`.
+* Enter your username and password in `.env.sh`.
+
 ## Running
 ### Docker
 * Fetch the image: `docker pull ghcr.io/caarmen/air-quality-rss:latest`
@@ -9,6 +18,7 @@ This is a hobby project which provides a webserver that serves pollen and pollut
 ```bash
  docker run \
    -e BASE_FEED_URL=http://localhost:8888 \
+   -v $(pwd)/.env.sh:/app/.env.sh:ro \
    -p 8888:8888 \
    ghcr.io/caarmen/air-quality-rss:latest
 ```

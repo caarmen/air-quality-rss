@@ -6,8 +6,8 @@
  <title>Polluants aujourd'hui</title>
  <subtitle>Polluants aujourd'hui</subtitle>
  <link rel="alternate" 
-  href="http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056" />
- <id>http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056</id>
+  href="http://localhost:8888/pollutant-rss/atmo-france/admin?code_zone=75056" />
+ <id>http://localhost:8888/pollutant-rss/atmo-france/admin?code_zone=75056</id>
  <entry>
   <title>Rapport de polluants</title>
   <link rel="alternate" 

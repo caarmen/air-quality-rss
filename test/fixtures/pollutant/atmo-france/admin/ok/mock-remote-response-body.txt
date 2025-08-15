@@ -1,0 +1,46 @@
+{
+  "type": "FeatureCollection",
+  "name": "national_data.national_ind_atmo",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::3857"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "aasqa": "11",
+        "date_maj": "2025-08-15T14:36:20.962+02:00",
+        "code_no2": 2,
+        "code_o3": 2,
+        "code_pm10": 1,
+        "code_pm25": 1,
+        "code_qual": 3,
+        "code_so2": 1,
+        "code_zone": "75056",
+        "coul_qual": "#F0E641",
+        "date_dif": "2025-08-15",
+        "date_ech": "2025-08-15",
+        "epsg_reg": "2154",
+        "lib_qual": "Dégradé",
+        "lib_zone": "Paris",
+        "source": "Airparif",
+        "type_zone": "commune",
+        "x_reg": 600469.854092525,
+        "x_wgs84": 2.34290503430796,
+        "y_reg": 2428697.65015414,
+        "y_wgs84": 48.8566165608135,
+        "gml_id2": null
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          260810.9953961569,
+          6250567.1516667735
+        ]
+      }
+    }
+  ]
+}

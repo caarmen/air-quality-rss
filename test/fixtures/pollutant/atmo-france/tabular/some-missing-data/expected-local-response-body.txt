@@ -6,19 +6,16 @@
  <title>Polluants aujourd'hui</title>
  <subtitle>Polluants aujourd'hui</subtitle>
  <link rel="alternate" 
-  href="http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056" />
- <id>http://localhost:8888/pollutant-rss/atmo-france?code_zone=75056</id>
+  href="http://localhost:8888/pollutant-rss/atmo-france/tabular?code_zone=75056" />
+ <id>http://localhost:8888/pollutant-rss/atmo-france/tabular?code_zone=75056</id>
  <entry>
   <title>Rapport de polluants</title>
   <link rel="alternate" 
    href="https://explore.data.gouv.fr/fr/datasets/6149925a2ff0ab6cebdd6fe8/?code_zone__exact=75056#/resources/d2b9e8e6-8b0b-4bb6-9851-b4fa2efc8201"/>
-  <id>__TODAY__,NO22 &#x1f7e2;,O32 &#x1f7e2;,PM101 &#x1f535;,PM2.51 &#x1f535;,SO21 &#x1f535;</id>
+  <id>__TODAY__,NO22 &#x1f7e2;,PM2.51 &#x1f535;</id>
   <content type="text/plain">
 NO2: 2 &#x1f7e2;
-O3: 2 &#x1f7e2;
-PM10: 1 &#x1f535;
 PM2.5: 1 &#x1f535;
-SO2: 1 &#x1f535;
   </content>
   <author><name>Atmo France</name></author>
   <dc:creator>Atmo France</dc:creator>

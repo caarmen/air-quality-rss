@@ -3,3 +3,4 @@ pollen.dat
 reports/
 logs/
 *.mod
+.env.sh
