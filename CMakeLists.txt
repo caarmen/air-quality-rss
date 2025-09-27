@@ -64,7 +64,7 @@ function(compile_cobol OUTPUT_VAR COB_FILE)
 
     add_custom_command(
         OUTPUT ${OBJ_PATH}
-        COMMAND COB_COPY_DIR=${COB_COPY_DIR} cobc -c ${COBOL_FLAGS} ${COB_FILE} -o ${OBJ_PATH}
+        COMMAND COB_COPY_DIR=${COB_COPY_DIR} cobc -c -g -O0 ${COBOL_FLAGS} ${COB_FILE} -o ${OBJ_PATH}
         DEPENDS ${COB_FILE}
         COMMENT "Compiling ${COB_FILE} ${COBOL_FLAGS}"
     )

@@ -1,6 +1,9 @@
 enable_language(Fortran)
 include(ExternalProject)
 
+# Apply -g -O0 to all Fortran compiled by CMake
+set(CMAKE_Fortran_FLAGS "-g -O0" CACHE STRING "Fortran flags" FORCE)
+
 # Find the NetCDF Fortran and C libraries installed on the system.
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(NETCDF_FORTRAN REQUIRED netcdf-fortran)
@@ -12,7 +15,7 @@ ExternalProject_Add(http_client_external
     GIT_REPOSITORY https://github.com/fortran-lang/http-client.git
     GIT_TAG main
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND fpm build
+    BUILD_COMMAND env "FCFLAGS=-g -O0" fpm build
     BUILD_IN_SOURCE 1
     INSTALL_COMMAND ""
 )
@@ -33,7 +36,7 @@ ExternalProject_Add(json_fortran_external
     GIT_REPOSITORY https://github.com/jacobwilliams/json-fortran
     GIT_TAG master
     CONFIGURE_COMMAND ""
-    BUILD_COMMAND fpm build
+    BUILD_COMMAND env "FCFLAGS=-g -O0" fpm build
     BUILD_IN_SOURCE 1
     INSTALL_COMMAND ""
 )
