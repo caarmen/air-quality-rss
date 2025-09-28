@@ -92,16 +92,12 @@ add_executable(air-quality-rss
 )
 
 target_link_options(air-quality-rss PRIVATE
-    -flto=auto
-    -ffat-lto-objects
+    -flto=auto -ffat-lto-objects
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_link_options(air-quality-rss PRIVATE
-        -Wl,--export-dynamic
-        -Wl,-Bsymbolic-functions
-        -Wl,-z,relro
-        -Wl,--no-as-needed
+        -Wl,--export-dynamic -Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,--no-as-needed
     )
 endif()
 

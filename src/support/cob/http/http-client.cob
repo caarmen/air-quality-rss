@@ -12,6 +12,9 @@
 
        DATA DIVISION.
 
+       WORKING-STORAGE SECTION.
+           01  WS-CURL-HANDLE-PTR         USAGE POINTER.
+
        LOCAL-STORAGE SECTION.
            01  LS-CURL-CODE               USAGE BINARY-LONG.
 
@@ -21,7 +24,6 @@
            01  C-CURLOPT-WRITEDATA        CONSTANT AS 10001.
 
            01  LS-CURL-WRITE-CALLBACK     USAGE PROGRAM-POINTER.
-           01  LS-CURL-HANDLE-PTR         USAGE POINTER.
 
        LINKAGE SECTION.
            01  IN-REQUEST-URL             PIC X(1000).
@@ -36,31 +38,31 @@
            SET LS-CURL-WRITE-CALLBACK TO
                ENTRY "CURL-WRITE-CALLBACK"
 
-           CALL "curl_easy_init"
-               RETURNING LS-CURL-HANDLE-PTR
+           IF WS-CURL-HANDLE-PTR = NULL
+           THEN
+               CALL "curl_easy_init"
+                   RETURNING WS-CURL-HANDLE-PTR
+               CALL "curl_easy_setopt" USING
+                   BY VALUE    WS-CURL-HANDLE-PTR
+                   BY VALUE    C-CURLOPT-WRITEFUNCTION
+                   BY VALUE    LS-CURL-WRITE-CALLBACK
+           END-IF
 
            CALL "curl_easy_setopt" USING
-               BY VALUE    LS-CURL-HANDLE-PTR
+               BY VALUE    WS-CURL-HANDLE-PTR
                BY VALUE    C-CURLOPT-URL
                BY CONTENT  FUNCTION TRIM(IN-REQUEST-URL)
 
-           CALL "curl_easy_setopt" USING
-               BY VALUE    LS-CURL-HANDLE-PTR
-               BY VALUE    C-CURLOPT-WRITEFUNCTION
-               BY VALUE    LS-CURL-WRITE-CALLBACK
 
            CALL "curl_easy_setopt" USING
-               BY VALUE    LS-CURL-HANDLE-PTR
+               BY VALUE    WS-CURL-HANDLE-PTR
                BY VALUE    C-CURLOPT-WRITEDATA
                BY REFERENCE OUT-RESPONSE
 
        *> https://curl.se/libcurl/c/curl_easy_perform.html
            CALL "curl_easy_perform" USING
-               BY VALUE    LS-CURL-HANDLE-PTR
+               BY VALUE    WS-CURL-HANDLE-PTR
                RETURNING   LS-CURL-CODE
-
-           CALL "curl_easy_cleanup" USING
-               BY VALUE LS-CURL-HANDLE-PTR
 
            GOBACK.
        END PROGRAM HTTP-CLIENT-GET.

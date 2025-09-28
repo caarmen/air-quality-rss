@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-docker rm airqual
+docker rm airqualfix
 docker run \
-   --name airqual \
+   --name airqualfix \
    -e BASE_FEED_URL=http://localhost:8888 \
    -e POLLUTANT_METADATA_URL=http://host.docker.internal:9999/pollutant/response.json \
    -e POLLEN_BASE_URL=http://host.docker.internal:9999/pollen/response.json \

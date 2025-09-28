@@ -9,7 +9,8 @@
        DATA DIVISION.
 
        LOCAL-STORAGE SECTION.
-           01  C-MHD-USE-SELECT-INTERNALLY   CONSTANT AS 8.
+           01  C-MHD-USE-INTERNAL-POLLING-THREAD   CONSTANT AS 8.
+           01  C-MHD-OPTION-THREAD-POOL-SIZE CONSTANT AS 14.
            01  C-MHD-OPTION-END              CONSTANT AS 0.
            01  C-PORT_NUMBER                 CONSTANT AS 8888.
 
@@ -22,12 +23,14 @@
                ENTRY "MICROHTTPD-ACCESS-HANDLER".
 
            CALL "MHD_start_daemon" USING
-               BY VALUE    C-MHD-USE-SELECT-INTERNALLY
+               BY VALUE    C-MHD-USE-INTERNAL-POLLING-THREAD
                BY VALUE    C-PORT_NUMBER
                BY VALUE    0
                BY VALUE    0
                BY VALUE    LS-CONNECTION-HANDLER-ENTRY
                BY VALUE    0
+               BY VALUE    C-MHD-OPTION-THREAD-POOL-SIZE
+               BY VALUE    1
                BY VALUE    C-MHD-OPTION-END
                RETURNING   LS-DAEMON-PTR
            END-CALL
