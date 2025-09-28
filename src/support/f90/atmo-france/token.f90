@@ -52,11 +52,12 @@ contains
       ! Call the atmo-france api route.
       response = request( &
                  method=HTTP_POST, &
-                 url="https://admindata.atmo-france.org/api/login", &
+                 url="https://admindata.atmo-francesfsdfsfsf.org/api/loginx", &
                  data=request_input, &
                  header=[pair_type("Content-Type", "application/json")] &
                  )
 
+      print *, response%content
       ! Extract the token.
       ! Same response:
       ! {
