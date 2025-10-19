@@ -22,6 +22,25 @@ load "../../support/test-actions.bash"
     [ "$status" -eq 0 ]
 }
 
+@test "Test nominal pollen data with HEAD" {
+    # GIVEN a remote pollen server running which returns a valid JSON response
+    # AND a local pollen server waiting for a request
+    # WHEN a request using HEAD is made to the local pollen server
+    # THEN the local pollen server should return a valid HEAD response
+
+    # GIVEN a remote pollen server running which returns a valid JSON response
+    # AND a local pollen server waiting for a request
+    launch_remote_server "pollen/ok"
+
+    # WHEN a request using HEAD is made to the local pollen server
+    call_local_server "/pollen-rss?latitude=48.8439104&longitude=2.3570831" "--head"
+
+    # THEN the local pollen server should return a valid HEAD response
+    [ "$http_status" -eq 200 ]
+    run compare_head_response "pollen/ok"
+    [ "$status" -eq 0 ]
+}
+
 @test "Test real server pollen data" {
     # GIVEN a remote pollen server running which returns a valid JSON response
     # AND a local pollen server waiting for a request

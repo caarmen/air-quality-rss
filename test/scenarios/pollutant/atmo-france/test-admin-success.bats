@@ -22,6 +22,25 @@ load "../../../support/test-actions.bash"
     [ "$status" -eq 0 ]
 }
 
+@test "Test atmo france admin nominal pollutant data with HEAD" {
+    # GIVEN a remote pollutant server running which returns valid data
+    # AND a local pollutant server waiting for a request
+    # WHEN a request using HEAD is made to the local pollutant server
+    # THEN the local pollutant server should return a valid HEAD response
+
+    # GIVEN a remote pollutant server running which returns valid data
+    # AND a local pollutant server waiting for a request
+    launch_remote_server "pollutant/atmo-france/admin/ok"
+
+    # WHEN a request using HEAD is made to the local pollutant server
+    call_local_server "/pollutant-rss/atmo-france/admin?code_zone=75056" "--head"
+
+    # THEN the local pollen server should return a valid HEAD response
+    [ "${http_status}" -eq 200 ]
+    run compare_head_response "pollutant/atmo-france/admin/ok"
+    [ "$status" -eq 0 ]
+}
+
 @test "Test atmo france admin some missing pollutant data" {
     # GIVEN a remote pollutant server running which returns some missing data
     # AND a local pollutant server waiting for a request

@@ -22,6 +22,25 @@ load "../../../support/test-actions.bash"
     [ "$status" -eq 0 ]
 }
 
+@test "Test prevair nominal pollutant data with HEAD" {
+    # GIVEN a remote pollutant server running which returns valid data
+    # AND a local pollutant server waiting for a request
+    # WHEN a request using HEAD is made to the local pollutant server
+    # THEN the local pollutant server should return a valid HEAD response
+
+    # GIVEN a remote pollutant server running which returns valid data
+    # AND a local pollutant server waiting for a request
+    launch_remote_server "pollutant/prevair/ok"
+
+    # WHEN a request using HEAD is made to the local pollutant server
+    call_local_server "/pollutant-rss/prevair?latitude=48.8439104&longitude=2.3570831" "--head"
+
+    # THEN the local pollen server should return a valid HEAD response
+    [ "${http_status}" -eq 200 ]
+    run compare_head_response "pollutant/prevair/ok"
+    [ "$status" -eq 0 ]
+}
+
 @test "Test prevair some invalid pollutant data" {
     # GIVEN a remote pollutant server running which returns some valid data
     # AND a local pollutant server waiting for a request

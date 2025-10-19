@@ -36,12 +36,14 @@
                BY REFERENCE OUT-RESPONSE.
 
            DISPLAY "Incoming " IN-HTTP-METHOD " request for "
-               IN-URL ".".
+               IN-URL "."
 
            EVALUATE FUNCTION TRIM(IN-HTTP-METHOD)
                ALSO FUNCTION TRIM(IN-URL)
            WHEN "GET" ALSO "/pollen-rss"
            WHEN "GET" ALSO "/pollutant-rss/prevair"
+           WHEN "HEAD" ALSO "/pollen-rss"
+           WHEN "HEAD" ALSO "/pollutant-rss/prevair"
                MOVE 200 TO OUT-STATUS-CODE
 
                *> Parse the latitude query parameter
@@ -98,6 +100,8 @@
                END-IF
            WHEN "GET" ALSO "/pollutant-rss/atmo-france/tabular"
            WHEN "GET" ALSO "/pollutant-rss/atmo-france/admin"
+           WHEN "HEAD" ALSO "/pollutant-rss/atmo-france/tabular"
+           WHEN "HEAD" ALSO "/pollutant-rss/atmo-france/admin"
                MOVE 200 TO OUT-STATUS-CODE
                CALL "PARSE-QUERY-PARAM" USING
                    BY VALUE     IN-CONNECTION-PTR
@@ -126,6 +130,7 @@
                            BY REFERENCE LS-CODE-ZONE
                            BY REFERENCE OUT-BODY
                            RETURNING RETURN-CODE
+               END-EVALUATE
                IF RETURN-CODE NOT = 0
                THEN
                    MOVE 500 TO OUT-STATUS-CODE
@@ -137,7 +142,7 @@
            WHEN OTHER
                MOVE 404 TO OUT-STATUS-CODE
                MOVE "Not Found" TO OUT-BODY
-           END-EVALUATE.
+           END-EVALUATE
 
            GOBACK.
        END PROGRAM AIR-QUALITY-ROUTER.
