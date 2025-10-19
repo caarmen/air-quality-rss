@@ -42,6 +42,8 @@
                ALSO FUNCTION TRIM(IN-URL)
            WHEN "GET" ALSO "/pollen-rss"
            WHEN "GET" ALSO "/pollutant-rss/prevair"
+           WHEN "HEAD" ALSO "/pollen-rss"
+           WHEN "HEAD" ALSO "/pollutant-rss/prevair"
                MOVE 200 TO OUT-STATUS-CODE
 
                *> Parse the latitude query parameter
@@ -98,6 +100,8 @@
                END-IF
            WHEN "GET" ALSO "/pollutant-rss/atmo-france/tabular"
            WHEN "GET" ALSO "/pollutant-rss/atmo-france/admin"
+           WHEN "HEAD" ALSO "/pollutant-rss/atmo-france/tabular"
+           WHEN "HEAD" ALSO "/pollutant-rss/atmo-france/admin"
                MOVE 200 TO OUT-STATUS-CODE
                CALL "PARSE-QUERY-PARAM" USING
                    BY VALUE     IN-CONNECTION-PTR
