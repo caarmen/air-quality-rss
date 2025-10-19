@@ -126,6 +126,7 @@
                            BY REFERENCE LS-CODE-ZONE
                            BY REFERENCE OUT-BODY
                            RETURNING RETURN-CODE
+               END-EVALUATE
                IF RETURN-CODE NOT = 0
                THEN
                    MOVE 500 TO OUT-STATUS-CODE
