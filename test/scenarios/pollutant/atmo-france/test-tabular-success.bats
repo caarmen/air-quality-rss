@@ -65,6 +65,9 @@ load "../../../support/test-actions.bash"
 }
 
 @test "Test real atmo tabular server pollutant data" {
+    skip "This test requires access to the real Atmo France server, which is not available currently."
+    # https://tabular-api.data.gouv.fr/api/resources/d2b9e8e6-8b0b-4bb6-9851-b4fa2efc8201/ returns a 404.
+
     # GIVEN a remote pollutant server running which returns valid data
     # AND a local pollutant server waiting for a request
     # WHEN a request is made to the local pollutant server
