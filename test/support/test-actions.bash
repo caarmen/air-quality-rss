@@ -99,13 +99,16 @@ function wait_for_text_in_file() {
 # Function to call the local server.
 # Arguments:
 #   $1: query string to pass to the local server
+#   $2: (optional) additional curl options
 # Saves the response body and metadata to actual-response-body.txt 
 # and actual-response-metadata.json
 # and the http status code to the variable http_status.
 function call_local_server() {
     request_uri=$1
+    additional_curl_options=$2
     # Call the local server
     curl \
+        ${additional_curl_options:+$additional_curl_options} \
         --silent \
         --output "${test_log_folder}/actual-local-response-body.txt" \
         --write-out "%{json}" \
@@ -139,6 +142,32 @@ function compare_response() {
         echo "${diff_content}" | sed -e 's/^/# /g' >&3
     fi
     exit ${diff_status}
+}
+
+function compare_head_response() {
+    get_fixture_name=$1
+    replace_date_placeholders \
+        "${fixture_folder}/${get_fixture_name}/expected-local-response-body.txt" \
+        "${test_log_folder}/expected-get-response-body.txt"
+
+    # Get the expected Content-Length from the fixture for the get http method.
+    # (xargs trims whitespace.)
+    expected_response_content_length=$(wc -c < "${test_log_folder}/expected-get-response-body.txt" | xargs)
+
+    # Check that the Content-Length header matches the expected length.
+    grep -i "^Content-Length: ${expected_response_content_length}\s*$" \
+        "${test_log_folder}/actual-local-response-body.txt" \
+        > /dev/null
+
+    grep_status=$?
+    if [ "${grep_status}" -ne 0 ]
+    then
+        echo "# Actual HEAD response different from expected response:" >&3
+        echo "# Expected Content-Length: ${expected_response_content_length}" >&3
+        echo "# Actual Content:" >&3
+        cat "${test_log_folder}/actual-local-response-body.txt" >&3
+    fi
+    exit ${grep_status}
 }
 
 function replace_date_placeholders() {
