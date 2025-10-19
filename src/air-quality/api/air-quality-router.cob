@@ -36,7 +36,7 @@
                BY REFERENCE OUT-RESPONSE.
 
            DISPLAY "Incoming " IN-HTTP-METHOD " request for "
-               IN-URL ".".
+               IN-URL "."
 
            EVALUATE FUNCTION TRIM(IN-HTTP-METHOD)
                ALSO FUNCTION TRIM(IN-URL)
@@ -138,7 +138,7 @@
            WHEN OTHER
                MOVE 404 TO OUT-STATUS-CODE
                MOVE "Not Found" TO OUT-BODY
-           END-EVALUATE.
+           END-EVALUATE
 
            GOBACK.
        END PROGRAM AIR-QUALITY-ROUTER.
