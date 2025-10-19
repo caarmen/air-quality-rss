@@ -55,11 +55,9 @@ function launch_remote_server() {
     status_code=$(cat \
         "${fixture_folder}/${fixture_name}/mock-remote-response-status-code.txt"\
     )
-    today_short=$(date +%Y%m%d)
-    sed -e \
-        "s/__TODAY_SHORT__/${today_short}/" \
+    replace_date_placeholders \
         "${fixture_folder}/${fixture_name}/mock-remote-response-body.txt" \
-        > "${test_log_folder}/mock-remote-response-body.txt"
+        "${test_log_folder}/mock-remote-response-body.txt"
     # Copy any pollutant files to the /tmp/prevair folder
     rm -f /tmp/prevair/*.nc
     cp "${fixture_folder}/${fixture_name}"/*.nc /tmp/prevair/ 2>/dev/null || true
@@ -125,12 +123,9 @@ function call_local_server() {
 
 function compare_response() {
     fixture_name=$1
-    today=$(date +%Y-%m-%d)
-    today_short=$(date +%Y%m%d)
-    sed -e \
-        "s/__TODAY__/${today}/;s/__TODAY_SHORT__/${today_short}/" \
+    replace_date_placeholders \
         "${fixture_folder}/${fixture_name}/expected-local-response-body.txt" \
-        > "${test_log_folder}/expected-local-response-body.txt"
+        "${test_log_folder}/expected-local-response-body.txt"
     diff_content=$(diff \
         "${test_log_folder}/expected-local-response-body.txt" \
         "${test_log_folder}/actual-local-response-body.txt"\
@@ -144,4 +139,15 @@ function compare_response() {
         echo "${diff_content}" | sed -e 's/^/# /g' >&3
     fi
     exit ${diff_status}
+}
+
+function replace_date_placeholders() {
+    input_file=$1
+    output_file=$2
+    today=$(date +%Y-%m-%d)
+    today_short=$(date +%Y%m%d)
+    sed -e \
+        "s/__TODAY__/${today}/;s/__TODAY_SHORT__/${today_short}/" \
+        "${input_file}" \
+        > "${output_file}"
 }
