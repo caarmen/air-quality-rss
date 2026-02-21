@@ -71,6 +71,7 @@ contains
       code_zone, &
       pollutant_names &
       ) result(data_url)
+      use env_config, only: get_pollutant_metadata_url
       implicit none
       character(len=*), intent(in) :: date_str
       character(len=*), intent(in) :: code_zone
@@ -79,7 +80,7 @@ contains
 
       integer :: i
 
-      call get_environment_variable("POLLUTANT_METADATA_URL", data_url)
+      data_url = get_pollutant_metadata_url()
       if (data_url == "") then
          data_url = "https://admindata.atmo-france.org/api/v2/data/indices/atmo"// &
                     "?format=geojson"// &

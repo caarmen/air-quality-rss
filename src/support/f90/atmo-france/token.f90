@@ -18,6 +18,7 @@ contains
    subroutine get_token(token)
       use http, only: response_type, request, HTTP_POST, pair_type
       use json_module
+      use env_config, only: get_atmo_france_username, get_atmo_france_password
       implicit none
 
       ! Output variable
@@ -32,16 +33,13 @@ contains
       type(json_value), pointer :: json_request_root, json_response_root
 
       ! Other local variables
-      character(len=256):: env_var_buffer
       character(len=:), allocatable:: username, password, request_input
 
       type(json_value), pointer :: p
 
       ! Read the username and password from the environment.
-      call get_environment_variable("ATMO_FRANCE_USERNAME", env_var_buffer)
-      username = trim(env_var_buffer)
-      call get_environment_variable("ATMO_FRANCE_PASSWORD", env_var_buffer)
-      password = trim(env_var_buffer)
+      username = get_atmo_france_username()
+      password = get_atmo_france_password()
 
       ! Create the request payload with the username and password
       call json%create_object(json_request_root, "")

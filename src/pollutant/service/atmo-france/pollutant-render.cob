@@ -83,7 +83,9 @@
            END-PERFORM
 
            *> Build the RSS feed url
-           ACCEPT LS-FEED-URL FROM ENVIRONMENT "BASE_FEED_URL"
+           CALL "GET-BASE-FEED-URL" USING
+               BY REFERENCE LS-FEED-URL
+           END-CALL
            STRING FUNCTION TRIM(LS-FEED-URL)
                FUNCTION TRIM(IN-URL)
                "?code_zone=" IN-CODE-ZONE

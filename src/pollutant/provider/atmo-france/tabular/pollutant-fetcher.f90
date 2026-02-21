@@ -66,6 +66,7 @@ contains
       code_zone, &
       pollutant_names &
       ) result(data_url)
+      use env_config, only: get_pollutant_metadata_url
       implicit none
       character(len=*), intent(in) :: date_str
       character(len=*), intent(in) :: code_zone
@@ -74,7 +75,7 @@ contains
 
       integer :: i
 
-      call get_environment_variable("POLLUTANT_METADATA_URL", data_url)
+      data_url = get_pollutant_metadata_url()
       if (data_url == "") then
          data_url = "https://tabular-api.data.gouv.fr/api/resources/"// &
                     "d2b9e8e6-8b0b-4bb6-9851-b4fa2efc8201/data/json/?"// &
