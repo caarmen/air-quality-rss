@@ -52,9 +52,10 @@ function launch_local_server() {
 #   $1: path to the fixture folder.
 function launch_remote_server() {
     fixture_name=$1
-    status_code=$(cat \
-        "${fixture_folder}/${fixture_name}/mock-remote-response-status-code.txt"\
-    )
+    response_config_json_file="${fixture_folder}/${fixture_name}/mock-remote-response-config.json"
+
+    status_code=$(jq -r '.status_code' "$response_config_json_file")
+
     replace_date_placeholders \
         "${fixture_folder}/${fixture_name}/mock-remote-response-body.txt" \
         "${test_log_folder}/mock-remote-response-body.txt"
