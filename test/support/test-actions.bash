@@ -38,6 +38,7 @@ function launch_local_server() {
         -e POLLEN_BASE_URL="${pollen_base_url}" \
         -e POLLUTANT_METADATA_URL="${pollutant_metadata_url}" \
         -e BASE_FEED_URL="http://localhost:8888" \
+        -e AQRSS_REQUEST_TIMEOUT_S=5 \
         --detach \
         --add-host=host.docker.internal:host-gateway \
         air-quality-rss)

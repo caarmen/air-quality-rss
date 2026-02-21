@@ -14,11 +14,14 @@
 
        LOCAL-STORAGE SECTION.
            01  LS-CURL-CODE               USAGE BINARY-LONG.
+           01  LS-TIMEOUT-MS              USAGE BINARY-LONG VALUE 30000.
+           01  LS-TIMEOUT-SECONDS         USAGE BINARY-LONG VALUE 30.
 
        *> https://github.com/curl/curl/blob/curl-8_18_0/packages/OS400/curl.inc.in#L1092
            01  C-CURLOPT-URL              CONSTANT AS 10002.
            01  C-CURLOPT-WRITEFUNCTION    CONSTANT AS 20011.
            01  C-CURLOPT-WRITEDATA        CONSTANT AS 10001.
+           01  C-CURLOPT-TIMEOUT-MS       CONSTANT AS 155.
 
            01  LS-CURL-WRITE-CALLBACK     USAGE PROGRAM-POINTER.
            01  LS-CURL-HANDLE-PTR         USAGE POINTER.
@@ -32,6 +35,12 @@
        PROCEDURE DIVISION USING
            IN-REQUEST-URL
            BY REFERENCE OUT-RESPONSE.
+
+      *> Read request timeout from environment (seconds).
+           CALL "GET-REQUEST-TIMEOUT-S" USING
+               BY REFERENCE LS-TIMEOUT-SECONDS
+           END-CALL
+           COMPUTE LS-TIMEOUT-MS = LS-TIMEOUT-SECONDS * 1000
 
            SET LS-CURL-WRITE-CALLBACK TO
                ENTRY "CURL-WRITE-CALLBACK"
@@ -53,6 +62,11 @@
                BY VALUE    LS-CURL-HANDLE-PTR
                BY VALUE    C-CURLOPT-WRITEDATA
                BY REFERENCE OUT-RESPONSE
+
+           CALL "curl_easy_setopt" USING
+               BY VALUE    LS-CURL-HANDLE-PTR
+               BY VALUE    C-CURLOPT-TIMEOUT-MS
+               BY VALUE    LS-TIMEOUT-MS
 
        *> https://curl.se/libcurl/c/curl_easy_perform.html
            CALL "curl_easy_perform" USING
