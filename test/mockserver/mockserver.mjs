@@ -14,10 +14,11 @@ import fs from 'fs';
 const args = process.argv.slice(2);
 const responseFile = args[0];
 const responseHttpStatus = args[1];
+const delay_s = args.length === 2 ? null : args[2]
 
 // Verify the command line arguments
 if (!responseFile || !responseHttpStatus) {
-    console.error(`Usage: node ${path.basename(__filename)} <response file> <http status code>`);
+    console.error(`Usage: node ${path.basename(__filename)} <response file> <http status code> [delay in seconds]`);
     process.exit(1);
 }
 
@@ -27,7 +28,9 @@ const server = http.createServer((req, res) => {
     console.log(`Received request for ${req.url}`);
     res.writeHead(responseHttpStatus, { 'Content-Type': 'application/json' });
     const body = fs.readFileSync(responseFile, 'utf-8');
-    res.end(body);
+    setTimeout(() =>{
+        res.end(body);
+    }, delay_s * 1000);
 });
 
 // Start the server.
