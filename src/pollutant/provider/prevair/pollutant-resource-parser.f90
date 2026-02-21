@@ -27,6 +27,7 @@ contains
       )
       use json_module, only: json_file, json_core, json_value
       use http, only: response_type, request
+      use env_config, only: get_request_timeout_s
       implicit none
 
       ! Subroutine arguments:
@@ -52,7 +53,7 @@ contains
 
       resources_count = 0
       print *, "Fetching data from: ", metadata_url
-      response = request(metadata_url)
+      response = request(metadata_url, timeout=get_request_timeout_s())
       json_metadata_file = json_file(response%content)
       call json_metadata_file%get("data", json_resources)
       json_resources_count = json_core_obj%count(json_resources)
