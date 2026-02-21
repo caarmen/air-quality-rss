@@ -30,6 +30,7 @@ To build the examples, set the `BUILD_EXAMPLES` environment variable: `BUILD_EXA
 
 Set the following environment variables:
 * `BASE_FEED_URL`: the base URL of the rss feed. This is used in the `<link>` and `<id>` tags of the RSS feed.
+* `AQRSS_REQUEST_TIMEOUT_S`: request timeout in seconds for outbound HTTP calls. Defaults to 30.
 
 Run the project with `build/bin/air-quality-rss`.
 
