@@ -27,6 +27,7 @@ contains
       pollutant_names &
       ) result(pollutant_data_json_str)
       use http, only: response_type, request, pair_type
+      use env_config, only: get_request_timeout_s
       implicit none
       character(len=*), intent(in) :: token
       character(len=*), intent(in) :: date_str
@@ -47,7 +48,8 @@ contains
 
       response = request( &
                  url=trim(data_url), &
-                 header=[pair_type("Authorization", "Bearer "//token)] &
+                 header=[pair_type("Authorization", "Bearer "//token)], &
+                 timeout=get_request_timeout_s() &
                  )
       pollutant_data_json_str = response%content
 

@@ -3,6 +3,27 @@
 !-----------------------------------------------------------------------
 module env_config
 contains
+   !-----------------------------------------------------------------------
+   ! Function to read the request timeout (in seconds) from the
+   ! environment.
+   !
+   ! Environment variables:
+   !   AQRSS_REQUEST_TIMEOUT_S
+   ! Returns:
+   !   timeout - The configured request timeout in seconds. Defaults to 30.
+   !-----------------------------------------------------------------------
+   integer function get_request_timeout_s()
+      implicit none
+      character(len=64) :: env_buf
+
+      env_buf = ""
+      call get_environment_variable("AQRSS_REQUEST_TIMEOUT_S", env_buf)
+      if (trim(env_buf) == "") then
+         get_request_timeout_s = 30
+      else
+         read (env_buf, *) get_request_timeout_s
+      end if
+   end function get_request_timeout_s
 
    !-----------------------------------------------------------------------
    ! Function to read the pollutant metadata url from the environment.
