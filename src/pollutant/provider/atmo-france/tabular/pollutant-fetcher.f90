@@ -27,6 +27,7 @@ contains
       pollutant_names &
       ) result(pollutant_data_json_str)
       use http, only: response_type, request
+      use env_config, only: get_request_timeout_s
       implicit none
       character(len=*), intent(in) :: date_str
       character(len=*), intent(in) :: code_zone
@@ -44,7 +45,7 @@ contains
 
       print *, "Fetching data from: ", data_url
 
-      response = request(trim(data_url))
+      response = request(trim(data_url), timeout=get_request_timeout_s())
       pollutant_data_json_str = response%content
 
    end function fetch_pollutant_data_tabular
