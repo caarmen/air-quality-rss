@@ -55,3 +55,22 @@ load "../../support/test-actions.bash"
     run compare_response "pollen/remote-server-offline"
     [ "$status" -eq 0 ]
 }
+
+@test "Test timeout" {
+    # GIVEN a remote pollen server running which is extremely slow to respond
+    # AND a local pollen server waiting for a request
+    # WHEN a request is made to the local pollen server
+    # THEN the local pollen server should return the expected error
+
+    # GIVEN a remote pollen server running which is extremely slow to respond
+    launch_remote_server "pollen/remote-server-slow"
+
+    # WHEN a request is made to the local pollen server
+    call_local_server "/pollen-rss?latitude=48.8439104&longitude=2.3570831"
+
+    # THEN the local pollen server should return the expected error
+    [ "$http_status" -eq 500 ]
+    run compare_response "pollen/remote-server-slow"
+    [ "$status" -eq 0 ]
+
+}
