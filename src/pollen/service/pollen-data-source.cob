@@ -63,8 +63,8 @@
                05  LS-CDT-MONTH                PIC 9(2). *> 01-12
                05  LS-CDT-DAY                  PIC 9(2). *> 01-31
            01  LS-DATE-AND-TIME-STR            PIC X(10).
-           01  LS-BASE-URL                     PIC X(100).
-           01  C-BASE-URL-DEFAULT              PIC X(100) VALUE
+           01  LS-BASE-URL                     PIC X(1000).
+           01  C-BASE-URL-DEFAULT              PIC X(1000) VALUE
                    "https://data.atmo-france.org/geoserver/ind_pol/ows".
            01  C-QUERY-STRING                  PIC X(1000) VALUE
                "?REQUEST=GetFeatureInfo&SERVICE=WMS&SRS=EPSG%3A3857" &
@@ -106,7 +106,9 @@
 
       *> Get the pollen source host from the environment.
       *> This is useful for testing purposes.
-           ACCEPT LS-BASE-URL FROM ENVIRONMENT "POLLEN_BASE_URL"
+           CALL "GET-POLLEN-BASE-URL" USING
+               BY REFERENCE LS-BASE-URL
+           END-CALL
            IF FUNCTION TRIM(LS-BASE-URL) = ""
            THEN
                MOVE C-BASE-URL-DEFAULT TO LS-BASE-URL
