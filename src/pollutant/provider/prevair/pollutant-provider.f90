@@ -102,6 +102,7 @@ contains
       use pollutant_resource_parser
       use pollutant_calculator
       use file_downloader
+      use env_config, only: get_pollutant_metadata_url
       implicit none
 
       character(len=8) :: date_str
@@ -129,7 +130,7 @@ contains
       ! https://github.com/datagouv/data.gouv.fr/issues/654
       ! https://github.com/opendatateam/udata/blob/v10.7.0/udata/core/dataset/apiv2.py#L92
 
-      call get_environment_variable("POLLUTANT_METADATA_URL", metadata_url)
+      metadata_url = get_pollutant_metadata_url()
       if (metadata_url == "") then
          metadata_url = "https://www.data.gouv.fr/api/2/datasets/67f79b112ceb5b1df4c25a8b"// &
                         "/resources/?&q="//date_str//".moyj0"
