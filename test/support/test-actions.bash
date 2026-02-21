@@ -38,6 +38,7 @@ function launch_local_server() {
         -e POLLEN_BASE_URL="${pollen_base_url}" \
         -e POLLUTANT_METADATA_URL="${pollutant_metadata_url}" \
         -e BASE_FEED_URL="http://localhost:8888" \
+        -e AQRSS_REQUEST_TIMEOUT_S=5 \
         --detach \
         --add-host=host.docker.internal:host-gateway \
         air-quality-rss)
@@ -55,6 +56,7 @@ function launch_remote_server() {
     response_config_json_file="${fixture_folder}/${fixture_name}/mock-remote-response-config.json"
 
     status_code=$(jq -r '.status_code' "$response_config_json_file")
+    delay_s=$(jq -r '.delay_s // 0' "$response_config_json_file")
 
     replace_date_placeholders \
         "${fixture_folder}/${fixture_name}/mock-remote-response-body.txt" \
@@ -70,7 +72,9 @@ function launch_remote_server() {
     # Start the remote server
     node test/mockserver/mockserver.mjs \
         "${test_log_folder}/mock-remote-response-body.txt" \
-        "${status_code}" > "${test_log_folder}/mockserver.log" 2>&1 &
+        "${status_code}" \
+        "${delay_s}" \
+        > "${test_log_folder}/mockserver.log" 2>&1 &
     wait_for_text_in_file \
         "${test_log_folder}/mockserver.log" \
         "listening"

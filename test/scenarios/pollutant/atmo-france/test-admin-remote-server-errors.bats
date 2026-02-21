@@ -21,3 +21,22 @@ load "../../../support/test-actions.bash"
     run compare_response "pollutant/atmo-france/admin/remote-server-500-error"
     [ "$status" -eq 0 ]
 }
+
+@test "Test atmo france admin slow" {
+    # GIVEN a remote pollutant server running which is extremely slow to respond
+    # AND a local pollutant server waiting for a request
+    # WHEN a request is made to the local pollutant server
+    # THEN the local pollutant server should return a valid RSS feed
+
+    # GIVEN a remote pollutant server running which returns a 500 error
+    # AND a local pollutant server waiting for a request
+    launch_remote_server "pollutant/atmo-france/admin/remote-server-slow"
+
+    # WHEN a request is made to the local pollutant server
+    call_local_server "/pollutant-rss/atmo-france/admin?code_zone=75056"
+
+    # THEN the local pollutant server should return a valid RSS feed
+    [ "${http_status}" -eq 200 ]
+    run compare_response "pollutant/atmo-france/admin/remote-server-slow"
+    [ "$status" -eq 0 ]
+}

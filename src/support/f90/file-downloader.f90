@@ -19,6 +19,7 @@ contains
       path &
       )
       use http, only: response_type, request
+      use env_config, only: get_request_timeout_s
       use stdlib_io, only: open
       implicit none
       character(len=*), intent(in) :: url, path
@@ -31,7 +32,7 @@ contains
          return
       end if
       print *, "Fetching data from: ", url
-      response = request(trim(url))
+      response = request(trim(url), timeout=get_request_timeout_s())
       file_id = open (path, "wb")
       write (file_id) response%content
       close (file_id)
