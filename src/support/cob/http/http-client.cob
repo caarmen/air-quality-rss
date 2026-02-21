@@ -15,7 +15,7 @@
        LOCAL-STORAGE SECTION.
            01  LS-CURL-CODE               USAGE BINARY-LONG.
 
-       *> https://github.com/curl/curl/blob/master/packages/OS400/curl.inc.in#L1073
+       *> https://github.com/curl/curl/blob/curl-8_18_0/packages/OS400/curl.inc.in#L1092
            01  C-CURLOPT-URL              CONSTANT AS 10002.
            01  C-CURLOPT-WRITEFUNCTION    CONSTANT AS 20011.
            01  C-CURLOPT-WRITEDATA        CONSTANT AS 10001.
